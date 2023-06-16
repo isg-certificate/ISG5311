@@ -1,0 +1,10 @@
+# Introduction to Linux/Bash
+
+----
+**Learning Objectives:**
+1) Identify what a terminal is and the advantages provided by the terminal interface
+2) Recognize how the Xanadu cluster differs from your local computer
+3) Gain proficiency in basic command line interface usage
+4) Move data within and between systems
+5) Ask questions about Xanadu and its status
+----

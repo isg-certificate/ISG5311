@@ -1,0 +1,7 @@
+book_filename: "series"
+language:
+  ui:
+    chapter_name: "Module "
+rmd_files: ["index.Rmd","module_1.Rmd","module_2.Rmd","module_3.Rmd","module_4.Rmd","module_5.Rmd","module_6.Rmd","module_7.Rmd","module_8.Rmd","module_9.Rmd","module_10.Rmd","module_11.Rmd"]
+delete_merged_file: true 
+output_dir: "docs"

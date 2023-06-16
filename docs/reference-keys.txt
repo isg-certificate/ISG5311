@@ -1,0 +1,15 @@
+introduction-to-linuxbash
+slurm-job-submission
+what-is-slurm
+submitting-a-batch-script
+loading-software-on-xanadu
+organizing-a-project-directory
+introduction-to-sequencing-data
+rna-seq-quality-control
+rna-seq-read-mapping-igv-and-counts-data
+introduction-to-rtidyverse
+rna-seq-statistical-analysis-in-r-deseq2
+rna-seq-enrichment-and-network-analysis
+rna-seq-visualization
+writing-up-results
+wrap-up-and-synthesis

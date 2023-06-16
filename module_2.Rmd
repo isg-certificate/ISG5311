@@ -1,0 +1,61 @@
+# SLURM Job Submission
+
+----
+**Learning Objectives:**
+1)
+----
+
+Resources:
+https://slurm.schedmd.com/slurm_design.pdf
+https://www.osc.edu/book/export/html/1800
+
+
+## What is SLURM?
+SLURM (Simple Linux Utility for Resource Management) is a scheduler software used to coordinate activities on a grid computing system. Three key functions include:
+
+
+  (1) Allocates exclusive and/or non-exclusive access to resources (compute nodes) to users for some duration of time so they can perform a task
+  (2) Provides a framework for starting, executing, and monitoring work (parallel job) on set of allocated nodes
+  (3) Arbitrates conflicting requests for resources by managing a queue of pending work
+
+
+**Command Line Utilities:**
+
+| Command  | Description                                   |
+|----------|-----------------------------------------------|
+| sbatch   | Launch a job with a batch script               |
+| srun     | Launch a job without a batch script            |
+| scancel  | Terminate a pending or running job             |
+| squeue   | Monitor job queues                            |
+| sinfo    | Monitor partition and overall system state     |
+| scontrol | Get information about a specific job           |
+| sacct    | Retrieve information on a running/completed job|
+| seff     | Display resource usage and efficiency of a completed job |
+
+
+## Submitting a Batch Script
+
+**SLURM header lines and directives:**
+
+A batch script header **must** start with a shebang: `#!/bin/bash`
+Below are a list of additional header options, which follow this format: `#SBATCH [option]`
+
+| Option           | Description                                       |
+|------------------|---------------------------------------------------|
+| --nodes        | Request that task and cores are on the same node   |
+| --ntasks       | Number of tasks to run (default: 1)                |
+| --mem          | Memory requested                                   |
+| --job-name     | Name of the script                                 |
+| --qos          | Quality of service (QoS)                           |
+| --cpus-per-task| Number of CPUs requested per task                   |
+| --partition    | Specifies SLURM partition (example: general)       |
+| --mail-type    | Mailing option                                     |
+| --mail-user    | Email notification should be sent to                |
+| -o myscript_%j.out | Standard output will be appended to `myscript_%j.out` file |
+| -e myscript_%j.err | Standard error will be appended to `myscript_%j.err` file |
+
+## Loading Software on Xanadu
+
+## Organizing a Project Directory
+
+

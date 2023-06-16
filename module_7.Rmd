@@ -1,0 +1,8 @@
+# RNA-Seq: Statistical Analysis in R (DESeq2)
+
+----
+**Learning Objectives:**
+1) 
+----
+  
+Resources:
