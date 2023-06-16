@@ -30,7 +30,7 @@
   
   
 
-<link rel="next" href="setup.html"/>
+<link rel="next" href="slurm-job-submission.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -77,16 +77,23 @@
 <li><a href="./">ISG 5311</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction to Linux/Bash</a></li>
-<li class="chapter" data-level="2" data-path="setup.html"><a href="setup.html"><i class="fa fa-check"></i><b>2</b> Setting up Bookdown</a>
+<li class="chapter" data-level="1" data-path="introduction-to-linuxbash.html"><a href="introduction-to-linuxbash.html"><i class="fa fa-check"></i><b>1</b> Introduction to Linux/Bash</a></li>
+<li class="chapter" data-level="2" data-path="slurm-job-submission.html"><a href="slurm-job-submission.html"><i class="fa fa-check"></i><b>2</b> SLURM Job Submission</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#get-bookdown-tutorial-going-on-your-local-computer"><i class="fa fa-check"></i><b>2.1</b> Get “bookdown-tutorial” going on your local computer</a></li>
-<li class="chapter" data-level="2.2" data-path="setup.html"><a href="setup.html#create-your-awesome-book-github-repo"><i class="fa fa-check"></i><b>2.2</b> Create your “awesome-book” GitHub repo</a></li>
-<li class="chapter" data-level="2.3" data-path="setup.html"><a href="setup.html#turn-bookdown-tutorial-into-awesome-book"><i class="fa fa-check"></i><b>2.3</b> Turn “bookdown-tutorial” into “awesome-book”</a></li>
-<li class="chapter" data-level="2.4" data-path="setup.html"><a href="setup.html#publish-awesome-book"><i class="fa fa-check"></i><b>2.4</b> Publish “awesome-book”</a></li>
-<li class="chapter" data-level="2.5" data-path="setup.html"><a href="setup.html#moving-forward"><i class="fa fa-check"></i><b>2.5</b> Moving forward</a></li>
+<li class="chapter" data-level="2.1" data-path="slurm-job-submission.html"><a href="slurm-job-submission.html#what-is-slurm"><i class="fa fa-check"></i><b>2.1</b> What is SLURM?</a></li>
+<li class="chapter" data-level="2.2" data-path="slurm-job-submission.html"><a href="slurm-job-submission.html#submitting-a-batch-script"><i class="fa fa-check"></i><b>2.2</b> Submitting a Batch Script</a></li>
+<li class="chapter" data-level="2.3" data-path="slurm-job-submission.html"><a href="slurm-job-submission.html#loading-software-on-xanadu"><i class="fa fa-check"></i><b>2.3</b> Loading Software on Xanadu</a></li>
+<li class="chapter" data-level="2.4" data-path="slurm-job-submission.html"><a href="slurm-job-submission.html#organizing-a-project-directory"><i class="fa fa-check"></i><b>2.4</b> Organizing a Project Directory</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="write.html"><a href="write.html"><i class="fa fa-check"></i><b>3</b> Writing in Bookdown</a></li>
+<li class="chapter" data-level="3" data-path="introduction-to-sequencing-data.html"><a href="introduction-to-sequencing-data.html"><i class="fa fa-check"></i><b>3</b> Introduction to sequencing data</a></li>
+<li class="chapter" data-level="4" data-path="rna-seq-quality-control.html"><a href="rna-seq-quality-control.html"><i class="fa fa-check"></i><b>4</b> RNA-Seq: Quality Control</a></li>
+<li class="chapter" data-level="5" data-path="rna-seq-read-mapping-igv-and-counts-data.html"><a href="rna-seq-read-mapping-igv-and-counts-data.html"><i class="fa fa-check"></i><b>5</b> RNA-Seq: Read Mapping, IGV, and Counts Data</a></li>
+<li class="chapter" data-level="6" data-path="introduction-to-rtidyverse.html"><a href="introduction-to-rtidyverse.html"><i class="fa fa-check"></i><b>6</b> Introduction to R/TidyVerse</a></li>
+<li class="chapter" data-level="7" data-path="rna-seq-statistical-analysis-in-r-deseq2.html"><a href="rna-seq-statistical-analysis-in-r-deseq2.html"><i class="fa fa-check"></i><b>7</b> RNA-Seq: Statistical Analysis in R (DESeq2)</a></li>
+<li class="chapter" data-level="8" data-path="rna-seq-enrichment-and-network-analysis.html"><a href="rna-seq-enrichment-and-network-analysis.html"><i class="fa fa-check"></i><b>8</b> RNA-Seq: Enrichment and Network Analysis</a></li>
+<li class="chapter" data-level="9" data-path="rna-seq-visualization.html"><a href="rna-seq-visualization.html"><i class="fa fa-check"></i><b>9</b> RNA-Seq: Visualization</a></li>
+<li class="chapter" data-level="10" data-path="writing-up-results.html"><a href="writing-up-results.html"><i class="fa fa-check"></i><b>10</b> Writing Up Results</a></li>
+<li class="chapter" data-level="11" data-path="wrap-up-and-synthesis.html"><a href="wrap-up-and-synthesis.html"><i class="fa fa-check"></i><b>11</b> Wrap Up and Synthesis</a></li>
 <li class="divider"></li>
 <li><a href="./">Noah Reid</a></li>
 </ul>
@@ -111,11 +118,11 @@
 <p class="author"><em>Noah Reid</em></p>
 </div>
 <div id="introduction-to-linuxbash" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Module 1</span> Introduction to Linux/Bash<a href="index.html#introduction-to-linuxbash" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<h1><span class="header-section-number">Module 1</span> Introduction to Linux/Bash<a href="introduction-to-linuxbash.html#introduction-to-linuxbash" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <table>
 <tbody>
 <tr class="odd">
-<td><strong>Module Learning Objectives:</strong></td>
+<td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
 <td>1) Identify what a terminal is and the advantages provided by the terminal interface</td>
@@ -142,7 +149,7 @@
         </div>
       </div>
 
-<a href="setup.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="slurm-job-submission.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -158,8 +165,8 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": false,
-"facebook": false,
-"twitter": false,
+"facebook": true,
+"twitter": true,
 "linkedin": false,
 "weibo": false,
 "instapaper": false,
@@ -199,3 +206,4 @@ gitbook.start({
 </body>
 
 </html>
+
