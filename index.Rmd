@@ -13,8 +13,4 @@ description: "ISG 5311 Exercises"
 
 # Orientation {-}
 
-<<<<<<< HEAD
-I edited this!
-=======
-random text
->>>>>>> 36a5bdfcb2ff49c46e6235ded2dd9c9e96176162
+new text
