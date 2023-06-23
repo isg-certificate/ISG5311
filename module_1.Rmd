@@ -8,3 +8,144 @@
 4) Move data within and between systems
 5) Ask questions about Xanadu and its status
 ----
+
+**Resources:**
+- https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+- https://tldp.org/LDP/abs/html/index.html
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207
+
+
+## Accessing the Cluster
+A cluster consists of a set connected computers that work together so that they can be viewed as a single system. Each computer unit in a cluster is referred as ‘node’. The components of a cluster are usually connected through fast local area networks (“LAN”), with each node running its own instance of an operating system.  The benefits of clusters include low cost, elasticity and the ability to run jobs anytime. 
+
+[Xanadu Account](http://bioinformatics.uconn.edu/contact-us/)
+
+```
+To obtain an account in Xanadu, you must have a UCH account, also known as a CAM account. The following link will allow you to request this: http://bioinformatics.uconn.edu/contact-us/. Select: “Account Request (Xanadu cluster) ” from the list on the contact-us page.
+Once you submit the request, you will receive a CAM form from a member of the UCH HPC team.  You will fill out this second form, and upon approval, you will be able to access this cluster.
+```
+
+## Cluster vs Local Computer
+### Open the terminal on your own computer
+```
+Macbook
+  1) Press Command+Space to open Spotlight Search.
+  2) Type "Terminal" and press Enter: This will launch the Terminal application.
+Windows
+  1) Install WSL
+  2) Press the Windows key on your keyboard to open the Start menu.
+  3) Type "Windows Terminal" in the search bar and click on it: This will launch the Windows Terminal application.
+```
+
+### Login to Xanadu
+```
+ssh <user_name>@xanadu-submit-ext.cam.uchc.edu
+```
+
+### Start an interactive session
+```
+srun --partition=general --qos=general --pty bash
+```
+
+## Basic Linux Commands
+
+| Command | Description                               |
+|---------|-------------------------------------------|
+| pwd     | print working directory                   |
+| cd      | navigate through directories              |
+| ls      | list directories                          |
+| man     | get help                                  |
+| touch   | create empty file                         |
+| mkdir   | create directory                          |
+| cat     | display file contents or concatenate      |
+| less    | display paged outputs                     |
+| mv      | rename or move files                      |
+| rm      | delete files or directories               |
+| cp      | copy files or directories                 |
+| chmod   | change file permissions                   |
+| wget    | download files from the internet          |
+
+### Match the command to its description
+
+<p><strong>Question 1:</strong> How do you create a directory?</p>
+
+<form>
+  <input type="radio" id="optionA" name="answer" value="A">
+  <label for="optionA">A. mkdir</label><br>
+  
+  <input type="radio" id="optionB" name="answer" value="B">
+  <label for="optionB">B. touch</label><br>
+  
+  <input type="radio" id="optionC" name="answer" value="C">
+  <label for="optionC">C. ls</label><br>
+  
+  <input type="radio" id="optionD" name="answer" value="D">
+  <label for="optionD">D. cp</label><br>
+  
+  <input type="submit" value="Submit" onclick="checkAnswer(event)">
+</form>
+
+<p id="result"></p>
+
+<script>
+  function checkAnswer(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    // Get the selected answer
+    const selectedOption = document.querySelector('input[name="answer"]:checked');
+    
+    // Check if an option is selected
+    if (selectedOption) {
+      const selectedValue = selectedOption.value;
+      
+      // Check if the selected answer is correct
+      if (selectedValue === "A") {
+        document.getElementById("result").textContent = "Correct!";
+      } else {
+        document.getElementById("result").textContent = "Incorrect!";
+      }
+    }
+  }
+</script>
+
+<p><strong>Question 2:</strong> What command would allow you to recursively copy a directory?</p>
+
+<form>
+  <input type="radio" id="optionA" name="answer" value="A">
+  <label for="optionA">A. cp -a </label><br>
+  
+  <input type="radio" id="optionB" name="answer" value="B">
+  <label for="optionB">B. cp</label><br>
+  
+  <input type="radio" id="optionC" name="answer" value="C">
+  <label for="optionC">C. cp -R</label><br>
+  
+  <input type="radio" id="optionD" name="answer" value="D">
+  <label for="optionD">D. mv -R</label><br>
+  
+  <input type="submit" value="Submit" onclick="checkAnswer(event)">
+</form>
+
+<p id="result"></p>
+
+<script>
+  function checkAnswer(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    // Get the selected answer
+    const selectedOption = document.querySelector('input[name="answer"]:checked');
+    
+    // Check if an option is selected
+    if (selectedOption) {
+      const selectedValue = selectedOption.value;
+      
+      // Check if the selected answer is correct
+      if (selectedValue === "C") {
+        document.getElementById("result").textContent = "Correct!";
+      } else {
+        document.getElementById("result").textContent = "Incorrect!";
+      }
+    }
+  }
+</script>
