@@ -33,7 +33,7 @@ SLURM (Simple Linux Utility for Resource Management) is a scheduler software use
 | seff     | Display resource usage and efficiency of a completed job |
 
 
-## Submitting a Batch Script
+## Batch Script Header
 
 **SLURM header lines and directives:**
 
@@ -54,7 +54,102 @@ Below are a list of additional header options, which follow this format: `#SBATC
 | -o myscript_%j.out | Standard output will be appended to `myscript_%j.out` file |
 | -e myscript_%j.err | Standard error will be appended to `myscript_%j.err` file |
 
+### Example:
+
+```
+#!/bin/bash
+#SBATCH --job-name=samtools
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH -c 5
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=END
+#SBATCH --mem=20G
+#SBATCH --mail-user=cynthia.webster@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+```
+
 ## Loading Software on Xanadu
+List the available software with the following command:
+```
+module avail
+```
+When software is available as a module file, you can simply add:
+```
+module load software/version
+```
+to your script.
+If I was interested in running `samtools` for example, I would:
+
+**1. Check if samtools is a module file:**
+```
+module avail samtools
+```
+
+**2. Pick the version I am interested in (usually most recent!):**
+```
+samtools/0.1.17 samtools/0.1.19 samtools/1.10   samtools/1.12   samtools/1.16.1 samtools/1.3.1  samtools/1.7    samtools/1.9
+```
+
+**3. Add it to a script:**
+```
+#!/bin/bash
+#SBATCH --job-name=samtools
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH -c 5
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=END
+#SBATCH --mem=20G
+#SBATCH --mail-user=cynthia.webster@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+module load samtools/1.16.1
+```
+
+## Submitting a Batch Script
+
+The example above loads `samtools`, but we still need to provide the code necessary to complete a certain task. 
+
+### Calculate the mapping rate of a BAM file
+
+**1. Download the BAM file into your working directory:**
+```
+cp /path/to/in.bam .
+```
+**2. Referring to the [`samtools manual`](http://www.htslib.org/doc/samtools-stats.html), write the following code into a file called `samtools.sh` using `vim` text editor:**
+```
+#!/bin/bash
+#SBATCH --job-name=samtools
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH -c 5
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=END
+#SBATCH --mem=20G
+#SBATCH --mail-user=cynthia.webster@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+module load samtools/1.16.1
+
+samtools stats /path/to/in.bam
+```
+
+**3. Submit the script:**
+```
+sbatch samtools.sh
+```
+
+**4. Check that the script is running:**
+```
+squeue
+```
 
 ## Organizing a Project Directory
 

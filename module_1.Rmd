@@ -1,93 +1,227 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 # Introduction to Linux/Bash
 
-----
-**Learning Objectives:**
-1) Identify what a terminal is and the advantages provided by the terminal interface
-2) Recognize how the Xanadu cluster differs from your local computer
-3) Gain proficiency in basic command line interface usage
-4) Move data within and between systems
-5) Ask questions about Xanadu and its status
-----
+|                                                                                      |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                             |
+| 1) Identify what a terminal is and the advantages provided by the terminal interface |
+| 2) Recognize how the Xanadu cluster differs from your local computer                 |
+| 3) Gain proficiency in basic command line interface usage                            |
+| 4) Move data within and between systems                                              |
+| 5) Ask questions about Xanadu and its status                                         |
 
-**Resources:**
-- https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-- https://tldp.org/LDP/abs/html/index.html
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207
-
+**Resources:** -
+<https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html> -
+<https://tldp.org/LDP/abs/html/index.html> -
+<https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645> -
+<https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207>
 
 ## Accessing the Cluster
-A cluster consists of a set connected computers that work together so that they can be viewed as a single system. Each computer unit in a cluster is referred as ‘node’. The components of a cluster are usually connected through fast local area networks (“LAN”), with each node running its own instance of an operating system.  The benefits of clusters include low cost, elasticity and the ability to run jobs anytime. 
+
+A cluster consists of a set connected computers that work together so
+that they can be viewed as a single system. Each computer unit in a
+cluster is referred as 'node'. The components of a cluster are usually
+connected through fast local area networks ("LAN"), with each node
+running its own instance of an operating system. The benefits of
+clusters include low cost, elasticity and the ability to run jobs
+anytime.
 
 [Xanadu Account](http://bioinformatics.uconn.edu/contact-us/)
 
-```
-To obtain an account in Xanadu, you must have a UCH account, also known as a CAM account. The following link will allow you to request this: http://bioinformatics.uconn.edu/contact-us/. Select: “Account Request (Xanadu cluster) ” from the list on the contact-us page.
-Once you submit the request, you will receive a CAM form from a member of the UCH HPC team.  You will fill out this second form, and upon approval, you will be able to access this cluster.
-```
+    To obtain an account in Xanadu, you must have a UCH account, also known as a CAM account. The following link will allow you to request this: http://bioinformatics.uconn.edu/contact-us/. Select: “Account Request (Xanadu cluster) ” from the list on the contact-us page.
+    Once you submit the request, you will receive a CAM form from a member of the UCH HPC team.  You will fill out this second form, and upon approval, you will be able to access this cluster.
 
 ## Cluster vs Local Computer
+
 ### Open the terminal on your own computer
-```
-Macbook
-  1) Press Command+Space to open Spotlight Search.
-  2) Type "Terminal" and press Enter: This will launch the Terminal application.
-Windows
-  1) Install WSL
-  2) Press the Windows key on your keyboard to open the Start menu.
-  3) Type "Windows Terminal" in the search bar and click on it: This will launch the Windows Terminal application.
-```
+
+    Macbook
+      1) Press Command+Space to open Spotlight Search.
+      2) Type "Terminal" and press Enter: This will launch the Terminal application.
+    Windows
+      1) Install WSL
+      2) Press the Windows key on your keyboard to open the Start menu.
+      3) Type "Windows Terminal" in the search bar and click on it: This will launch the Windows Terminal application.
 
 ### Login to Xanadu
+
+`ssh` or Secure Shell (Secure Shell) allows you to communicate with the
+cluster. Replace `user_name` with your username assigned on the cluster.
+
+    ssh <user_name>@xanadu-submit-ext.cam.uchc.edu
+
+Upon logging in you will see the following resource usage policy:
+
+         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         !!!                RESOURCE USAGE POLICY                 !!!
+         !!! Uploading and/or processing of PHI or other          !!! 
+         !!! protected data in the HPC environment is prohibited. !!!
+         !!!                                                      !!!
+         !!! NOTICE: DO NOT RUN COMPUTE JOBS ON THIS NODE         !!!
+         !!! Users found to be running compute jobs on submit     !!!
+         !!! nodes risk having their jobs killed and work lost.   !!!
+         !!!                                                      !!!
+         !!! NOTICE: DO NOT USE SUBMIT NODES FOR FILE TRANSFERS   !!!
+         !!! Please use either Globus or a compute node to        !!!
+         !!! transfer large data files.                           !!!
+         !!!                                                      !!!
+         !!! Memory allocations are strictly enforced please      !!!
+         !!! refer to "working with SLURM" section of Xanadu      !!!
+         !!! tutorial at                                          !!!
+         !!! https://bioinformatics.uconn.edu/resources-and-events/tutorials/xanadu/
+         !!!                                                      !!!
+         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+**DO NOT RUN COMPUTE JOBS ON THIS NODE:** When logging onto Xanadu you
+default to the `login node`, which is very limited in resources. You
+should NEVER run any bash jobs on this node. Consider it equivalent to
+the lobby of hotel - you would NEVER take a shower in the lobby.
+
+**How can you tell if you're on a `login node`?**
+
+    hostname
+
+This will produce one of four nodes:
+
+    hpc-ext-1.cam.uchc.edu
+    hpc-ext-2.cam.uchc.edu
+    hpc-ext-3.cam.uchc.edu
+    hpc-ext-4.cam.uchc.edu
+
+If you see this, you are on the login node.
+
+**Why can't you run big jobs on the login node?**
+
+This node is only equipped with 2 CPUs:
+
+    lscpu
+
+and 8 GB of RAM:
+
+    cat /proc/meminfo
+
+If you run a job that exceeds these limitations, you will directly
+impact other users' ability to move around the cluster.
+
+### HPC resources and limits
+
+The nodes (individual nodes within the cluster) are divided into groups
+which are called partitions. Xanadu has several partitions available:
+general, xeon, amd and himem.
+
+To look up the available partition information you can use `sifno -s`
+which will you give you the current list:
+
+```{=html}
+<pre>
+PARTITION  AVAIL  TIMELIMIT   NODES(A/I/O/T)  NODELIST
+general*      up   infinite        41/3/1/45  xanadu-[01-05,08,10,20-27,29-31,34,36,39,46-47,49-54,57-67,69-70,72-74]
+vcell         up   infinite          1/6/0/7  xanadu-[76-82]
+vcellpu       up   infinite          0/1/0/1  xanadu-32
+himem         up   infinite          6/0/0/6  xanadu-[06,40-44]
+himem2        up   infinite          2/0/0/2  xanadu-[07,75]
+xeon          up   infinite        24/2/1/27  xanadu-[02-05,08,39,46-47,49-54,57-67,69-70]
+amd           up   infinite        14/0/0/14  xanadu-[10,20-27,29-31,34,36]
+mcbstudent    up   infinite          1/1/0/2  xanadu-[68,71]
+gpu           up   infinite         8/1/1/10  xanadu-[01-08,84-85]
+special       up   infinite        19/9/0/28  xanadu-[50-67,69-70,72-75,79-82]
+crbm          up   infinite          0/2/0/2  xanadu-[55-56]
+</pre>
 ```
-ssh <user_name>@xanadu-submit-ext.cam.uchc.edu
+Remember when we said the `login` node only has 2CPUs and 8GB of RAM?
+**Check out the nodes associated in the Xanadu cluster!**
+
+    sinfo -N -l
+
+```{=html}
+<pre>
+NODELIST   NODES  PARTITION       STATE CPUS    S:C:T MEMORY TMP_DISK WEIGHT AVAIL_FE REASON              
+xanadu-01      1   general*   allocated   36   2:18:1 257669        0      1 cpu_xeon none                
+xanadu-01      1        gpu   allocated   36   2:18:1 257669        0      1 cpu_xeon none                
+xanadu-02      1   general*   allocated   36   2:18:1 257669        0      1 cpu_xeon none                
+xanadu-02      1       xeon   allocated   36   2:18:1 257669        0      1 cpu_xeon none                
+xanadu-02      1        gpu   allocated   36   2:18:1 257669        0      1 cpu_xeon none                
+xanadu-03      1   general*   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-03      1       xeon   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-03      1        gpu   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-04      1   general*   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-04      1       xeon   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-04      1        gpu   allocated   36   2:18:1 257845        0      1 cpu_xeon none                
+xanadu-05      1   general*       mixed   36   2:18:1 225612        0      1 cpu_xeon none                
+xanadu-05      1       xeon       mixed   36   2:18:1 225612        0      1 cpu_xeon none                
+xanadu-05      1        gpu       mixed   36   2:18:1 225612        0      1 cpu_xeon none                
+xanadu-06      1      himem       mixed   36   2:18:1 515701        0      1 cpu_xeon none                
+xanadu-06      1        gpu       mixed   36   2:18:1 515701        0      1 cpu_xeon none                
+</pre>
 ```
+Notice some nodes have up to 64 CPUS and 515GB of memory. **This is why
+it is important to always run jobs on `xanadu-##` nodes**
 
 ### Start an interactive session
-```
-srun --partition=general --qos=general --pty bash
-```
+
+    srun --partition=general --qos=general --pty bash
+
+**By starting an interactive session you move onto a submit node**:
+
+    hostname
+
+You should see `xanadu-##` instead of `hpc-ext-#.cam.uchc.edu`. You can
+now safely run a job in the terminal!
 
 ## Basic Linux Commands
 
-| Command | Description                               |
-|---------|-------------------------------------------|
-| pwd     | print working directory                   |
-| cd      | navigate through directories              |
-| ls      | list directories                          |
-| man     | get help                                  |
-| touch   | create empty file                         |
-| mkdir   | create directory                          |
-| cat     | display file contents or concatenate      |
-| less    | display paged outputs                     |
-| mv      | rename or move files                      |
-| rm      | delete files or directories               |
-| cp      | copy files or directories                 |
-| chmod   | change file permissions                   |
-| wget    | download files from the internet          |
+| Command | Description                          |
+|---------|--------------------------------------|
+| pwd     | print working directory              |
+| cd      | navigate through directories         |
+| ls      | list directories                     |
+| man     | get help                             |
+| touch   | create empty file                    |
+| mkdir   | create directory                     |
+| cat     | display file contents or concatenate |
+| less    | display paged outputs                |
+| mv      | rename or move files                 |
+| rm      | delete files or directories          |
+| cp      | copy files or directories            |
+| chmod   | change file permissions              |
+| wget    | download files from the internet     |
 
 ### Match the command to its description
 
-<p><strong>Question 1:</strong> How do you create a directory?</p>
+<p>
+
+<strong>Question 1:</strong> How do you create a directory?
+
+</p>
 
 <form>
-  <input type="radio" id="optionA" name="answer" value="A">
-  <label for="optionA">A. mkdir</label><br>
-  
-  <input type="radio" id="optionB" name="answer" value="B">
-  <label for="optionB">B. touch</label><br>
-  
-  <input type="radio" id="optionC" name="answer" value="C">
-  <label for="optionC">C. ls</label><br>
-  
-  <input type="radio" id="optionD" name="answer" value="D">
-  <label for="optionD">D. cp</label><br>
-  
-  <input type="submit" value="Submit" onclick="checkAnswer(event)">
+
+<input type="radio" id="optionA" name="answer" value="A">
+<label for="optionA">A. mkdir</label><br>
+
+<input type="radio" id="optionB" name="answer" value="B">
+<label for="optionB">B. touch</label><br>
+
+<input type="radio" id="optionC" name="answer" value="C">
+<label for="optionC">C. ls</label><br>
+
+<input type="radio" id="optionD" name="answer" value="D">
+<label for="optionD">D. cp</label><br>
+
+<input type="submit" value="Submit" onclick="checkAnswer(event)">
+
 </form>
 
-<p id="result"></p>
+<p id="result">
 
+</p>
+
+```{=html}
 <script>
   function checkAnswer(event) {
     event.preventDefault(); // Prevent form submission
@@ -108,44 +242,51 @@ srun --partition=general --qos=general --pty bash
     }
   }
 </script>
+```
+## Editing a File with Vim
 
-<p><strong>Question 2:</strong> What command would allow you to recursively copy a directory?</p>
+**1. Create a txt file called `file.txt`:**
 
-<form>
-  <input type="radio" id="optionA" name="answer" value="A">
-  <label for="optionA">A. cp -a </label><br>
-  
-  <input type="radio" id="optionB" name="answer" value="B">
-  <label for="optionB">B. cp</label><br>
-  
-  <input type="radio" id="optionC" name="answer" value="C">
-  <label for="optionC">C. cp -R</label><br>
-  
-  <input type="radio" id="optionD" name="answer" value="D">
-  <label for="optionD">D. mv -R</label><br>
-  
-  <input type="submit" value="Submit" onclick="checkAnswer(event)">
-</form>
+    touch file.txt
 
-<p id="result"></p>
+**2. Open `file.txt` with vim:**
 
-<script>
-  function checkAnswer(event) {
-    event.preventDefault(); // Prevent form submission
-    
-    // Get the selected answer
-    const selectedOption = document.querySelector('input[name="answer"]:checked');
-    
-    // Check if an option is selected
-    if (selectedOption) {
-      const selectedValue = selectedOption.value;
-      
-      // Check if the selected answer is correct
-      if (selectedValue === "C") {
-        document.getElementById("result").textContent = "Correct!";
-      } else {
-        document.getElementById("result").textContent = "Incorrect!";
-      }
-    }
-  }
-</script>
+    vim file.txt
+
+**3. Press i on keyboard to insert text** You will see this at the
+bottom: -- INSERT --
+
+**4. Type "Hello World!"**
+
+**5. Press esc on keyboard, followed by :x and enter**
+
+    :x  
+
+**6. View the edit**
+
+    less file.txt
+
+## Absolute vs Relative Paths
+
+**Absolute Path:**
+
+An absolute path provides the complete and specific location of a file
+or directory from the root directory of the file system. It includes all
+the directories and subdirectories leading to the desired file or
+directory.
+
+*Example:*
+
+/home/username/Documents/file.txt
+
+**Relative Path:**
+
+A relative path specifies the location of a file or directory relative
+to the current working directory or another reference point. It does not
+start from the root directory but instead uses the context of the
+current directory.
+
+*Example:*
+
+Current working directory: /home/username/Documents Relative path:
+file.txt
