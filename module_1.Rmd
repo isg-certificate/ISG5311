@@ -36,9 +36,11 @@ anytime.
     To obtain an account in Xanadu, you must have a UCH account, also known as a CAM account. The following link will allow you to request this: http://bioinformatics.uconn.edu/contact-us/. Select: “Account Request (Xanadu cluster) ” from the list on the contact-us page.
     Once you submit the request, you will receive a CAM form from a member of the UCH HPC team.  You will fill out this second form, and upon approval, you will be able to access this cluster.
 
-## Cluster vs Local Computer
+## Command Line Interface
 
-### Open the terminal on your own computer
+### Local Computer
+
+**Open the terminal on your own computer**
 
     Macbook
       1) Press Command+Space to open Spotlight Search.
@@ -48,7 +50,7 @@ anytime.
       2) Press the Windows key on your keyboard to open the Start menu.
       3) Type "Windows Terminal" in the search bar and click on it: This will launch the Windows Terminal application.
 
-### Login to Xanadu
+### HPC
 
 `ssh` or Secure Shell (Secure Shell) allows you to communicate with the
 cluster. Replace `user_name` with your username assigned on the cluster.
@@ -253,8 +255,9 @@ now safely run a job in the terminal!
 
     vim file.txt
 
-**3. Press i on keyboard to insert text** You will see this at the
-bottom: -- INSERT --
+**3. Press i on keyboard to insert text**
+
+You will see this at the bottom: -- INSERT --
 
 **4. Type "Hello World!"**
 
