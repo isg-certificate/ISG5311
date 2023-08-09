@@ -168,6 +168,8 @@ it is important to always run jobs on `xanadu-##` nodes**
 
     srun --partition=general --qos=general --pty bash
 
+`srun` is a SLURM command, we will discuss this in the next section.
+
 **By starting an interactive session you move onto a submit node**:
 
     hostname
@@ -293,3 +295,162 @@ current directory.
 
 Current working directory: /home/username/Documents Relative path:
 file.txt
+
+## Regular Expressions
+
+A regular expression (regrex) describes a set of possible input strings
+
+-   The simplest regular expressions are a string of literal characters
+    to match
+-   The string matches the regular expression if it contains the
+    substring
+
+### **grep**
+
+Comes from the ed (Unix text editor) search command "global regular
+expression print" or g/re/p `grep [OPTION]... “PATTERN” [FILE]...`
+
+**Possible flags:**
+
+`-bash-4.2$ grep --help`
+
+    Output control:
+    -m, --max-count=NUM stop after NUM matches
+    -b, --byte-offset print the byte offset with output lines
+    -n, --line-number print line number with output lines
+    --line-buffered flush output on every line
+    -H, --with-filename print the file name for each match
+    -h, --no-filename suppress the file name prefix on output
+    --label=LABEL use LABEL as the standard input file name prefix
+    -o, --only-matching show only the part of a line matching PATTERN
+    -q, --quiet, --silent suppress all normal output
+    --binary-files=TYPE assume that binary files are TYPE;
+    TYPE is 'binary', 'text', or 'without-match'
+    -a, --text equivalent to --binary-files=text
+    -I equivalent to --binary-files=without-match
+    -d, --directories=ACTION how to handle directories;
+    ACTION is 'read', 'recurse', or 'skip'
+    -D, --devices=ACTION how to handle devices, FIFOs and sockets;
+    ACTION is 'read' or 'skip'
+    -r, --recursive like --directories=recurse
+    -R, --dereference-recursive
+    likewise, but follow all symlinks
+    --include=FILE_PATTERN
+    search only files that match FILE_PATTERN
+    --exclude=FILE_PATTERN
+    skip files and directories matching FILE_PATTERN
+    --exclude-from=FILE skip files matching any file pattern from FILE
+    --exclude-dir=PATTERN directories that match PATTERN will be skipped.
+    -L, --files-without-match print only names of FILEs containing no match
+    -l, --files-with-matches print only names of FILEs containing matches
+    -c, --count print only a count of matching lines per FILE
+    -T, --initial-tab make tabs line up (if needed)
+    -Z, --null print 0 byte after FILE name
+
+**Example:**
+
+`less sequences.fasta`
+
+\>1
+
+GCTAGC
+
+\>2
+
+AGTCGAT
+
+\>3
+
+ACGGGCCT
+
+**Use grep to count the number of sequences in `sequences.fasta`**:
+
+**`grep -c ">" sequences.fasta`**
+
+### **AWK** 
+
+AWK is a domain-specific language designed for text processing and
+typically used as a data extraction and reporting tool
+
+`awk [OPTION]... "PATTERN" [FILE]...`
+
+**Check out the different flags for awk:**
+
+`awk –help`
+
+### **sed** 
+
+sed is a text editor that performs basic transformations of text in a
+file, either in place, or in a new file
+
+`sed [OPTION]... {script-only-if-no-other-script} [input-file]...`
+
+**Check out the different flags for sed:**
+
+`sed –help`
+
+## Permissions
+
+`chmod` (Change mode): a command that allows a user to change
+permissions of a file or directory to all types of users.
+
+Syntax:
+
+    chmod <Operations> <File/Directory Name>
+
+You can give or revoke permission by adjusting the **Operations** in the
+above command.
+
+-   `r` -- Grants read permission
+
+-   `w` -- Grant write permission
+
+-   `x` -- Grant execute permission
+
+-   `u` -- Grant permission to a user
+
+-   `g` -- Grant permission to a group (A Group of users)
+
+-   `o` -- Grant permission to others (who do not come under either of
+    the above).
+
+These operations need to be preceded with a **'+' or '-'** operator.
+
+**'+'** indicates adding a new permission, and **'-'** indicates
+removing an existing permission.
+
+## Transfer
+
+### FileZilla
+
+FileZilla is a graphical file transfer utility for all operating
+systems. [Download](https://sourceforge.net/projects/filezilla/) and run
+Filezilla Client.
+
+1.  In the top menu, click on File \> Site Manager or with the shortcut
+    key stroke Ctrl + s to open the Site Manager window.
+
+2.  Click on "New Site" and call it, say, "hpc". Fill in the values for
+    "Host", "Protocol" and "Login" (with your NetID) as shown below.
+    Then click "Connect". The "Host" field will be
+    [hpc2.storrs.hpc.uconn.edu](http://hpc2.storrs.hpc.uconn.edu/)
+
+### SCP (Mac OS or GNU/Linux)
+
+To transfer large files between 2 computers, it is useful to directly
+transfer between those computers instead of copying to your local
+computer. One can use scp on the cluster to copy files. scp is a command
+line utility bundled with UNIX operating systems. For example, to upload
+file(s):
+
+    scp <local_file> <NetID>@hpc2.storrs.hpc.uconn.edu:/path/to/remote/destination/directory
+
+To download a directory:
+
+    scp -r <NetID>@hpc2.storrs.hpc.uconn.edu:/path/to/remote/source/directory . # The dot means current directory; -r means recursively copy everything in the directory
+
+**Globus:**
+
+<https://github.com/CBC-UCONN/CBC_Docs/wiki/File-Transfer>
+
+\

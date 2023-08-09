@@ -71,9 +71,8 @@
     2.  What is the absolute path of the working directory? What is the relative path?
 8.  Using the `vim` text editor, create a file called `username.txt` and write the following text:
 
-```{=html}
 <!-- -->
-```
+
       Your name
       Your favorite color
       Your goals for this program
@@ -109,9 +108,8 @@
 
     2.  This protein file was downloaded from Phytozome.org. The sequence headers in this file look something like this:
 
-    ```{=html}
     <!-- -->
-    ```
+
         >Glyma.16G009500.2.p pacid=41077002 transcript=Glyma.16G009500.2 locus=Glyma.16G009500 ID=Glyma.16G009500.2.Wm82.a4.v1 annot-version=Wm82.a4.v1
 
     3.  Too long! Change the headers in Glycine_max.fasta so they display just the name or unique identifier of the protein sequences.
@@ -120,9 +118,8 @@
 
             >Glyma.16G009500.2.p
 
-```{=html}
 <!-- -->
-```
+
 11. How many module versions of `trinity` exist on Xanadu? What about `GATK`?
 12. Copy the following bash script into your home directory: `/path/to/tbd`
     1.  Add your email to the header, and increase the memory to 5G
@@ -138,3 +135,4 @@
     6.  Were there any errors? How can you tell?
 
     7.  Display resource usage and efficiency of the completed job.
+13. Try to go into another user home directory. How can you chance the permissions on your files?

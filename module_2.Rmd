@@ -150,7 +150,3 @@ sbatch samtools.sh
 ```
 squeue
 ```
-
-## Organizing a Project Directory
-
-
