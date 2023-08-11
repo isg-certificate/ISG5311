@@ -351,23 +351,18 @@ expression print" or g/re/p `grep [OPTION]... “PATTERN” [FILE]...`
 
 `less sequences.fasta`
 
-\>1
+    >1 
+    GCTAGC 
+    >2 
+    AGTCGAT 
+    >3 
+    ACGGGCCT
 
-GCTAGC
+Count the number of sequences in `sequences.fasta`:
 
-\>2
+`grep -c ">" sequences.fasta`
 
-AGTCGAT
-
-\>3
-
-ACGGGCCT
-
-**Use grep to count the number of sequences in `sequences.fasta`**:
-
-**`grep -c ">" sequences.fasta`**
-
-### **AWK** 
+### **AWK**
 
 AWK is a domain-specific language designed for text processing and
 typically used as a data extraction and reporting tool
@@ -378,7 +373,13 @@ typically used as a data extraction and reporting tool
 
 `awk –help`
 
-### **sed** 
+**Example:**
+
+Print the second column of a text file:
+
+`awk '{print $2}' data.txt`
+
+### **sed**
 
 sed is a text editor that performs basic transformations of text in a
 file, either in place, or in a new file
@@ -388,6 +389,11 @@ file, either in place, or in a new file
 **Check out the different flags for sed:**
 
 `sed –help`
+
+**Example:** To replace "world" with "universe" in a file:
+`sed 's/world/universe/' input.txt`
+
+To delete the second line from a file: `sed '2d' input.txt`
 
 ## Permissions
 
@@ -400,6 +406,8 @@ Syntax:
 
 You can give or revoke permission by adjusting the **Operations** in the
 above command.
+
+### Symbolic Notation
 
 -   `r` -- Grants read permission
 
@@ -418,6 +426,49 @@ These operations need to be preceded with a **'+' or '-'** operator.
 
 **'+'** indicates adding a new permission, and **'-'** indicates
 removing an existing permission.
+
+**Examples**:
+
+1.  Add read and write permissions for the owner of the file
+
+    `chmod u+rw filename`
+
+2.  Remove execute permission for the group
+
+    `chmod g-x filename`
+
+3.  Set read, write, and execute permissions for others
+
+    `chmod o+rwx filename`
+
+4.  Grant read and execute permissions to everyone
+
+    `chmod a+rx filename`
+
+### Numeric Notation
+
+| Value | Permission | Binary |
+|:-----:|:----------:|:------:|
+|   7   |    rwx     |  111   |
+|   6   |    rw-     |  110   |
+|   5   |    r-x     |  101   |
+|   4   |    r---    |  100   |
+|   3   |    -wx     |  011   |
+|   2   |    -w-     |  010   |
+|   1   |    --x     |  001   |
+|   0   |    ---     |  000   |
+
+**Examples:**
+
+1.  Give read, write, and execute permissions to the owner, and read and
+    execute permissions to the group and others
+
+    `chmod 755 filename`
+
+2.  set read and write permissions for the owner, and read-only
+    permissions for the group and others
+
+    `chmod 644 filename`
 
 ## Transfer
 
@@ -452,5 +503,3 @@ To download a directory:
 **Globus:**
 
 <https://github.com/CBC-UCONN/CBC_Docs/wiki/File-Transfer>
-
-\
