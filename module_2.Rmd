@@ -1,152 +1,247 @@
 # SLURM Job Submission
 
-----
-**Learning Objectives:**
-1)
-----
+|                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------|
+| **Learning Objectives:**                                                                                         |
+| 1) Explain why supercomputers/grid computing systems often require a controller or scheduler software like SLURM |
+| 2) Understand the SLURM command line utilities                                                                   |
+| 3) Differentiate between a standard and interactive batch job, and why you might use one over the other          |
+| 4) Load software and check job progress                                                                          |
+| 5) Troubleshoot a failed job                                                                                     |
 
-Resources:
-https://slurm.schedmd.com/slurm_design.pdf
-https://www.osc.edu/book/export/html/1800
-
+Resources: <https://slurm.schedmd.com/slurm_design.pdf> <https://www.osc.edu/book/export/html/1800>
 
 ## What is SLURM?
+
 SLURM (Simple Linux Utility for Resource Management) is a scheduler software used to coordinate activities on a grid computing system. Three key functions include:
 
-
-  (1) Allocates exclusive and/or non-exclusive access to resources (compute nodes) to users for some duration of time so they can perform a task
-  (2) Provides a framework for starting, executing, and monitoring work (parallel job) on set of allocated nodes
-  (3) Arbitrates conflicting requests for resources by managing a queue of pending work
-
+(1) Allocates exclusive and/or non-exclusive access to resources (compute nodes) to users for some duration of time so they can perform a task
+(2) Provides a framework for starting, executing, and monitoring work (parallel job) on set of allocated nodes
+(3) Arbitrates conflicting requests for resources by managing a queue of pending work
 
 **Command Line Utilities:**
 
-| Command  | Description                                   |
-|----------|-----------------------------------------------|
-| sbatch   | Launch a job with a batch script               |
-| srun     | Launch a job without a batch script            |
-| scancel  | Terminate a pending or running job             |
-| squeue   | Monitor job queues                            |
-| sinfo    | Monitor partition and overall system state     |
-| scontrol | Get information about a specific job           |
-| sacct    | Retrieve information on a running/completed job|
+| Command  | Description                                              |
+|----------|----------------------------------------------------------|
+| sbatch   | Launch a job with a batch script                         |
+| srun     | Launch a job without a batch script                      |
+| scancel  | Terminate a pending or running job                       |
+| squeue   | Monitor job queues                                       |
+| sinfo    | Monitor partition and overall system state               |
+| scontrol | Get information about a specific job                     |
+| sacct    | Retrieve information on a running/completed job          |
 | seff     | Display resource usage and efficiency of a completed job |
-
 
 ## Batch Script Header
 
 **SLURM header lines and directives:**
 
-A batch script header **must** start with a shebang: `#!/bin/bash`
-Below are a list of additional header options, which follow this format: `#SBATCH [option]`
+A batch script header **must** start with a shebang: `#!/bin/bash` Below are a list of additional header options, which follow this format: `#SBATCH [option]`
 
-| Option           | Description                                       |
-|------------------|---------------------------------------------------|
-| --nodes        | Request that task and cores are on the same node   |
-| --ntasks       | Number of tasks to run (default: 1)                |
-| --mem          | Memory requested                                   |
-| --job-name     | Name of the script                                 |
-| --qos          | Quality of service (QoS)                           |
-| --cpus-per-task| Number of CPUs requested per task                   |
-| --partition    | Specifies SLURM partition (example: general)       |
-| --mail-type    | Mailing option                                     |
-| --mail-user    | Email notification should be sent to                |
-| -o myscript_%j.out | Standard output will be appended to `myscript_%j.out` file |
-| -e myscript_%j.err | Standard error will be appended to `myscript_%j.err` file |
+| Option              | Description                                                |
+|-------------------|-----------------------------------------------------|
+| --nodes             | Request that task and cores are on the same node           |
+| --ntasks            | Number of tasks to run (default: 1)                        |
+| --mem               | Memory requested                                           |
+| --job-name          | Name of the script                                         |
+| --qos               | Quality of service (QoS)                                   |
+| --cpus-per-task     | Number of CPUs requested per task                          |
+| --partition         | Specifies SLURM partition (example: general)               |
+| --mail-type         | Mailing option                                             |
+| --mail-user         | Email notification should be sent to                       |
+| -o myscript\_%j.out | Standard output will be appended to `myscript_%j.out` file |
+| -e myscript\_%j.err | Standard error will be appended to `myscript_%j.err` file  |
 
 ### Example:
 
-```
-#!/bin/bash
-#SBATCH --job-name=samtools
-#SBATCH -N 1
-#SBATCH -n 1
-#SBATCH -c 5
-#SBATCH --partition=general
-#SBATCH --qos=general
-#SBATCH --mail-type=END
-#SBATCH --mem=20G
-#SBATCH --mail-user=cynthia.webster@uconn.edu
-#SBATCH -o %x_%j.out
-#SBATCH -e %x_%j.err
-```
+    #!/bin/bash
+    #SBATCH --job-name=samtools
+    #SBATCH -N 1
+    #SBATCH -n 1
+    #SBATCH -c 5
+    #SBATCH --partition=general
+    #SBATCH --qos=general
+    #SBATCH --mail-type=END
+    #SBATCH --mem=20G
+    #SBATCH --mail-user=cynthia.webster@uconn.edu
+    #SBATCH -o %x_%j.out
+    #SBATCH -e %x_%j.err
 
 ## Loading Software on Xanadu
+
 List the available software with the following command:
-```
-module avail
-```
+
+    module avail
+
 When software is available as a module file, you can simply add:
-```
-module load software/version
-```
-to your script.
-If I was interested in running `samtools` for example, I would:
+
+    module load software/version
+
+to your script. If I was interested in running `samtools` for example, I would:
 
 **1. Check if samtools is a module file:**
-```
-module avail samtools
-```
+
+    module avail samtools
 
 **2. Pick the version I am interested in (usually most recent!):**
-```
-samtools/0.1.17 samtools/0.1.19 samtools/1.10   samtools/1.12   samtools/1.16.1 samtools/1.3.1  samtools/1.7    samtools/1.9
-```
+
+    samtools/0.1.17 samtools/0.1.19 samtools/1.10   samtools/1.12   samtools/1.16.1 samtools/1.3.1  samtools/1.7    samtools/1.9
 
 **3. Add it to a script:**
-```
-#!/bin/bash
-#SBATCH --job-name=samtools
-#SBATCH -N 1
-#SBATCH -n 1
-#SBATCH -c 5
-#SBATCH --partition=general
-#SBATCH --qos=general
-#SBATCH --mail-type=END
-#SBATCH --mem=20G
-#SBATCH --mail-user=cynthia.webster@uconn.edu
-#SBATCH -o %x_%j.out
-#SBATCH -e %x_%j.err
 
-module load samtools/1.16.1
-```
+    #!/bin/bash
+    #SBATCH --job-name=samtools
+    #SBATCH -N 1
+    #SBATCH -n 1
+    #SBATCH -c 5
+    #SBATCH --partition=general
+    #SBATCH --qos=general
+    #SBATCH --mail-type=END
+    #SBATCH --mem=20G
+    #SBATCH --mail-user=cynthia.webster@uconn.edu
+    #SBATCH -o %x_%j.out
+    #SBATCH -e %x_%j.err
+
+    module load samtools/1.16.1
 
 ## Submitting a Batch Script
 
-The example above loads `samtools`, but we still need to provide the code necessary to complete a certain task. 
+The example above loads `samtools`, but we still need to provide the code necessary to complete a certain task.
 
 ### Calculate the mapping rate of a BAM file
 
 **1. Download the BAM file into your working directory:**
-```
-cp /path/to/in.bam .
-```
+
+    cp /path/to/in.bam .
+
 **2. Referring to the [`samtools manual`](http://www.htslib.org/doc/samtools-stats.html), write the following code into a file called `samtools.sh` using `vim` text editor:**
-```
-#!/bin/bash
-#SBATCH --job-name=samtools
-#SBATCH -N 1
-#SBATCH -n 1
-#SBATCH -c 5
-#SBATCH --partition=general
-#SBATCH --qos=general
-#SBATCH --mail-type=END
-#SBATCH --mem=20G
-#SBATCH --mail-user=cynthia.webster@uconn.edu
-#SBATCH -o %x_%j.out
-#SBATCH -e %x_%j.err
 
-module load samtools/1.16.1
+    #!/bin/bash
+    #SBATCH --job-name=samtools
+    #SBATCH -N 1
+    #SBATCH -n 1
+    #SBATCH -c 5
+    #SBATCH --partition=general
+    #SBATCH --qos=general
+    #SBATCH --mail-type=END
+    #SBATCH --mem=20G
+    #SBATCH --mail-user=cynthia.webster@uconn.edu
+    #SBATCH -o %x_%j.out
+    #SBATCH -e %x_%j.err
 
-samtools stats /path/to/in.bam
-```
+    module load samtools/1.16.1
+
+    samtools stats /path/to/in.bam
 
 **3. Submit the script:**
-```
-sbatch samtools.sh
-```
 
-**4. Check that the script is running:**
-```
-squeue
-```
+    sbatch samtools.sh
+
+**4. Check that the script is running with `squeue`:**
+
+    squeue
+
+     JOBID  PARTITION   NAME     USER    ST  TIME   NODES NODELIST(REASON)
+    7222373   general samtools cwebster  R   0:30    1    xanadu-53
+
+-   **`JOBID`**: Represents the unique identifier for the job.
+
+-   **`PARTITION`**: Indicates the SLURM partition where the job is running or queued.
+
+-   **`NAME`**: Specifies the name of the job.
+
+-   **`USER`**: Displays the username of the person who submitted the job.
+
+-   **`ST`**: Represents the job state. In this case, it's "R" indicating that the job is running.
+
+-   **`TIME`**: Displays the amount of time the job has been running.
+
+-   **`NODES`**: Shows the number of nodes allocated for the job.
+
+-   **`NODELIST`**: Provides a list of specific nodes where the job is running or queued.
+
+-   **`REASON`**: Specifies the reason if the job is in a specific state or queue.
+
+In the given example, the job with ID **7222373**, named "samtools," was submitted by the user "cwebster" to the "general" partition. The job is currently in the "Running" state (**`ST`** is "R") and has been running for 30 seconds. It is utilizing a single node, which is "xanadu-53." The output of **`squeue`** provides essential insights into the status and progress of jobs within the cluster environment.
+
+**5. Check resource usage of finished run using `seff <jobid>`**
+
+    seff 7222373
+
+    Job ID: 7222373
+    Cluster: xanadu
+    User/Group: cwebster/knutielab
+    State: COMPLETED (exit code 0)
+    Nodes: 1
+    Cores per node: 5
+    CPU Utilized: 00:05:21
+    CPU Efficiency: 50.00% of 00:10:42 core-walltime
+    Job Wall-clock time: 00:05:21
+    Memory Utilized: 14.51 GB
+    Memory Efficiency: 72.56% of 20.00 GB
+
+-   **`Job ID: 7222373`**: A unique identifier assigned to the job by the system.
+
+-   **`Cluster: xanadu`**: Indicates the cluster where the job was executed.
+
+-   **`User/Group: cwebster/knutielab`**: Specifies the username and group associated with the job. The job was executed by the user "cwebster" who is part of the "knutielab" group.
+
+-   **`State: COMPLETED (exit code 0)`**: Describes the state of the job. In this case, the job has completed successfully with an exit code of 0, which typically signifies a successful execution.
+
+-   **`Nodes: 1`**: Indicates the number of nodes allocated for the job. In this case, the job utilized a single node.
+
+-   **`Cores per node: 5`**: Specifies the number of CPU cores allocated per node for the job.
+
+-   **`CPU Utilized: 00:05:21`**: Represents the amount of CPU time used by the job, which is 5 minutes and 21 seconds.
+
+-   **`CPU Efficiency: 50.00% of 00:10:42 core-walltime`**: Reflects the efficiency of CPU utilization. In this instance, the job utilized 50% of the available CPU time, which corresponds to half of the total core-walltime of 10 minutes and 42 seconds.
+
+-   **`Job Wall-clock time: 00:05:21`**: Indicates the actual time taken by the job to complete, which is 5 minutes and 21 seconds.
+
+-   **`Memory Utilized: 14.51 GB`**: Specifies the amount of memory used by the job, which is approximately 14.51 gigabytes.
+
+-   **`Memory Efficiency`: 72.56% of 20.00 GB**: Represents the efficiency of memory utilization. The job utilized 72.56% of the available memory, which corresponds to around 14.51 GB out of the total allocated memory of 20.00 GB.
+
+## Troubleshoot a Failed Run
+
+Sometimes a job will fail!
+
+**1)** Path errors
+
+Error messages may be long and confusing, but it's fairly easy to spot a path error:
+
+    File provided doesn't exist or the path is incorrect: file
+    /var/spool/slurm/slurmd/job5772243/slurm_script: line 22: -o: command not found
+    /var/spool/slurm/slurmd/job5772243/slurm_script: line 24: -p: command not found
+    Currently Loaded Modulefiles:
+     1) NanoPlot/1.33.0
+
+**"doesn't exist"= check file path**
+
+Check that the path you provide a script exists by typing **`ls /path/to/file`**
+
+**2)** Out of memory
+
+If a job runs out of memory you will know by typing `seff <jobid>`:
+
+    Job ID: 7268666
+    Array Job ID: 7268666_12
+    Cluster: xanadu
+    User/Group: hakella/wegrzynlab
+    State: OUT_OF_MEMORY (exit code 0)
+    Nodes: 1
+    Cores per node: 8
+    CPU Utilized: 04:17:29
+    CPU Efficiency: 48.29% of 08:53:12 core-walltime
+    Job Wall-clock time: 01:06:39
+    Memory Utilized: 13.00 GB
+    Memory Efficiency: 99.01% of 13.12 GB
+
+**3)** Check standard error/out files
+
+As you'll recall, a bash script contains the following in the header:
+
+    #SBATCH -o %x_%j.out
+    #SBATCH -e %x_%j.err
+
+To troubleshoot a failed run you should always refer the these files - it could be due to a path issue, memory issue, software version, command syntax error, etc.

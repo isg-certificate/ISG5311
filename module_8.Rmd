@@ -1,8 +1,24 @@
 # RNA-Seq: Enrichment and Network Analysis
 
-----
-**Learning Objectives:**
-1)
-----
+|                          |
+|--------------------------|
+| **Learning Objectives:** |
+| 1)                       |
 
 Resources:
+
+## Enrichment Analysis
+
+**Enrichment analysis** identifies biological pathways, functions, and processes that are statistically over-represented in a set of differentially expressed genes.
+
+1.  **Gene Ontology Enrichment Analysis:** Assesses enriched biological processes, molecular functions, or cellular components in a list of differentially expressed genes.
+
+    *If a set of genes are upregulated in response to stress, an enrichment analysis may find that terms related to "response to stress" are significantly over-represented.*
+
+2.  **Pathway Enrichment Analysis:** Focuses on identifying pathways (with KEGG) or signaling cascades that are over-represented in a gene list.
+
+    *If a set of genes is involved in cell signaling and responds to extracellular stimuli, the pathway analysis might reveal enrichment in the "MAPK Signaling Pathway."*
+
+## Network Analysis
+
+**Network analysis** unveils intricate relationships between genes, proteins, and other molecular entities, elucidating the complex regulatory mechanisms at play.

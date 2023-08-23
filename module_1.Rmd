@@ -199,7 +199,7 @@ now safely run a job in the terminal!
 
 <p>
 
-<strong>Question 1:</strong> How do you create a directory?
+<strong>Question:</strong> How do you create a directory?
 
 </p>
 
@@ -296,6 +296,36 @@ current directory.
 Current working directory: /home/username/Documents Relative path:
 file.txt
 
+### Match the command to its description
+
+<p>
+
+<strong>Question:</strong> Which is a relative path?
+
+</p>
+
+<form>
+
+<input type="radio" id="optionA" name="answer" value="A">
+<label for="optionA">A. \~/.nextflow/assets </label><br>
+
+<input type="radio" id="optionB" name="answer" value="B">
+<label for="optionB">B. /home/FCAM </label><br>
+
+<input type="radio" id="optionC" name="answer" value="C">
+<label for="optionC">C. \$PWD/metrics </label><br>
+
+<input type="radio" id="optionD" name="answer" value="D">
+<label for="optionD">D. ../../apples.txt </label><br>
+
+<input type="submit" value="Submit" onclick="checkAnswer(event2)">
+
+</form>
+
+<p id="result">
+
+</p>
+
 ## Regular Expressions
 
 A regular expression (regrex) describes a set of possible input strings
@@ -347,20 +377,37 @@ expression print" or g/re/p `grep [OPTION]... “PATTERN” [FILE]...`
     -T, --initial-tab make tabs line up (if needed)
     -Z, --null print 0 byte after FILE name
 
-**Example:**
+**Examples:**
 
-`less sequences.fasta`
+For the following `sequences.fasta` file:
 
-    >1 
-    GCTAGC 
-    >2 
-    AGTCGAT 
-    >3 
-    ACGGGCCT
+    >seq1
+    ACGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC
+    >seq2
+    TGCAATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCG
+    >seq3
+    GGGCCCTTTAAAGGGCCCCTTTAAAGGGCCCCTTTAAAGGGCCCCTTTAAA
+    EOF
 
-Count the number of sequences in `sequences.fasta`:
+**1)** Count the number of sequences
 
 `grep -c ">" sequences.fasta`
+
+    3
+
+**2)** Search for "ACGT" in the file
+
+`grep "ACGT" sequences.fasta`
+
+    ACGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC
+
+**3)** Search for sequence names (lines starting with "\>")
+
+`grep ">" sequences.txt`
+
+    >seq1
+    >seq2
+    >seq3
 
 ### **AWK**
 
@@ -373,11 +420,41 @@ typically used as a data extraction and reporting tool
 
 `awk –help`
 
-**Example:**
+**Examples:**
 
-Print the second column of a text file:
+For the following `data.txt` file:
+
+    Name    Age     Occupation      Country
+    Alice   28      Engineer        USA
+    Bob     35      Scientist       Canada
+    Charlie 22      Student         UK
+    David   45      Doctor          Australia
+    Eve     31      Artist          France
+
+**1)** Print the second column
 
 `awk '{print $2}' data.txt`
+
+    Age
+    28
+    35
+    22
+    45
+    31
+
+**2)** Print occupations that contain the letter 't'
+
+`awk 'NR > 1 && $3 ~ /t/ {print $3}' data.txt`
+
+    Scientist
+    Student
+    Artist
+
+**3)** Calculate and print the total sum of ages
+
+`awk 'NR > 1 {sum += $2} END {print "Total Age:", sum}' data.txt`
+
+    Total Age: 161
 
 ### **sed**
 
@@ -390,10 +467,59 @@ file, either in place, or in a new file
 
 `sed –help`
 
-**Example:** To replace "world" with "universe" in a file:
-`sed 's/world/universe/' input.txt`
+**Examples:**
 
-To delete the second line from a file: `sed '2d' input.txt`
+For the following `input.gff` file:
+
+    1       AUGUSTUS        gene    3760    5630    1       +       .       ID=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        transcript      3760    5630    1       +       .       ID=g1.t1;Parent=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    3760    3913    1       +       .       ID=exon-1;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    3996    4276    1       +       .       ID=exon-2;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    4486    4605    1       +       .       ID=exon-3;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    4706    5095    1       +       .       ID=exon-4;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    5174    5326    1       +       .       ID=exon-5;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    5439    5630    1       +       .       ID=exon-6;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     3760    3913    .       +       0       ID=cds-1;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     3996    4276    .       +       2       ID=cds-2;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     4486    4605    .       +       0       ID=cds-3;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     4706    5095    .       +       0       ID=cds-4;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     5174    5326    .       +       0       ID=cds-5;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     5439    5630    .       +       0       ID=cds-6;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        start_codon     3760    3762    .       +       0       ID=start_added-11728;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        stop_codon      5628    5630    .       +       0       ID=stop_added-11701;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+
+**1)** Remove lines with "exon" feature
+
+`sed '/\texon\t/d' input.gff`
+
+    1       AUGUSTUS        gene    3760    5630    1       +       .       ID=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        transcript      3760    5630    1       +       .       ID=g1.t1;Parent=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     3760    3913    .       +       0       ID=cds-1;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     3996    4276    .       +       2       ID=cds-2;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     4486    4605    .       +       0       ID=cds-3;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     4706    5095    .       +       0       ID=cds-4;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     5174    5326    .       +       0       ID=cds-5;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        CDS     5439    5630    .       +       0       ID=cds-6;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        start_codon     3760    3762    .       +       0       ID=start_added-11728;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        stop_codon      5628    5630    .       +       0       ID=stop_added-11701;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+
+**2)** Replace all occurrences of "gene" with "GENE"
+
+`sed 's/gene/GENE/g' input.gff`
+
+    1       AUGUSTUS        GENE    3760    5630    1       +       .       ID=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        transcript      3760    5630    1       +       .       ID=g1.t1;Parent=g1;gene_id=g1;transcript_id=g1.t1
+    1       AUGUSTUS        exon    3760    3913    1       +       .       ID=exon-1;Parent=g1.t1;gene_id=g1;transcript_id=g1.t1
+    ...
+
+**3)** Extract gene IDs
+
+`sed -n '/\tgene\t/s/.*\bgene_id=\([^;]*\).*/Gene ID: \1/p' input.gff`
+
+    Gene ID: g1
+    Gene ID: g1
+    Gene ID: g1
+    ...
 
 ## Permissions
 
