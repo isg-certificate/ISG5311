@@ -1,9 +1,9 @@
 # RNA-Seq: Enrichment and Network Analysis
 
-|                          |
-|--------------------------|
-| **Learning Objectives:** |
-| 1)                       |
+|                                                |
+|------------------------------------------------|
+| **Learning Objectives:**                       |
+| 1) Perform a gene ontology enrichment analysis |
 
 Resources:
 
@@ -18,6 +18,40 @@ Resources:
 2.  **Pathway Enrichment Analysis:** Focuses on identifying pathways (with KEGG) or signaling cascades that are over-represented in a gene list.
 
     *If a set of genes is involved in cell signaling and responds to extracellular stimuli, the pathway analysis might reveal enrichment in the "MAPK Signaling Pathway."*
+
+We are going to use two tools: a Cytoscape app, `ClueGO` and a web-based package called `g:Profiler`
+
+### g:Profiler
+
+**Download: <https://biit.cs.ut.ee/gprofiler/gost>**
+
+Consider the following list of differentially expressed genes (*Homo sapien*):
+
+    TP53
+    AKT1
+    EGFR
+    BRCA1
+    PTEN
+    MYC
+    STAT3
+    CDKN1B
+    FOS
+    VEGFA
+
+By providing this list to `g:GOSt` and pressing `Run query`, we are left with many enriched terms:
+
+<https://biit.cs.ut.ee/gplink/l/PxB6wc61TT>
+
+    Source Term ID    Term Name                 Padj (query_1)
+    GO:MF GO:0042802  identical protein binding 9.900×10-52
+    GO:MF GO:0019903  protein phosphatase binding 1.054×10-43
+    GO:MF GO:0001046  core promoter sequence-specific DNA binding 1.847×10-44
+    GO:MF GO:0030235  nitric-oxide synthase regulator activity  8.007×10-4
+    ...
+
+### ClueGO
+
+**Download: <https://apps.cytoscape.org/apps/cluego>**
 
 ## Network Analysis
 
