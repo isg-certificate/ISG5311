@@ -1,8 +1,0 @@
-# RNA-Seq: Read Mapping, IGV, and Counts Data
-
-----
-**Learning Objectives:**
-1)
-----
-
-Resources:
