@@ -1,0 +1,20 @@
+---
+title: "Getting Set Up"
+editor: visual
+---
+
+## Objective
+
+Before you can do anything else, you need to ensure you have an appropriate computer setup.
+
+Our starting exercises, and indeed most of the work for the course, will take place on a remote computer cluster running a Linux operating system (the cluster is named "Xanadu"). So the first thing you're going to do is connect your local machine to that server. We'll get into many of the details to help you understand what's going on later, but to start we're going to have you follow some directions without a lot of explanation.
+
+You can connect to the server using any of the common computer operating systems. We'll cover how to do it with a machine running Windows or MacOS here, and assume that if you are running something else, you are savvy enough that you can piece this together on your own (or ask an instructor for help).
+
+## Connecting with MacOS
+
+## Connecting with Windows
+
+## Now that you're connected...
+
+Unless you are told directly, all the work for the Linux and HPC sections of this course will be conducted while connected to Xanadu. Remember, if you're working in a terminal window and you're not sure *what* it's connected to, you can always type `hostname`. If the host is something like `hpc-ext-#`, `hpc-int-#`, or `xanadu-##`, then you're connected to Xanadu. If it's anything else you're not!

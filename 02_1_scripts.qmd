@@ -1,0 +1,483 @@
+---
+title: "Scripts and putting it all together"
+---
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Edit files | 
+| Use environment variables  |
+| Write loops to efficiently do repetitive tasks    |
+| Edit files on Xanadu in `nano`    |
+| Connect Visual Studio Code to Xanadu to edit files    |
+| Connect your desktop to Xanadu's file system to access files |
+| Write and execute scripts |
+
+We've now gotten some experience navigating the Linux file system, and inspecting and summarizing files. We've seen how we can use pipes to connect simple programs together to quickly get insight into our data. These are key ingredients to building up to analysis of data that you can be confident in. We're now going to introduce some concepts that will help us write **scripts**, which are essentially shell commands organized into a file and executed as a batch, rather than executed interactively. 
+
+*scripting* is not categorically different from *programming*.  The terms are generally used for polar ends of of a spectrum of complexity. If you, for example, write bash code to download some data from a database, decompress it, and set permissions, most people would refer to that as a scripting. In contrast, if you write code in c++ to parse thousands of sequence alignments and use complex numerical algorithms to estimate some statistical quantity from them, most people will refer to that as *programming*. In both cases, you are writing instructions for a computer to follow. 
+
+In this course we're going to focus mostly on the simpler end of the spectrum: using shell scripts to automate chunks of data analysis performed by other programs written in languages such as **c++**, **python**, or **R**. 
+
+## One-Liners
+
+In the previous chapter we introduced the pipe as a way to link the inputs and outputs of multiple shell commands. Short piped commands are sometimes referred to as "one-liners" and you can find lots of useful repositories of them at pages like [this](https://github.com/stephenturner/oneliners?tab=readme-ov-file) and [this](https://github.com/onceupon/Bash-Oneliner). A quick skim through these, especially after we've moved a little further through the course will be super helpful. 
+
+## Environment variables
+
+A key feature of BASH is the use of **environment variables**. These are objects used to store text strings. These strings are typically used in 2 ways: to generalize code in shell scripts, or to configure the system. 
+
+### Invoking variables
+
+Some variables are set automatically (usually those used to configure the system or shell options). To see a list try the command `env`. You should see a long list, but among them is a pretty straightforward variable: `USER`. To invoke it, try any one of the following:
+
+```bash
+echo $USER
+echo ${USER}
+echo "${USER}"
+```
+The key thing here is the `$`. The curly brackets and quotes can slightly modify how the variable itself is invoked or understood by the shell (more in a moment), but the `$` is how you let the shell know you're calling out a variable. 
+
+Variables can be interpolated into text strings, or commands in a variety of ways. Try this, for example:
+
+```bash
+echo "My username is $USER"
+```
+
+### Setting variables
+
+Users can also create variables, or modify existing ones. To create a variable holding a path, for example:
+
+```bash
+MYHOMEDIR="/home/FCAM/$USER/"
+echo $MYHOMEDIR
+```
+
+In this case you can see we've defined a variable using another variable. We can equally well define output files this way:
+
+```bash
+MYOUTFILE="/home/FCAM/$USER/${USER}_testfile.txt"
+echo $MYOUTFILE
+echo "hello world!" >$MYOUTFILE
+cat $MYOUTFILE
+```
+
+### An aside about quotes in BASH
+
+Now that we're getting a little more into bash, we need to be careful when thinking about quotes and whitespace. 
+
+Try to assign the text string "Hello World" without quotes like this:
+
+```bash
+HW=Hello World
+echo $HW
+```
+
+You should get the error `-bash: World: command not found`. This is because bash tried to assign the string "Hello" to variable "HW", then saw the whitespace and treated "World" as a separate command, which happens not to exist. The entire command failed. 
+
+If we wrap the text in double quotes it will work:
+
+```bash
+HW="Hello World"
+echo $HW
+```
+
+If we wrap the text in single quotes it will work:
+
+```bash
+HW='Hello World'
+echo $HW
+```
+
+But what's the difference between double and single quotes? Single quotes prevent variable interpolation, leading to *very* different results:
+
+```bash
+HWD="Hello $USER"
+echo $HWD
+HWS='Hello $USER'
+echo $HWS
+```
+
+Quoting generally ensures whitespace is maintained as part of a string, which is sometimes very important. Single-quoting prevents variable interpolation (i.e. it treats strings literally) while double-quoting allows it. Tripping over quoting is a common source of errors, even with intermediate level bash users. 
+
+### The PATH variable
+
+Another key variable you can see in the list produced by `env` is `PATH`. It's a critical variable for configuration. It tells the shell where to look for programs you try to execute. Try 
+
+```
+echo $PATH
+```
+
+You'll see a colon-separated list of paths. Every program you successfully execute will be found in one of those paths. You can add to this list if you want bash to look somewhere new in addition like this:
+
+```bash
+PATH=$PATH:/path/to/my/new/favorite/software
+```
+
+That is also generally how you can recursively modify variables, should you need to. 
+
+When executing programs it can be really useful to know *which* copy of a program is being executed, as sometimes there will be multiple versions installed on a given system (this is definitely true of Xanadu). You can use the command `which` for this:
+
+```bash
+which ls
+which grep
+which cat
+```
+
+You'll note that each of these is found in a path found in your PATH variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Xanadu.  
+
+### Generalizing code
+
+So far we have been executing commands by explicitly referring to files, programs and their parameters. For example: 
+
+```bash
+grep -o -P "(?<=[Ss]pecies )[A-Za-z]+" darwin1859.txt | sort | uniq -c | sort -g | tail
+```
+
+In this case, we have specified programs by name, several options, a regular expression, and an input file. We could easily make this line of code more general by replacing important parts of it with variables:
+
+```bash
+REGEX="(?<=[Ss]pecies )[A-Za-z]+"
+INFILE=darwin1859.txt
+
+grep -o -P "${REGEX}" $INFILE | sort | uniq -c | sort -g | tail
+```
+
+Note that quoting the regular expression variable: `"${REGEX}"` is necessary in this case. If you try without the quotes, some of those special characters will trip bash up, and by extension cause grep to fail. 
+
+Using variables like this can be especially useful in two cases:
+
+1. When paths get extremely long and cumbersome and/or file names are not descriptive. Long paths can make code difficult to read. Obscuring them with descriptive variables allows you (and anyone else) to quickly see HOW you ran a program, instead of having to scan over multiple instances of `/the/very/long/and/convoluted/path/to/my/precious/input/data.txt`. 
+2. When code must be repeated many times on many different input files. Copying, pasting and editing the same line over and over again is extremely inadvisable as even the most conscientious people will be prone to mistakes. If we get used to using variables like this, we gain the flexibility to use loops and other means of parallelization that make our code less error prone, faster, and prefigure the way workflow languages we will explore in the next semester require us to think about and write code. 
+
+## Loops
+
+It's often the case that we want to do something repeatedly. It may be that we want to do some analysis the same way for multiple input files, or do something with every element of a list, or line of a file. Sometimes, though less often in data analysis, we may want to repeat a process until some condition is met. 
+
+One common way to approach this is with a **loop**. A loop generally has the following very general syntax:
+
+```
+loop condition 
+  { command1
+  command2
+  command3 }
+```
+
+In BASH we typically use `for` and `while` loops. A `for` loop iterates over a list of fixed length executing the same code each time. A `while` loop executes code repeatedly until some condition is no longer met. 
+
+### `for` loops. 
+
+With `for` loops we can iterate over any sort of list. Let's extract mentions of classic Darwin terms "species", "forms", and "varieties" from the Origin:
+
+```bash
+for WORD in species forms varieties
+do
+  grep "$WORD" darwin1859.txt >"${WORD}"_mentions.txt
+done
+```
+In this syntax we tell bash we're going to use the variable `WORD`, and for each iteration of the loop, populate it with an element of the list "species forms varieties". The elements are separated by whitespace. The code to be executed for each iteration of the list is sandwiched between the keywords `do` and `done`. We redirect the output to three separate files named "species_mentions.txt", etc. 
+
+We can specify the list of elements to be iterated over any number of ways. We can use a range of numbers or letters with a shell expansion:
+
+```bash
+for NUM in {1..10}
+do
+  echo $NUM
+done
+```
+We can use a glob to iterate over files:
+
+```bash
+for FILE in *mentions.txt
+do 
+  head "$FILE"
+done
+```
+
+#### A digression about BASH arrays
+
+Sometimes we may wish to construct a list outside of the context of the loop itself. It can be useful to store that list in a special type of variable called a **bash array** (or just "array", but we will deal with other types of arrays later, so we'll try to be specific). bash arrays are lists that require you to use a special syntax to create and access their elements. 
+
+bash arrays can be created simply with parentheses like this:
+
+```bash
+DARWIN=(species forms varieties)
+```
+
+Or using `ls` or `find`, or `*` to grab files:
+
+```bash
+DARWIN=(*mentions.txt)
+```
+
+```bash
+DARWIN=($(ls *mentions.txt))
+```
+
+In this last case the syntax `$(command)` is a command substitution. It means run the command and insert the output in place (in this case, inside the `()` used to define the array). Also note that the array elements will be parsed based on whitespace, so if file names contain whitespace (you should *avoid* this always) this approach will break. 
+
+bash arrays are zero-indexed, meaning the first element is element `0`. We can access elements with this syntax:
+
+```bash
+echo ${DARWIN[0]}
+```
+
+To write out ALL the elements:
+
+```bash
+echo ${DARWIN[@]}
+```
+
+To get the length of the array:
+
+```bash
+echo ${#DARWIN[@]}
+```
+
+To use this in a loop we can either provide the whole array like this:
+
+```bash
+DARWIN=($(ls *mentions.txt))
+
+for FILE in ${DARWIN[@]}
+do
+  echo "FIRST TEN LINES OF $FILE -------------------"
+  head $FILE
+done
+```
+
+Or we can iterate over the indexes like this:
+
+```bash
+DARWIN=($(ls *mentions.txt))
+
+for NUM in {0..2}
+do
+  echo "FIRST TEN LINES OF ${DARWIN[$NUM]} -------------------"
+  head  ${DARWIN[$NUM]}
+done
+```
+
+### `while` loops. 
+
+`while` loops differ from `for` loops in that they evaluate repeatedly until some condition is no longer satisfied. You can use:
+
+```bash
+COUNTER=1
+
+while [ $COUNTER -le 5 ]
+do
+    echo "Count: $COUNTER"
+    ((COUNTER++))
+done
+```
+
+Where `[ $COUNTER -le 5 ]` is a conditional construct indicating `COUNTER` must be less than 5. If this evaluates to false, the loop ends. [Conditional constructs](https://www.gnu.org/software/bash/manual/html_node/Conditional-Constructs.html) are a general way to manage when code is executed, and we will cover them more later. `((COUNTER++))` adds one to `COUNTER` every time the loop executes. 
+
+You can also use `while` to iterate over lines in a file:
+
+```bash
+FILE=darwin1859.txt
+COUNTER=1
+
+while IFS= read -r line ; do
+    echo "Processing line $COUNTER: $line"
+    ((COUNTER++))
+done < $FILE
+```
+
+In this case we're using `< $FILE` to direct the standard input to `FILE` and while will read from it. When `FILE` runs out of lines, the loop will break. 
+
+## Editing Files
+
+We've covered lots of basic bash features. We're almost ready to start writing scripts. Now that you've been writing lots of commands in the terminal, and you recognize you're connected to a remote computer cluster that your local file system doesn't have access to, you're probably starting to wonder, how do I actually write and save lots of code on the remote server?
+
+In this section we'll deal with that issue and cover some tools you can use to write and edit code, both locally and remotely. 
+
+### Command-line text editors
+
+The most straightforward approach to this is to use CLI text editors that are already available on Xanadu (and most Linux systems). Since you run them on Xanadu, they can directly create and access files. The most common ones are `nano`, `vim` and `emacs`. `vim` and `emacs` are very powerful editors. They are highly customizable and have large user communities. They have steep learning curves, however, and there are alternatives to CLI editors, so in this course we are going to focus on `nano`, which is simple to use and suitable for quick edits and copy-paste operations. 
+
+If you simply type `nano` on the command line, it will open a new text document. You can immediately begin typing whatever you like. When you're done, you can type `ctrl-x` and it will ask you if you want to save the file. If you do, type `y`, then when prompted, write a file name and hit `enter`. That's it. If you want to edit an existing file, type `nano filename`. Save and exit the same way. `ctrl-c` cancels. 
+
+You can navigate around with the arrows on your keyboard (and some keyboard shortcuts we'll talk about in a video). That's it. 
+
+### Code editors
+
+Another approach suitable for users starting up is to write code using a locally installed, dedicated code editor such as [Sublime Text](https://www.sublimetext.com). There are others, but for this course I recommend you download and use Sublime for at least some cases. Unlike `nano`, it has lots of features and user-created plugins. It has **syntax highlighting**, which means if you select the language you are writing in from a dropdown menu in the bottom right corner, it will recognize syntactic features of the language and change the color of the text in ways that greatly help with editing. 
+
+A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using `nano`, or use `scp`/`rsync` to upload the documents to Xanadu. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Xanadu, but we haven't yet shown you the tools to do that, and we'll introduce another, easier approach in a moment. 
+
+### Integrated development environments. 
+
+IDEs are dedicated code editors with *lots* more features. [Visual Studio Code](https://code.visualstudio.com) is another program we recommend you download and install locally. It also has syntax highlighting, but you'll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. 
+
+### Conveniently accessing files. 
+
+Ok, so aside from using `nano` (or learning to be a `vim` power user), how can you conveniently access and edit files on Xanadu? There are two relatively straightforward ways:
+
+1. Visual Studio Code has an extension [Remote - SSH](https://code.visualstudio.com/docs/remote/ssh-tutorial). This is **highly** recommended. You can connect VS Code to Xanadu directly via SSH. You can open windows focusing on specific directories, visualize the directory structure, and create and edit files directly on Xanadu. You can also open a Xanadu terminal window so that you can test and execute code, all in VS Code. 
+
+::: {.callout-warning}
+Please don't use language-specific code extensions (python, R, etc) to run code on Xanadu from within VS Code. We'll cover this in the next chapter, but VS Code connects to a **login** node, which has few resources and is shared by many users. To run code on Xanadu, it must be submitted through the batch scheduler, `SLURM`. A VS Code extension that runs code for you can only run it on the login node, which will cause problems for everyone. 
+:::
+
+2. You can mount the Xanadu file system on your local computer. You can get your operating system to "see" Xanadu's filesystem, and access files as if they were local. You can then edit them using Sublime, VS Code, or anything else. To do this, you **must** be connected to the CAM VPN ([instructions](https://health.uconn.edu/high-performance-computing/tutorials/cam-vpn/)).  
+- From a mac, you can select from your top dropdown menu `Go:Connect to Server` and enter ` smb://cfs09.cam.uchc.edu/home/FCAM/<username>`. When prompted, enter your CAM credentials (not your netID/password).  
+- From Windows, you can map a network filesystem using [these directions](https://support.microsoft.com/en-us/windows/map-a-network-drive-in-windows-29ce55d1-34e3-a7e2-4801-131475f9557d) and the address formatted like this: `\\cfs09.cam.uchc.edu\home\FCAM\<username>`
+
+::: {.callout-warning}
+You should only use dedicated software for editing code (or CLI editors on Xanadu). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try `cat -A myscript.sh`. If `myscript.sh` contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them. 
+:::
+
+## Scripts
+
+Ok, now we've got all the pieces, we can start writing longer bits of code into **scripts** so that we can run them as batches instead of interactively, line-by-line. Scripts can be as simple as a series of commands that you *could* execute interactively, or as complicated as computer programs that run entire analyses for you. 
+
+In this course, we'll aim for the simpler end of the spectrum. We want to write code in chunks that we can pass off to Xanadu's job scheduler and that will serve as the most fundamental documentation of the analyses we do. While keeping notes on what you do (or try) is important, the code itself is the ultimate documentation of your analysis, so it should be complete and well organized into scripts. 
+
+### The shebang
+
+A script can be written in any language, so typically the way we start one off in a Linux environment is to tell bash what interpreter to use. Right now we're writing bash code (rather than R, python, perl or something else), so we need to tell bash that. To do that, the first line of the script will always be what's referred to as a **shebang**, or `#!` followed by the interpreter we wish to use, in this case `/bin/bash` so:
+
+```bash
+#!/bin/bash
+```
+
+If we were writing python code we might write:
+
+```bash
+#!/bin/env python
+```
+
+This would tell the shell to use whichever python interpreter was found by searching our `PATH` variable. 
+
+After the shebang line, we can start writing code. 
+
+### Comment lines
+
+Despite our best efforts, code can sometimes be complicated and confusing to read. Because of this, it's really important to document your code with **comments**. In shell scripting, you can include lines prefixed with `#`, that will be ignored by the interpreter. You can and should write notes on these lines explaining what the code does. 
+
+```bash
+#!/bin/bash
+
+# this script will print the 10 most common words found in a text file and their frequencies
+
+# this line specifies the text file
+ORIGIN=darwin1859.txt
+
+# this line extracts and prints the word list
+grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
+```
+
+Create this script with the title `commonWords.sh` on Xanadu and change the permission so that you can execute it. 
+
+### Executing scripts
+
+There are a few ways to execute scripts. 
+
+1. `source commonWords.sh` This method *ignores* the shebang (it begins with `#` after all) and executes all the code in the current shell session as if you had typed it on the command line. If you created any variables in the current environment they will be available in the script. 
+2. `bash commonWords.sh` This method also ignores the shebang and explicitly invokes bash, but it creates a *subshell*. The execution context is mostly isolated from the environment you submitted the script, and environment variables you create are not available unless you export them. 
+3. `./commonWords.sh` This will execute the script, and looks for the shebang to see which intepreter should be used. It also creates an isolated execution context. 
+4. Passing the script to a job scheduler (in our case SLURM). This will be covered in then next chapter. 
+
+What does it mean to have an isolated environment? Modify the `commonWords.sh` script so that the variable definition is *commented out* and thus ignored by the interpreter:
+
+```bash
+#!/bin/bash
+
+# this script will print the 10 most common words found in a text file and their frequencies
+
+# this line specifies the text file
+# ORIGIN=darwin1859.txt
+
+# this line extracts and prints the word list
+grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
+```
+
+If you try to execute it, you will find that it hangs indefinitely because the ORIGIN variable is empty. 
+
+If you try to define the ORIGIN variable and then run the script it will work with the `source` method:
+
+```bash
+ORIGIN=darwin1859.txt
+source commonWords.sh
+```
+
+But for it to work with the other two methods, you need to `export` the variable:
+
+```
+export ORIGIN=darwin1859.txt
+./commonWords.sh
+```
+
+Exporting the variable makes it so that it will be inherited by any processes spawned by the current shell. 
+
+Another big difference between `source` and the other two methods is that any variables created by the script will be available in the current shell session after the script has completed. 
+
+#### Command-line arguments
+
+Note that we can generalize our script by writing it so that it expects command-line input from the user:
+
+```bash
+#!/bin/bash
+
+# this script will print the 10 most common words found in a text file and their frequencies
+
+# this line specifies the text file
+ORIGIN="$1"
+REGEX="$2"
+
+# this line extracts and prints the word list
+grep -o -P "$REGEX" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
+```
+
+Save this script to the file `test.sh` and make it executable. We can now run it like this:
+
+```bash
+./test.sh darwin1859.txt "\b[A-Za-z]{4,}\b"
+```
+
+The variables `$1` and `$2` are automatically parsed as whitespace separated arguments provided on the command line when executing the script. There are more complex ways to provide and parse command-line arguments, but we won't cover them here. 
+
+### Errors and exit codes
+
+Code can fail for many reasons. You will inevitably make mistakes in command line usage for some program, refer to paths that don't exist, or use incorrect syntax, and an error will result. Computer clusters are complex, and they also inevitably have problems. Sometimes a compute node will crash. Sometimes a user will accidentally get around whatever guardrails the system administrators have in place and muck up some important settings. Troubleshooting these errors can be a major challenge for beginners. 
+
+Here are a few common errors you are likely to encounter:
+
+**"No such file or directory"**
+```bash
+cat /path/does/not/exist.txt
+```
+Leads to `ls: cannot access /path/does/not/exist.txt: No such file or directory`. 
+
+Check your path/filename. 
+
+**"Permission denied"**
+```bash
+echo "I'm going to put a file in the root directory of the cluster!" >/file.txt
+```
+
+Leads to `bash: /file.txt: Permission denied`
+
+Check that your path is correct and that you actually *should* have permission. If you own or share the file or the directory, fix the permissions. If someone else owns it, ask them to fix the permissions. 
+
+**bad quoting**
+```bash
+grep endless forms darwin1859.txt
+```
+
+Leads to search results for "endless" but also `grep: forms: No such file or directory`. This is a quoting issue. `forms` is treated as another file to be searched because of the whitespace. It should be `grep "endless forms" darwin1859.txt`
+
+**"Command not found"**
+```bash
+gep "endless forms" darwin1859.txt
+```
+
+Leads to `bash: gep: command not found`. Classic typo. Command not found can also be a sign of incorrect quoting, or the dreaded incorrect line breaks that arise from editing code in non-code-specific editors. 
+
+When a command is evaluated, bash produces an **exit code** and stores it in the special variable `$?`. If the command executes without error, the exit code will be 0. If there is an error it will be greater than 0. With scripts set up as we have above, the exit code will refer to the *last command* in the script. So if there are two commands in a script, and the second one completes successfully, but the first fails, the exit code will still be 0. By default the script wont just quit when it hits an error. There are [settings](https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425) that can change the behavior of bash when it encounters errors, but there is [some](https://www.reddit.com/r/bash/comments/mivbcm/the_set_o_pipefail_is_not_a_best_practice/) controversy about whether you should use them [or not](https://mywiki.wooledge.org/BashPitfalls#pipefail). 
+
+"There is some controversy" is often the case with bash scripting. BASH is a wonky language, and it takes *years* to truly become an expert in it. When learning to do data analysis, we need to do our best, be vigilant about errors, and be open to learning new ways of doing things when we discover problems with our established habits. Pages like [this](https://mywiki.wooledge.org/BashPitfalls) are great for intermediate bash users to consider, but we can't wait to analyze our data until we've assimilated all these best practices. 
+
+## Exercises

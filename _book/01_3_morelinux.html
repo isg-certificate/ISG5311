@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ISG 5311 - Genomic Data Analysis in Practice - 3&nbsp; Working with Files</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./01_2_gettingstarted.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_0_IntroToLinux.html">Intro to Linux and Bash</a></li><li class="breadcrumb-item"><a href="./01_3_morelinux.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">ISG 5311 - Genomic Data Analysis in Practice</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./01_0_IntroToLinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Linux and Bash</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_1_setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Connected</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_2_gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with Linux</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_3_morelinux.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./02_0_HPCandSLURM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HPC and SLURM</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_1_scripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Scripts and putting it all together</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_2_hpc_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">High Performance Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_3_software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Sequencing Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seqdata_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">RNA-seq</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rnaseq_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#moving-files-between-computers" id="toc-moving-files-between-computers" class="nav-link active" data-scroll-target="#moving-files-between-computers"><span class="header-section-number">3.1</span> Moving files between computers</a>
+  <ul class="collapse">
+  <li><a href="#wget-and-curl" id="toc-wget-and-curl" class="nav-link" data-scroll-target="#wget-and-curl"><span class="header-section-number">3.1.1</span> <code>wget</code> and <code>curl</code></a></li>
+  <li><a href="#scp" id="toc-scp" class="nav-link" data-scroll-target="#scp"><span class="header-section-number">3.1.2</span> <code>scp</code></a></li>
+  <li><a href="#rsync" id="toc-rsync" class="nav-link" data-scroll-target="#rsync"><span class="header-section-number">3.1.3</span> <code>rsync</code></a></li>
+  <li><a href="#ftp-clients-and-globus" id="toc-ftp-clients-and-globus" class="nav-link" data-scroll-target="#ftp-clients-and-globus"><span class="header-section-number">3.1.4</span> FTP clients and Globus</a></li>
+  </ul></li>
+  <li><a href="#file-compression" id="toc-file-compression" class="nav-link" data-scroll-target="#file-compression"><span class="header-section-number">3.2</span> File compression</a></li>
+  <li><a href="#basic-file-inspection" id="toc-basic-file-inspection" class="nav-link" data-scroll-target="#basic-file-inspection"><span class="header-section-number">3.3</span> Basic file inspection</a>
+  <ul class="collapse">
+  <li><a href="#less" id="toc-less" class="nav-link" data-scroll-target="#less"><span class="header-section-number">3.3.1</span> <code>less</code></a></li>
+  <li><a href="#head-tail-and-cat" id="toc-head-tail-and-cat" class="nav-link" data-scroll-target="#head-tail-and-cat"><span class="header-section-number">3.3.2</span> <code>head</code>, <code>tail</code> and <code>cat</code></a></li>
+  <li><a href="#counting-with-wc" id="toc-counting-with-wc" class="nav-link" data-scroll-target="#counting-with-wc"><span class="header-section-number">3.3.3</span> Counting with <code>wc</code></a></li>
+  <li><a href="#cut" id="toc-cut" class="nav-link" data-scroll-target="#cut"><span class="header-section-number">3.3.4</span> <code>cut</code></a></li>
+  </ul></li>
+  <li><a href="#regular-expressions-and-grep" id="toc-regular-expressions-and-grep" class="nav-link" data-scroll-target="#regular-expressions-and-grep"><span class="header-section-number">3.4</span> Regular expressions and <code>grep</code></a></li>
+  <li><a href="#stdin-stdout-stderr-redirection-and-the-pipe" id="toc-stdin-stdout-stderr-redirection-and-the-pipe" class="nav-link" data-scroll-target="#stdin-stdout-stderr-redirection-and-the-pipe"><span class="header-section-number">3.5</span> STDIN, STDOUT, STDERR, redirection and the pipe</a>
+  <ul class="collapse">
+  <li><a href="#the-pipe" id="toc-the-pipe" class="nav-link" data-scroll-target="#the-pipe"><span class="header-section-number">3.5.1</span> The pipe</a></li>
+  </ul></li>
+  <li><a href="#sed" id="toc-sed" class="nav-link" data-scroll-target="#sed"><span class="header-section-number">3.6</span> <code>sed</code></a>
+  <ul class="collapse">
+  <li><a href="#replacements" id="toc-replacements" class="nav-link" data-scroll-target="#replacements"><span class="header-section-number">3.6.1</span> Replacements</a></li>
+  </ul></li>
+  <li><a href="#line-printing" id="toc-line-printing" class="nav-link" data-scroll-target="#line-printing"><span class="header-section-number">3.7</span> Line printing</a></li>
+  <li><a href="#awk" id="toc-awk" class="nav-link" data-scroll-target="#awk"><span class="header-section-number">3.8</span> <code>awk</code></a></li>
+  <li><a href="#linux-commands-in-this-section" id="toc-linux-commands-in-this-section" class="nav-link" data-scroll-target="#linux-commands-in-this-section"><span class="header-section-number">3.9</span> Linux Commands in This Section</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">3.10</span> Exercises</a>
+  <ul class="collapse">
+  <li><a href="#quiz" id="toc-quiz" class="nav-link" data-scroll-target="#quiz"><span class="header-section-number">3.10.1</span> Quiz:</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>Move files between computers</td>
+</tr>
+<tr class="odd">
+<td>Work with file compression</td>
+</tr>
+<tr class="even">
+<td>Inspect files</td>
+</tr>
+<tr class="odd">
+<td>Use regular expressions with <code>sed</code> and <code>grep</code></td>
+</tr>
+<tr class="even">
+<td>Pipe inputs and outputs</td>
+</tr>
+</tbody>
+</table>
+<p>In the previous section, we learned about the shell, how to navigate the file system and how to manipulate files and directories within the file system. Now we’re going to get into how we can transfer files on and off the server, edit, inspect and summarize files in the shell. These are essential skills that will give you the flexibility to monitor your analyses and check input and output files against your basic expectations.</p>
+<section id="moving-files-between-computers" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="moving-files-between-computers"><span class="header-section-number">3.1</span> Moving files between computers</h2>
+<p>You will quite frequently need to move files on and off a remote computer cluster. We will sometimes use specialized pieces of software for retrieving data from particular public databases, but there a number of pieces of widely available software it’s good to be familiar with. Here we’ll discuss:</p>
+<ol type="1">
+<li><code>wget</code> and <code>curl</code></li>
+<li><code>scp</code></li>
+<li><code>rsync</code></li>
+<li>GUI-based FTP clients and Globus</li>
+</ol>
+<section id="wget-and-curl" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="wget-and-curl"><span class="header-section-number">3.1.1</span> <code>wget</code> and <code>curl</code></h3>
+<p>These are two commonly used utilities for downloading files via HTTP and FTP protocols. If you’ve got a URL pointing to a file you want, either of these will do. Both have lots of features and support several file transfer protocols, but for the most common use cases we’ll encounter, simply invoking the command and providing the URL as the first argument will work will start the download. For <code>wget</code> you don’t even need to specify a name for the downloaded file, but for <code>curl</code> you’ll need to redirect the output to a file. <strong>Try one of the following</strong> to download the <em>Fundulus heteroclitus</em> genome from the ENSEMBL database:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> ftp://ftp.ensembl.org/pub/release-105/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> ftp://ftp.ensembl.org/pub/release-105/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz <span class="op">&gt;</span>Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="scp" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="scp"><span class="header-section-number">3.1.2</span> <code>scp</code></h3>
+<p><code>scp</code> is a <em>secure</em> version of the <code>cp</code> command we learned in the previous chapter. We can use this to securely, i.e.&nbsp;in encrypted fashion, transfer data between computers. The usage is the same as <code>cp</code> (requiring the <code>-r</code> flag to copy a directory), except that with <code>scp</code> you also need to provide an address for a remote host in front of the path like this: <code>username@remotehostaddress:/path/to/target/file.txt</code> You can copy data to or from a remote host. You can use <code>.</code> if you want the file to simply transfer to the current working directory.</p>
+<p>On the Xanadu cluster, you cannot use the normal login nodes (i.e.&nbsp;<code>xanadu-submit-ext.cam.uchc.edu</code>) to transfer files. A special transfer host has been set up for this purpose. The address for that host is <code>transfer.cam.uchc.edu</code>. <strong>Try this now</strong>: Copy the <em>F. heteroclitus</em> genome we just downloaded from Xanadu to your local computer. Open a terminal window and <em>do not</em> connect to Xanadu. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Xanadu):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> nreid@transfer.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Hopefully it is self-evident how to transfer files <strong>to</strong> the remote host with this method. You can feel free to delete the transferred file, as we will not be continuing to use it.</p>
+</section>
+<section id="rsync" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="rsync"><span class="header-section-number">3.1.3</span> <code>rsync</code></h3>
+<p><code>rsync</code> is like a much more elaborate version of <code>scp</code>. While its usage is generally much more flexible, the key improvement over <code>scp</code> is that <code>rsync</code> can be used to “synchronize” directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they’ve changed and skip them if they haven’t. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch.</p>
+<p>The usage of <code>rsync</code> is similar to scp, except that when transferring a directory we recommend using the flags <code>a</code> <code>v</code> and <code>z</code>. To move your <code>killifishGenomes</code> directory from Xanadu to your local machine you can try: <code>rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes .</code> taking care to edit your username and ensuring the path on Xanadu to your directory is correct. This will transfer the entire directory.</p>
+<p><code>rsync</code> has lots of options, use <code>man rsync</code> to read up on it.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A subtle but important detail: if you include a trailing <code>/</code> on the source directory like this: <code>rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes/ .</code> Then the <strong>contents</strong> of the source directory will be transferred to the target directory, but not the enveloping directory.</p>
+</div>
+</div>
+</section>
+<section id="ftp-clients-and-globus" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="ftp-clients-and-globus"><span class="header-section-number">3.1.4</span> FTP clients and Globus</h3>
+<p>The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as <a href="https://filezilla-project.org">FileZilla</a>. You can use the transfer node <code>transfer.cam.uchc.edu</code> and your Xanadu credentials to move files this way.</p>
+<p>When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Xanadu we use Globus, a platform available on many institutional HPCs for moving data. We won’t cover it right now, but you can see a guide to getting started using it on Xanadu <a href="https://github.com/CBC-UCONN/CBC_Docs/wiki">here</a></p>
+</section>
+</section>
+<section id="file-compression" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="file-compression"><span class="header-section-number">3.2</span> File compression</h2>
+<p>’omic data files are often very large. A single copy of a human genome is around 3.3 gigabytes. A raw, unassembled sequence of a human genome at 30x coverage might be 180 gigabytes. Data at this scale is cumbersome to transfer and analyze, and expensive to store. Compression eases this burden somewhat, making these files 1/3 to 1/4 the size. So wherever we can, we try to keep data files compressed, and use tools that can read and write data in compressed form. There are a few means of compression that we’ll encounter during this course, but here we’ll cover <code>gzip</code>.</p>
+<p><code>gzip</code> refers to both a compression algorithm <strong>and</strong> the most common piece of software used to implement it. Above we download a genome for <em>F. heteroclitus</em>. The file name is <code>Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz</code>. The <code>.gz</code> suffix is commonly applied to indicate that a file has been gzip-compressed. If you list the contents of the directory containing this file with <code>ls -lh</code> you should see this compressed genome file is 278 megabytes:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">-rw-r--r--</span>  1 nreid cbc   278M Mar  6 19:32 Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Try this now</strong>: Decompressing the file with</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You’ll see that <code>gunzip</code> removes the <code>.gz</code> suffix, and <code>ls -lh</code> indicates the file is now 992 megabytes, giving a compression ratio of 3.57.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">-rw-r--r--</span>  1 nreid cbc   992M Mar  6 19:32 Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can compress the file again with:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gzip</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that compressing the file takes longer than decompressing.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Remember, because many, if not most tools that process genomic data can read and write compressed files, unless you know you need uncompressed data, <strong>make sure you keep files compressed</strong>.</p>
+</div>
+</div>
+<p>You are likely to encounter a particular type of gzipped file known as a <strong>T</strong>ape <strong>AR</strong>chive (suffix <code>.tar</code>) or informally as a <strong>tarball</strong>. Tarballs are entire directories of files that have been put into an archive file and then gzipped (suffix <code>.tar.gz</code>. You will commonly encounter source code for uncompiled software distributed as tarballs, and sometimes large sets of raw data. To decompress them you can use the utility <code>tar</code> like this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> <span class="at">-xvzf</span> mydir.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>-xvzf</code> flags indicate you want to extract the tarball (<code>-x -f</code>) that the tarball is gzipped (<code>-z</code>) and that you want it to print out what it’s doing as it goes (<code>-v</code>, for <em>verbose</em>, a common option with command-line software). See the man page for more details.</p>
+</section>
+<section id="basic-file-inspection" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="basic-file-inspection"><span class="header-section-number">3.3</span> Basic file inspection</h2>
+<p>Linux has a number of simple tools we can use to inspect uncompressed files in plain text. Let’s download some files we can do some exploring with. To keep it simple we’ll download a catalog of public domain books available through Project Gutenberg, and a plain text copy of Charles Darwin’s “On the Origin of Species By Means of Natural Selection”. Let’s also rename the file to something more descriptive.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Catalog</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Origin of Species</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://www.gutenberg.org/ebooks/1228.txt.utf-8</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> 1228.txt.utf-8 darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="less" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="less"><span class="header-section-number">3.3.1</span> <code>less</code></h3>
+<p>An easy way to scroll through this file is with the program <code>less</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pressing the up or down arrows will scroll through the text. The space bar will move one screen’s worth of text at a time. Press <code>q</code> to exit. <code>less</code> can also view gzip-compressed text files without decompressing them.</p>
+</section>
+<section id="head-tail-and-cat" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="head-tail-and-cat"><span class="header-section-number">3.3.2</span> <code>head</code>, <code>tail</code> and <code>cat</code></h3>
+<p>We can print lines from the file to the screen using three commands.</p>
+<p><code>head</code> prints the <em>beginning</em> of the file. It prints the first 10 lines by default, but the flag <code>-n</code> can modify this:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 20 darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>tail</code> prints the the <em>end</em> of the file. It also prints 10 lines by default and accepts the <code>-n</code> flag.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 20 darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>-n</code> flag in tail can also accept a number in the format <code>+20</code> to indicate it should print the end of the file <em>starting at line 20</em>. Be careful with this one if the file is large.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> +20 darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To cancel the process, remember, try <code>ctrl-x</code> or <code>command-.</code>.</p>
+<p>To print out the <em>entire file</em> to the terminal you can use <code>cat</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="counting-with-wc" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="counting-with-wc"><span class="header-section-number">3.3.3</span> Counting with <code>wc</code></h3>
+<p>To count the number of lines, words and bytes (a proxy for characters), you can use <code>wc</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can use <code>wc -l</code> to output only the number of lines.</p>
+</section>
+<section id="cut" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="cut"><span class="header-section-number">3.3.4</span> <code>cut</code></h3>
+<p>With tabular data (i.e.&nbsp;our catalog of books) you can cut out columns with <code>cut</code>. Try inspecting the file with the above commands first. With cut, you can extract a column (or field) with the flag <code>-f</code>. You’ll see that each of the fields in this table is separated by a <code>,</code>. <code>cut</code> expects a tab character by default, so we must also specify a delimiter with <code>-d</code>. To extract column 3, the publication date, we would do:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 3 <span class="at">-d</span> <span class="st">","</span> pg_catalog.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You’ll likely notice some messiness. <code>cut</code> is not smart, and doesn’t recognize that the commas in a title like “A Medium of Inter-communication for Literary Men, Artists, Antiquaries, Genealogists” are not meant to be field separators.</p>
+</section>
+</section>
+<section id="regular-expressions-and-grep" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="regular-expressions-and-grep"><span class="header-section-number">3.4</span> Regular expressions and <code>grep</code></h2>
+<p>We very frequently want to search a text file for occurrences of some pattern, perhaps a word, phrase, or series of numbers. <code>grep</code> is a frequently used for this purpose. Provided a file and a matching pattern, it’s default behavior is to return all lines in the file containing the matching pattern. It has a lot of flexibility, however. You can have it <em>exclude</em> all lines with matches, return lines preceding and succeeding matches, print line numbers, just a count of occurrences, or instead of the whole line, only the matching string. You can check the <code>man</code> page for more detail.</p>
+<p>How do we specify these matching patterns? with <strong>regular expressions</strong> (sometimes shortened to <code>regex</code>. You can think of regular expressions as a very elaborate expansion of the <code>*</code> wildcard we have already seen (e.g.&nbsp;<code>*.txt</code> to match any file with suffix <code>.txt</code>). <a href="https://www.regular-expressions.info/charclass.html">This</a> is a great page explaining lots of regex features, and is worth skimming through.</p>
+<p>To introduce this, we will work through some examples with <code>grep</code>. <strong>Follow along in the terminal</strong> using the file <code>darwin1859.txt</code> that we downloaded above.</p>
+<p>We’ll start with the simplest regex, an unambiguous text string, by searching for every occurrence of the word species:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"species"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If we want only a count of these occurrences, we can do:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"species"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In these cases, “species” is our regular expression. What if we want to introduce some ambiguity? In regex syntax <code>.</code> is the wildcard character. It matches a single character without respect to identity (including whitespace characters). We could find “species” without regard to capitalization by:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">".pecies"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that if you actually wanted to match a period character, you need to <em>escape</em> it with a <code>\</code>. Escaping tells the regex interpreter to treat an otherwise special character literally. So if you want to match cases where species is the last word in a sentence:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">".pecies\."</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Of course, this only works when the rest of the word can’t have any other unintended matches. Searching for “had” with “.ad”, would not only match “Had” and “had”, but every other three letter string ending in “ad”. Try it now:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">".ad"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>grep</code> has an option <code>-w</code> that will match only “words”, i.e.&nbsp;only matches that are preceeded or followed by “non-word” characters or line starts/endings.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-w</span> <span class="st">".ad"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>But this will also return words like “bad”, “mad”, etc. In regex syntax we can specify groups of characters, or ranges of characters inside square brackets to be more specific.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-w</span> <span class="st">"[Hh]ad"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will match only the full words “Had” and “had”.</p>
+<p>We can <em>exclude</em> characters by adding a <code>^</code>. Had/had are very common. If we only want to match other words we can try:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-w</span> <span class="st">"[^Hh]ad"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>What if there is some ambiguity in the length of the pattern we wish to match? There are a couple options here. Say we wish to see all words ending in “ing”? We can use the asterisk <code>*</code> to say, <em>match 0 or more of the preceding character</em> along with a bracketed set of letters. In this case we will quit using <code>-w</code> as a crutch and be explicit about the match pattern by excluding any lower-case letter characters following the match.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"[A-Za-z]*ing[^a-z]"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>There are multiple “flavors” of regular expressions. We’ve been using the basic version. There are extensions with more features. We can enable extended regexes in grep with <code>-E</code>, and perl-style regexes with <code>-P</code>. For example, we can specify a number or range of repetitions with <code>{1,3}</code> for <em>match 1-3</em> of the preceding character:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-E</span> <span class="st">"[^A-Za-z][A-Za-z]{1,3}ing[^a-z]"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>With perl-style regexes (<code>-P</code>) we can also use “lookarounds”. These divide a regex into two pieces, a core matching sequence, and an adjacent matching sequence that is required (or excluded), but not returned as part of the total match. We can match words following the word species with a “positive lookbehind” like this:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Since in these last couple cases, we don’t actually know what our matches are going to be, it can be helpful to return <em>only</em> the matches. You can use <code>-o</code> for this:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When you construct regular expressions, you want to test them carefully to see that they match what you want, and <strong>only</strong> what you want. It’s pretty easy to come up with something you will work, only to discover later there are lots of unintended matches.</p>
+<p>On this note, large language models like ChatGPT can be pretty effective at writing and interpreting regexes for you, but they can make mistakes, and they can’t necessarily anticipate unintended matches in your data any better than you can, so you should still test them before relying on them heavily in code.</p>
+</div>
+</div>
+</section>
+<section id="stdin-stdout-stderr-redirection-and-the-pipe" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="stdin-stdout-stderr-redirection-and-the-pipe"><span class="header-section-number">3.5</span> STDIN, STDOUT, STDERR, redirection and the pipe</h2>
+<p>We have now seen a few different tools we can use to inspect and summarize files. Though each alone is fairly limited, one of the strengths of the Linux command-line environment is the ability to easily chain simple tools like these together in powerful ways. To understand how this works, we need to cover a few concepts.</p>
+<p>Linux programs operate on three main streams of data which users can redirect in various ways. First is the <strong>standard input</strong> (sometimes abbreviated STDIN). Programs can often read data from this stream. The second is the <strong>standard output</strong> (STDOUT) programs often write output to this stream. The third is the <strong>standard error</strong> (STDERR). This stream is often used by programs to send warning or error messages (though scientific software written by scientists, rather than software engineers, will sometimes write output directly to a file, and warnings or errors to stdout, as you will see later in the course). These three streams have numerical file descriptors 0, 1, and 2, for stdin, stdout and stderr.</p>
+<p>For programs that write output to stdout and errors to stderr by default, these outputs will be written to the terminal. We saw this above with <code>grep</code>. When we searched our text file, the lines we requested streamed across our terminal window. If we made any typos, say referring to a non-existent file such as <code>darwin1959.txt</code>, the resulting error message would have come from the stderr stream.</p>
+<p>We can <strong>redirect</strong> these streams, however, causing them to be written to files, or if we wish, taking the stdout stream from one program and hooking it up to the stdin stream for another.</p>
+<p><strong>Try the following:</strong></p>
+<p>To redirect the stdout stream to a file, let’s modify one of our commands above with <code>&gt;</code>.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"species"</span> darwin1859.txt <span class="op">&gt;</span>species_lines.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We have now created a new file with every line containing the string “species” (we can append to an existing file with <code>&gt;&gt;</code>).</p>
+<p>As above, if we did something that caused an error, such as referring to a file that doesn’t exist, we would see an error in the terminal:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"species"</span> darwin2000.txt <span class="op">&gt;</span>species_lines.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That error was written to stderr, and we can redirect it to a file like this:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"species"</span> darwin2000.txt <span class="op">&gt;</span>species_lines.txt <span class="dv">2</span><span class="op">&gt;</span>species_lines.err</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>2&gt;</code> is taking the stderr (which has file descriptor 2) and sending it to a file. The command creates two files. Though the program failed with an error, the redirect still created the file <code>species_lines.txt</code>. It’s important to know this is the usual behavior. Seeing an output file does not mean a program executed successfully. The second file, <code>species_lines.err</code> now contains the output from stderr.</p>
+<p>You can even redirect stderr to stdout with:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"species"</span> darwin2000.txt <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>&amp;1</code> refers to the stdout file descriptor. If you just wrote <code>2&gt;1</code> stderr would be written to a new file called <code>1</code>.</p>
+<section id="the-pipe" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="the-pipe"><span class="header-section-number">3.5.1</span> The pipe</h3>
+<p>The character <code>|</code> is usually referred to as the <strong>pipe</strong>. It allows us to redirect the stdout from one program to the stdin for another, thus <em>piping</em> together one or more programs, or creating a <em>pipeline</em>, though the term pipeline is also used in a much broader sense to refer to any workflow consisting of many sequential steps.</p>
+<p>Above we extracted every line containing the word species. We could have used <code>-c</code> to count lines We can also <em>pipe</em> the output to <code>wc</code> to count the number of lines:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">".pecies"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here the pipe is sending the stdout from <code>grep</code> to the stdin for <code>wc</code>.</p>
+<p>For something a little less trivial, let’s see a really common linux idiom:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The grep command is extracting every word that comes after “species”. We then use two commands piped together, <code>sort</code> and <code>uniq</code> to tally up their frequencies. <code>uniq</code> emits unique lines, but it can only identify duplicates if they are adjacent to each other, so first we must sort them. <code>-c</code> tells <code>uniq</code> to also write the counts of each element. We can sort this yet again numerically to see the most common words following “species”:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s try tallying up word frequencies for the entire document. Instead of using <code>-w</code>, let’s use <code>\b</code> to indicate word boundaries, restrict ourselves to words with 4 or more characters (<code>{4,}</code>), and let’s only look at the 50 most common (<code>tail -n 50</code>):</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 50</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This isn’t totally optimal as it is case-sensitive, but hopefully you can begin to see how these tools will let you rapidly inspect and summarize files in useful ways.</p>
+</section>
+</section>
+<section id="sed" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="sed"><span class="header-section-number">3.6</span> <code>sed</code></h2>
+<p>Above we’ve used regexes and <code>grep</code> to match text. We can also edit text on the fly using regexes with <code>sed</code> (which stands for <strong>S</strong>tream <strong>ED</strong>itor). <code>sed</code> has lots and lots of features. See extensive documentation <a href="https://www.gnu.org/software/sed/manual/sed.html">here</a> and a more in-depth tutorial <a href="https://www.grymoire.com/Unix/Sed.html">here</a>. We’re just going to cover two features here. Replacement operations, and controlling which lines are printed.</p>
+<section id="replacements" class="level3" data-number="3.6.1">
+<h3 data-number="3.6.1" class="anchored" data-anchor-id="replacements"><span class="header-section-number">3.6.1</span> Replacements</h3>
+<p><code>sed</code>’s replacement operator has a relatively simple syntax. <code>s/matchpattern/replacement/</code>. The <code>s</code> indicates a replacement operation, and the <code>/</code>’s delimit the match and replacement strings. Any character can be used as a delimiter, e.g.&nbsp;<code>s,matchpattern,replacement,</code>.</p>
+<p>The matching patterns use regular expressions as in <code>grep</code> and extended regexes can be used with <code>-r</code>, but perl-style regexes (i.e.&nbsp;those with lookarounds) are not available.</p>
+<p><strong>Try this now</strong>: Imagine we would like to make our Project Gutenberg catalog a little less formal. Let’s change all occurrences of “Darwin, Charles” to “Darwin, Chuck”. First let’s use grep to extract only lines containing our target string:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="st">'s/Darwin, Charles/Darwin, Chuck/g'</span> pg_catalog.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>sed</code>’s default behavior is to edit only the first match on each line. In this case, the trailing <code>g</code> in the matching expression means tells it to edit all occurrences.</p>
+<p>You probably noticed that by default, <code>sed</code> writes all output to stdout, rather than editing the original file. If you <em>want</em> to edit the original file, you can use <code>-i</code> for “edit in place”, but destructive editing <em>en masse</em> like this is not usually advisable. Let’s add a <code>grep</code> command to extract only our target lines to see them more clearly:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"Darwin, Charles"</span> pg_catalog.csv <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/Darwin, Charles/Darwin, Chuck/g'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>For cases where we have ambiguity in the match that we wish to preserve in the replacement, we can use capturing groups. These are a feature of extended regexes, and require the <code>-r</code> flag. Capturing works by putting parentheses around the target string. Captured strings can then be invoked with <code>\1</code>, <code>\2</code>… for the first, second string, etc. Let’s find every name formatted as “&lt;SURNAME&gt;, Alfred” and reformat as “Alfred”The Greatest Author of All Time” &lt;SURNAME&gt;“:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-r</span> <span class="st">'s/([A-Z,a-z,-]*), (Alfred [A-Za-z]*),/\2 "The Greatest Author of All Time" \1,/g'</span> pg_catalog.csv <span class="kw">|</span> <span class="fu">grep</span> <span class="st">"The Greatest Author"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will substitute names like “Brehm, Alfred Edmund” for ““Alfred Edmund”The Greatest Author of All Time” Brehm”.</p>
+</section>
+</section>
+<section id="line-printing" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="line-printing"><span class="header-section-number">3.7</span> Line printing</h2>
+<p>We can also use <code>sed</code> to print specific lines by number. To print line number <code>24286</code>, we tell <code>sed</code> to print no lines (<code>-n</code>) except the ones we specify <code>24286p</code>.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-n</span> <span class="st">'24286p'</span> pg_catalog.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Alternatively, we could print, say, every 4th line, starting at line 2:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-n</span> <span class="st">'2~4p'</span> pg_catalog.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="awk" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="awk"><span class="header-section-number">3.8</span> <code>awk</code></h2>
+<p><code>awk</code> is a program (and a language) that can be used to extract, process, or reformat data. In combination with <code>sed</code>, <code>grep</code> and regular expressions, we have a very powerful set of tools for examining, validating, and/or reformatting data quickly without requiring specialized software (although sometimes we want to use specialized software instead of reinventing our own rickety wheels in custom bash scripts). We’ll cover awk superficially here, but see <a href="https://www.gnu.org/software/gawk/manual/gawk.html">here</a> for the documentation, and <a href="https://www.grymoire.com/Unix/Awk.html">here</a> for a shorter tutorial.</p>
+<p>Let’s use <code>awk</code> to do a little processing of a genome annotation file in <code>GTF</code> format. First download and decompress it:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ensembl.org/pub/release-111/gtf/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf.gz</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We’ll get into genome annotation files more later, but for now you should know <code>GTF</code> is a tab-delimited format that contains the locations of important genomic features. For each feature, column 1 gives the sequence (often a whole chromosome, sometimes a chromosomal fragment) that the feature is found on, columns 4 and 5 give the start and end positions (1-based, inclusive) of the feature, and column 3 gives the type of feature (exon, CDS, transcript, gene). Features are hierarchical, so coding sequences (CDS) and exons always have a transcript parent feature, and transcripts always have a gene parent feature. In a GTF, all these identifiers are supposed to be provided for each record, though gene annotation file formats are very frequently violated by different pieces of software. The transcript and gene identifiers are found as part of a long semicolon-separated list in column 9.</p>
+<p>Let’s first use <code>awk</code> in the simplest possible way. We’ll print only lines containing gene features. <code>awk</code> automatically parses text files with white space as field separators, so we can access the columns (or fields) with special variables <code>$1, $2, $3...</code> with <code>$0</code> referring to the entire line. We can match individual fields with a regular expression like this:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span> <span class="st">"\t"</span> <span class="st">'$3 ~ /transcript/'</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here we’re using <code>-F "\t"</code> to tell <code>awk</code> to use only tabs as field separators (to the exclusion of spaces). Piping this whole thing to <code>wc -l</code> we would see this file contains 35,597 transcript records.</p>
+<p>We can use logical statements to require multiple matches to pull out transcripts matching a gene identifier:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span>  <span class="at">-F</span> <span class="st">"\t"</span> <span class="st">'$3 ~ /transcript/ &amp;&amp; $9 ~ /ENSFHEG00000021448/'</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>awk</code> has considerably more utility than this, however. I often use it to reformat files.</p>
+<p>Another common format used to store information about genomic regions is <code>BED</code>. <code>BED</code> has only 3 required columns: the sequence identifier, the start position and the end position. The trick here is that whereas GTF is 1-based and fully closed, BED is 0-based and half-open. This means that in a GTF file, an interval of 1-1000 refers to the first 1000 bases, including the start and end point of the interval. In BED format, however, the first base in a sequence is numbered 0, and the end base in an interval is not included as part of the interval, making the BED interval 0-1000. See this <a href="https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/">blog</a> for a discussion.</p>
+<p>If you find this fully closed vs half-open, 0-based vs 1-based stuff irritating, know that it will come up repeatedly, as it has for many decades (see <a href="https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html">this</a> 40+ year old polemic)</p>
+<p>At any rate… we can easily output our GTF intervals in BED format like this:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span> <span class="st">"\t"</span> <span class="st">'{OFS="\t"}{newstart=$4-1}{print $1,newstart,$5}'</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here we have grouped commands with <code>{}</code> and specified an “output field separator” (<code>OFS="\t"</code>) because <code>awk</code> will by default write spaces instead of tabs. We told awk to print field 1, our new variable <code>newstart</code>, and field 5.</p>
+<p>Note that in this case, GTF has a few header lines (beginning with <code>#</code>) that we have mangled and included.</p>
+<p>We can also summarize our data by doing operations across lines. Let’s figure out how much of our genome falls into annotated genes:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span> <span class="st">"\t"</span> <span class="st">'{if($3 ~ /gene/) n+=$5-$4+1 } END {print n}'</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this case, we use a conditional <code>if($3 ~ /gene/)</code> to say that if field 3 is a gene record, we should add the difference between fields 5 and 4 plus 1 to the variable <code>n</code>. <code>n+=...</code> is a shorthand for <code>n=n+...</code>, so for each subsequent record the value of <code>n</code> is incremented rather than replaced by a new value. In <code>awk</code>, <code>END</code> indicates the following command should be executed when the file has finished processing.</p>
+<p>We see here that 474,790,822 bases of our 1 gigabase genome falls inside of gene annotations. To figure out how much is actually exonic is a little more complicated and difficult to achieve with awk alone because each gene may have multiple transcripts, each with their own overlapping exons, though it could be done.</p>
+</section>
+<section id="linux-commands-in-this-section" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="linux-commands-in-this-section"><span class="header-section-number">3.9</span> Linux Commands in This Section</h2>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cmnd</td>
+<td>desc</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exercises" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="exercises"><span class="header-section-number">3.10</span> Exercises</h2>
+<section id="quiz" class="level3" data-number="3.10.1">
+<h3 data-number="3.10.1" class="anchored" data-anchor-id="quiz"><span class="header-section-number">3.10.1</span> Quiz:</h3>
+<p>This week’s quiz is a practical demonstration of the skills from this section. Find it on Xanadu here: <code>/core/cbc/ISG5311/quizzes/week2quiz.docx</code>. Transfer it to your local computer, and using Microsoft Word, answer the questions it and upload it to blackboard. &lt;details…&gt;</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./01_2_gettingstarted.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with Linux</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

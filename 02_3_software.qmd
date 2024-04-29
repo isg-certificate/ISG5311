@@ -1,0 +1,32 @@
+---
+title: "Data Storage and Software on HPC"
+---
+
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+|  |
+|  | 
+
+We have two more important topics to cover before we move on to actually starting to analyze some real data. 
+
+
+## Data storage and access
+
+home
+
+scratch
+
+tmp
+
+/isg/shared
+
+## Software
+
+compiling
+
+the module system
+
+conda
+
+containers

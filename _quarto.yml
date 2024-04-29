@@ -2,14 +2,28 @@ project:
   type: book
 
 book:
-  title: "quarto_blank_test"
-  author: "Norah Jones"
+  title: "ISG 5311 - Genomic Data Analysis in Practice"
+  author: "Noah Reid"
   date: "9/14/2023"
   chapters:
-    - index.qmd
-    - intro.qmd
-    - summary.qmd
+  - index.qmd
+  - part: 01_0_IntroToLinux.qmd
+    chapters:
+    - 01_1_setup.qmd
+    - 01_2_gettingstarted.qmd
+    - 01_3_morelinux.qmd
     - references.qmd
+  - part: 02_0_HPCandSLURM.qmd
+    chapters:
+    - 02_1_scripts.qmd
+    - 02_2_hpc_1.qmd
+    - 02_3_software.qmd
+  - part: Sequencing Data
+    chapters:
+    - seqdata_1.qmd
+  - part: RNA-seq
+    chapters:
+    - rnaseq_1.qmd
 
 bibliography: references.bib
 

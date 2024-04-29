@@ -1,0 +1,457 @@
+---
+title: "Working with Files"
+---
+
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Move files between computers                                     |
+| Work with file compression |
+| Inspect files |
+| Use regular expressions with `sed` and `grep` |
+| Pipe inputs and outputs |
+
+
+
+In the previous section, we learned about the shell, how to navigate the file system and how to manipulate files and directories within the file system. Now we're going to get into how we can transfer files on and off the server, edit, inspect and summarize files in the shell. These are essential skills that will give you the flexibility to monitor your analyses and check input and output files against your basic expectations. 
+
+## Moving files between computers
+
+You will quite frequently need to move files on and off a remote computer cluster. We will sometimes use specialized pieces of software for retrieving data from particular public databases, but there a number of pieces of widely available software it's good to be familiar with. Here we'll discuss:
+
+1. `wget` and `curl`
+2. `scp`
+3. `rsync`
+4. GUI-based FTP clients and Globus
+
+### `wget` and `curl`
+
+These are two commonly used utilities for downloading files via HTTP and FTP protocols. If you've got a URL pointing to a file you want, either of these will do. Both have lots of features and support several file transfer protocols, but for the most common use cases we'll encounter, simply invoking the command and providing the URL as the first argument will work will start the download. For `wget` you don't even need to specify a name for the downloaded file, but for `curl` you'll need to redirect the output to a file. **Try one of the following** to download the *Fundulus heteroclitus* genome from the ENSEMBL database:
+
+```bash
+wget ftp://ftp.ensembl.org/pub/release-105/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz
+
+curl ftp://ftp.ensembl.org/pub/release-105/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz >Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz
+```
+### `scp`
+
+`scp` is a *secure* version of the `cp` command we learned in the previous chapter. We can use this to securely, i.e. in encrypted fashion, transfer data between computers. The usage is the same as `cp` (requiring the `-r` flag to copy a directory), except that with `scp` you also need to provide an address for a remote host in front of the path like this: `username@remotehostaddress:/path/to/target/file.txt` You can copy data to or from a remote host. You can use `.` if you want the file to simply transfer to the current working directory. 
+
+On the Xanadu cluster, you cannot use the normal login nodes (i.e. `xanadu-submit-ext.cam.uchc.edu`) to transfer files. A special transfer host has been set up for this purpose. The address for that host is `transfer.cam.uchc.edu`. **Try this now**: Copy the *F. heteroclitus* genome we just downloaded from Xanadu to your local computer. Open a terminal window and *do not* connect to Xanadu. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Xanadu):
+
+```bash
+scp nreid@transfer.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .
+```
+
+Hopefully it is self-evident how to transfer files **to** the remote host with this method. You can feel free to delete the transferred file, as we will not be continuing to use it. 
+
+### `rsync`
+
+`rsync` is like a much more elaborate version of `scp`. While its usage is generally much more flexible, the key improvement over `scp` is that `rsync` can be used to "synchronize" directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they've changed and skip them if they haven't. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch. 
+
+The usage of `rsync` is similar to scp, except that when transferring a directory we recommend using the flags `a` `v` and `z`. To move your `killifishGenomes` directory from Xanadu to your local machine you can try: `rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes .` taking care to edit your username and ensuring the path on Xanadu to your directory is correct. This will transfer the entire directory. 
+
+`rsync` has lots of options, use `man rsync` to read up on it. 
+
+::: {.callout-note}
+A subtle but important detail: if you include a trailing `/` on the source directory like this: `rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes/ .` Then the **contents** of the source directory will be transferred to the target directory, but not the enveloping directory. 
+:::
+
+### FTP clients and Globus
+
+The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as [FileZilla](https://filezilla-project.org). You can use the transfer node `transfer.cam.uchc.edu` and your Xanadu credentials to move files this way. 
+
+When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Xanadu we use Globus, a platform available on many institutional HPCs for moving data. We won't cover it right now, but you can see a guide to getting started using it on Xanadu [here](https://github.com/CBC-UCONN/CBC_Docs/wiki)
+
+## File compression
+
+'omic data files are often very large. A single copy of a human genome is around 3.3 gigabytes. A raw, unassembled sequence of a human genome at 30x coverage might be 180 gigabytes. Data at this scale is cumbersome to transfer and analyze, and expensive to store. Compression eases this burden somewhat, making these files 1/3 to 1/4 the size. So wherever we can, we try to keep data files compressed, and use tools that can read and write data in compressed form. There are a few means of compression that we'll encounter during this course, but here we'll cover `gzip`.
+
+`gzip` refers to both a compression algorithm **and** the most common piece of software used to implement it. Above we download a genome for *F. heteroclitus*. The file name is `Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz`. The `.gz` suffix is commonly applied to indicate that a file has been gzip-compressed. If you list the contents of the directory containing this file with `ls -lh` you should see this compressed genome file is 278 megabytes:
+
+```bash
+-rw-r--r--  1 nreid cbc   278M Mar  6 19:32 Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz
+```
+
+**Try this now**: Decompressing the file with 
+
+```bash
+gunzip Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz
+```
+
+You'll see that `gunzip` removes the `.gz` suffix, and `ls -lh` indicates the file is now 992 megabytes, giving a compression ratio of 3.57. 
+
+```bash
+-rw-r--r--  1 nreid cbc   992M Mar  6 19:32 Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa
+```
+
+You can compress the file again with:
+
+```bash
+gzip Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa
+```
+
+Note that compressing the file takes longer than decompressing. 
+
+::: {.callout-important}
+Remember, because many, if not most tools that process genomic data can read and write compressed files, unless you know you need uncompressed data, **make sure you keep files compressed**. 
+:::
+
+You are likely to encounter a particular type of gzipped file known as a **T**ape **AR**chive (suffix `.tar`) or informally as a **tarball**. Tarballs are entire directories of files that have been put into an archive file and then gzipped (suffix `.tar.gz`. You will commonly encounter source code for uncompiled software distributed as tarballs, and sometimes large sets of raw data. To decompress them you can use the utility `tar` like this:
+
+```bash
+tar -xvzf mydir.tar.gz
+```
+
+The `-xvzf` flags indicate you want to extract the tarball (`-x -f`) that the tarball is gzipped (`-z`) and that you want it to print out what it's doing as it goes (`-v`, for *verbose*, a common option with command-line software). See the man page for more details. 
+
+## Basic file inspection
+
+Linux has a number of simple tools we can use to inspect uncompressed files in plain text. Let's download some files we can do some exploring with. To keep it simple we'll download a catalog of public domain books available through Project Gutenberg, and a plain text copy of Charles Darwin's "On the Origin of Species By Means of Natural Selection". Let's also rename the file to something more descriptive. 
+
+```bash
+# Catalog
+wget https://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv
+# Origin of Species
+wget https://www.gutenberg.org/ebooks/1228.txt.utf-8
+mv 1228.txt.utf-8 darwin1859.txt
+```
+
+### `less`
+
+An easy way to scroll through this file is with the program `less`. 
+
+```bash
+less darwin1859.txt
+```
+
+Pressing the up or down arrows will scroll through the text. The space bar will move one screen's worth of text at a time. Press `q` to exit. `less` can also view gzip-compressed text files without decompressing them. 
+
+### `head`, `tail` and `cat`
+
+We can print lines from the file to the screen using three commands. 
+
+`head` prints the *beginning* of the file. It prints the first 10 lines by default, but the flag `-n` can modify this:
+
+```bash
+head -n 20 darwin1859.txt
+```
+
+`tail` prints the the *end* of the file. It also prints 10 lines by default and accepts the `-n` flag. 
+
+```bash
+tail -n 20 darwin1859.txt
+```
+
+The `-n` flag in tail can also accept a number in the format `+20` to indicate it should print the end of the file *starting at line 20*. Be careful with this one if the file is large. 
+
+```bash
+tail -n +20 darwin1859.txt
+```
+
+To cancel the process, remember, try `ctrl-x` or `command-.`. 
+
+To print out the *entire file* to the terminal you can use `cat`. 
+
+```bash
+cat darwin1859.txt
+```
+
+### Counting with `wc`
+
+To count the number of lines, words and bytes (a proxy for characters), you can use `wc`. 
+
+```bash
+wc darwin1859.txt
+```
+
+You can use `wc -l` to output only the number of lines. 
+
+### `cut`
+
+With tabular data (i.e. our catalog of books) you can cut out columns with `cut`. Try inspecting the file with the above commands first. With cut, you can extract a column (or field) with the flag `-f`. You'll see that each of the fields in this table is separated by a `,`. `cut` expects a tab character by default, so we must also specify a delimiter with `-d`. To extract column 3, the publication date, we would do:
+
+```bash
+cut -f 3 -d "," pg_catalog.csv
+```
+You'll likely notice some messiness. `cut` is not smart, and doesn't recognize that the commas in a title like "A Medium of Inter-communication for Literary Men, Artists, Antiquaries, Genealogists" are not meant to be field separators. 
+
+## Regular expressions and `grep`
+
+We very frequently want to search a text file for occurrences of some pattern, perhaps a word, phrase, or series of numbers. `grep` is a frequently used for this purpose. Provided a file and a matching pattern, it's default behavior is to return all lines in the file containing the matching pattern. It has a lot of flexibility, however. You can have it *exclude* all lines with matches, return lines preceding and succeeding matches, print line numbers, just a count of occurrences, or instead of the whole line, only the matching string. You can check the `man` page for more detail. 
+
+How do we specify these matching patterns? with **regular expressions** (sometimes shortened to `regex`. You can think of regular expressions as a very elaborate expansion of the `*` wildcard we have already seen (e.g. `*.txt` to match any file with suffix `.txt`). [This](https://www.regular-expressions.info/charclass.html) is a great page explaining lots of regex features, and is worth skimming through. 
+
+To introduce this, we will work through some examples with `grep`. **Follow along in the terminal** using the file `darwin1859.txt` that we downloaded above.  
+
+We'll start with the simplest regex, an unambiguous text string, by searching for every occurrence of the word species:
+
+```bash
+grep "species" darwin1859.txt
+```
+
+If we want only a count of these occurrences, we can do:
+
+```bash
+grep -c "species" darwin1859.txt
+```
+
+In these cases, "species" is our regular expression. What if we want to introduce some ambiguity? In regex syntax `.` is the wildcard character. It matches a single character without respect to identity (including whitespace characters). We could find "species" without regard to capitalization by:
+
+```bash
+grep ".pecies" darwin1859.txt
+```
+
+Note that if you actually wanted to match a period character, you need to *escape* it with a `\`. Escaping tells the regex interpreter to treat an otherwise special character literally. So if you want to match cases where species is the last word in a sentence:
+
+```bash
+grep ".pecies\." darwin1859.txt
+```
+
+
+Of course, this only works when the rest of the word can't have any other unintended matches. Searching for "had" with ".ad", would not only match "Had" and "had", but every other three letter string ending in "ad". Try it now:
+
+```bash
+grep ".ad" darwin1859.txt
+```
+
+`grep` has an option `-w` that will match only "words", i.e. only matches that are preceeded or followed by "non-word" characters or line starts/endings. 
+
+```bash
+grep -w ".ad" darwin1859.txt
+```
+
+But this will also return words like "bad", "mad", etc. In regex syntax we can specify groups of characters, or ranges of characters inside square brackets to be more specific. 
+
+```bash
+grep -w "[Hh]ad" darwin1859.txt
+```
+
+This will match only the full words "Had" and "had". 
+
+We can *exclude* characters by adding a `^`. Had/had are very common. If we only want to match other words we can try:
+
+```bash
+grep -w "[^Hh]ad" darwin1859.txt
+```
+
+
+What if there is some ambiguity in the length of the pattern we wish to match? There are a couple options here. Say we wish to see all words ending in "ing"? We can use the asterisk `*` to say, *match 0 or more of the preceding character* along with a bracketed set of letters. In this case we will quit using `-w` as a crutch and be explicit about the match pattern by excluding any lower-case letter characters following the match. 
+
+```bash
+grep "[A-Za-z]*ing[^a-z]" darwin1859.txt
+```
+
+There are multiple "flavors" of regular expressions. We've been using the basic version. There are extensions with more features. We can enable extended regexes in grep with `-E`, and perl-style regexes with `-P`. For example, we can specify a number or range of repetitions with `{1,3}` for *match 1-3* of the preceding character:
+
+```bash
+grep -E "[^A-Za-z][A-Za-z]{1,3}ing[^a-z]" darwin1859.txt
+```
+
+With perl-style regexes (`-P`) we can also use "lookarounds". These divide a regex into two pieces, a core matching sequence, and an adjacent matching sequence that is required (or excluded), but not returned as part of the total match. We can match words following the word species with a "positive lookbehind" like this:
+
+```bash
+grep -P "(?<=[Ss]pecies )[A-Za-z]+" darwin1859.txt
+```
+
+Since in these last couple cases, we don't actually know what our matches are going to be, it can be helpful to return *only* the matches. You can use `-o` for this:
+
+```bash
+grep -o -P "(?<=[Ss]pecies )[A-Za-z]+" darwin1859.txt
+```
+
+::: {.callout-note}
+When you construct regular expressions, you want to test them carefully to see that they match what you want, and **only** what you want. It's pretty easy to come up with something you will work, only to discover later there are lots of unintended matches. 
+
+On this note, large language models like ChatGPT can be pretty effective at writing and interpreting regexes for you, but they can make mistakes, and they can't necessarily anticipate unintended matches in your data any better than you can, so you should still test them before relying on them heavily in code. 
+:::
+
+
+## STDIN, STDOUT, STDERR, redirection and the pipe
+
+We have now seen a few different tools we can use to inspect and summarize files. Though each alone is fairly limited, one of the strengths of the Linux command-line environment is the ability to easily chain simple tools like these together in powerful ways. To understand how this works, we need to cover a few concepts. 
+
+Linux programs operate on three main streams of data which users can redirect in various ways. First is the **standard input** (sometimes abbreviated STDIN). Programs can often read data from this stream. The second is the **standard output** (STDOUT) programs often write output to this stream. The third is the **standard error** (STDERR). This stream is often used by programs to send warning or error messages (though scientific software written by scientists, rather than software engineers, will sometimes write output directly to a file, and warnings or errors to stdout, as you will see later in the course). These three streams have numerical file descriptors 0, 1, and 2, for stdin, stdout and stderr. 
+
+For programs that write output to stdout and errors to stderr by default, these outputs will be written to the terminal. We saw this above with `grep`. When we searched our text file, the lines we requested streamed across our terminal window. If we made any typos, say referring to a non-existent file such as `darwin1959.txt`, the resulting error message would have come from the stderr stream. 
+
+We can **redirect** these streams, however, causing them to be written to files, or if we wish, taking the stdout stream from one program and hooking it up to the stdin stream for another. 
+
+**Try the following:**
+
+To redirect the stdout stream to a file, let's modify one of our commands above with `>`. 
+
+```bash
+grep "species" darwin1859.txt >species_lines.txt
+```
+
+We have now created a new file with every line containing the string "species" (we can append to an existing file with `>>`).  
+
+
+As above, if we did something that caused an error, such as referring to a file that doesn't exist, we would see an error in the terminal:
+
+```bash
+grep "species" darwin2000.txt >species_lines.txt
+```
+
+That error was written to stderr, and we can redirect it to a file like this:
+
+```bash
+grep "species" darwin2000.txt >species_lines.txt 2>species_lines.err
+```
+
+`2>` is taking the stderr (which has file descriptor 2) and sending it to a file. The command creates two files. Though the program failed with an error, the redirect still created the file `species_lines.txt`. It's important to know this is the usual behavior. Seeing an output file does not mean a program executed successfully. The second file, `species_lines.err` now contains the output from stderr. 
+
+You can even redirect stderr to stdout with:
+
+```bash
+grep "species" darwin2000.txt 2>&1
+```
+
+The `&1` refers to the stdout file descriptor. If you just wrote `2>1` stderr would be written to a new file called `1`. 
+
+### The pipe
+
+The character `|` is usually referred to as the **pipe**. It allows us to redirect the stdout from one program to the stdin for another, thus *piping* together one or more programs, or creating a *pipeline*, though the term pipeline is also used in a much broader sense to refer to any workflow consisting of many sequential steps. 
+
+Above we extracted every line containing the word species. We could have used `-c` to count lines We can also *pipe* the output to `wc` to count the number of lines:
+
+```bash
+grep ".pecies" darwin1859.txt | wc -l
+```
+
+Here the pipe is sending the stdout from `grep` to the stdin for `wc`. 
+
+For something a little less trivial, let's see a really common linux idiom:
+
+```bash
+grep -o -P "(?<=[Ss]pecies )[A-Za-z]+" darwin1859.txt | sort | uniq -c
+```
+
+The grep command is extracting every word that comes after "species". We then use two commands piped together, `sort` and `uniq` to tally up their frequencies. `uniq` emits unique lines, but it can only identify duplicates if they are adjacent to each other, so first we must sort them. `-c` tells `uniq` to also write the counts of each element. We can sort this yet again numerically to see the most common words following "species":
+
+```bash
+grep -o -P "(?<=[Ss]pecies )[A-Za-z]+" darwin1859.txt | sort | uniq -c | sort -g
+```
+
+Let's try tallying up word frequencies for the entire document. Instead of using `-w`, let's use `\b` to indicate word boundaries, restrict ourselves to words with 4 or more characters (`{4,}`), and let's only look at the 50 most common (`tail -n 50`):
+
+```bash
+grep -o -P "\b[A-Za-z]{4,}\b" darwin1859.txt | sort | uniq -c | sort -g | tail -n 50
+```
+
+This isn't totally optimal as it is case-sensitive, but hopefully you can begin to see how these tools will let you rapidly inspect and summarize files in useful ways. 
+
+
+## `sed`
+
+Above we've used regexes and `grep` to match text. We can also edit text on the fly using regexes with `sed` (which stands for **S**tream **ED**itor). `sed` has lots and lots of features. See extensive documentation [here](https://www.gnu.org/software/sed/manual/sed.html) and a more in-depth tutorial [here](https://www.grymoire.com/Unix/Sed.html). We're just going to cover two features here. Replacement operations, and controlling which lines are printed. 
+
+### Replacements
+
+`sed`'s replacement operator has a relatively simple syntax. `s/matchpattern/replacement/`. The `s` indicates a replacement operation, and the `/`'s delimit the match and replacement strings. Any character can be used as a delimiter, e.g. `s,matchpattern,replacement,`. 
+
+The matching patterns use regular expressions as in `grep` and extended regexes can be used with `-r`, but perl-style regexes (i.e. those with lookarounds) are not available. 
+
+**Try this now**: Imagine we would like to make our Project Gutenberg catalog a little less formal. Let's change all occurrences of "Darwin, Charles" to "Darwin, Chuck". First let's use grep to extract only lines containing our target string:
+
+```bash
+sed 's/Darwin, Charles/Darwin, Chuck/g' pg_catalog.csv
+```
+
+`sed`'s default behavior is to edit only the first match on each line. In this case, the trailing `g` in the matching expression means tells it to edit all occurrences.
+
+You probably noticed that by default, `sed` writes all output to stdout, rather than editing the original file. If you *want* to edit the original file, you can use `-i` for "edit in place", but destructive editing *en masse* like this is not usually advisable. Let's add a `grep` command to extract only our target lines to see them more clearly:
+
+```bash
+grep "Darwin, Charles" pg_catalog.csv | sed 's/Darwin, Charles/Darwin, Chuck/g'
+```
+
+For cases where we have ambiguity in the match that we wish to preserve in the replacement, we can use capturing groups. These are a feature of extended regexes, and require the `-r` flag. Capturing works by putting parentheses around the target string. Captured strings can then be invoked with `\1`, `\2`... for the first, second string, etc. Let's find every name formatted as "\<SURNAME\>, Alfred" and reformat as "Alfred "The Greatest Author of All Time" \<SURNAME\>":
+
+```bash
+sed -r 's/([A-Z,a-z,-]*), (Alfred [A-Za-z]*),/\2 "The Greatest Author of All Time" \1,/g' pg_catalog.csv | grep "The Greatest Author"
+```
+
+This will substitute names like "Brehm, Alfred Edmund" for ""Alfred Edmund "The Greatest Author of All Time" Brehm". 
+
+## Line printing
+
+We can also use `sed` to print specific lines by number. To print line number `24286`, we tell `sed` to print no lines (`-n`) except the ones we specify `24286p`. 
+
+```bash
+sed -n '24286p' pg_catalog.csv
+```
+
+Alternatively, we could print, say, every 4th line, starting at line 2: 
+
+```bash
+sed -n '2~4p' pg_catalog.csv
+```
+
+## `awk`
+
+`awk` is a program (and a language) that can be used to extract, process, or reformat data. In combination with `sed`, `grep` and regular expressions, we have a very powerful set of tools for examining, validating, and/or reformatting data quickly without requiring specialized software (although sometimes we want to use specialized software instead of reinventing our own rickety wheels in custom bash scripts). We'll cover awk superficially here, but see [here](https://www.gnu.org/software/gawk/manual/gawk.html) for the documentation, and [here](https://www.grymoire.com/Unix/Awk.html) for a shorter tutorial. 
+
+Let's use `awk` to do a little processing of a genome annotation file in `GTF` format. First download and decompress it:
+
+```bash
+wget https://ftp.ensembl.org/pub/release-111/gtf/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf.gz
+gunzip Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf.gz
+```
+
+We'll get into genome annotation files more later, but for now you should know `GTF` is a tab-delimited format that contains the locations of important genomic features. For each feature, column 1 gives the sequence (often a whole chromosome, sometimes a chromosomal fragment) that the feature is found on, columns 4 and 5 give the start and end positions (1-based, inclusive) of the feature, and column 3 gives the type of feature (exon, CDS, transcript, gene). Features are hierarchical, so coding sequences (CDS) and exons always have a transcript parent feature, and transcripts always have a gene parent feature. In a GTF, all these identifiers are supposed to be provided for each record, though gene annotation file formats are very frequently violated by different pieces of software. The transcript and gene identifiers are found as part of a long semicolon-separated list in column 9. 
+
+Let's first use `awk` in the simplest possible way. We'll print only lines containing gene features. `awk` automatically parses text files with white space as field separators, so we can access the columns (or fields) with special variables `$1, $2, $3...` with `$0` referring to the entire line. We can match individual fields with a regular expression like this:
+
+```bash
+awk -F "\t" '$3 ~ /transcript/' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
+```
+
+Here we're using `-F "\t"` to tell `awk` to use only tabs as field separators (to the exclusion of spaces). Piping this whole thing to `wc -l` we would see this file contains 35,597 transcript records. 
+
+We can use logical statements to require multiple matches to pull out transcripts matching a gene identifier:
+
+```bash
+awk  -F "\t" '$3 ~ /transcript/ && $9 ~ /ENSFHEG00000021448/' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
+```
+
+`awk` has considerably more utility than this, however. I often use it to reformat files. 
+
+Another common format used to store information about genomic regions is `BED`. `BED` has only 3 required columns: the sequence identifier, the start position and the end position. The trick here is that whereas GTF is 1-based and fully closed, BED is 0-based and half-open. This means that in a GTF file, an interval of 1-1000 refers to the first 1000 bases, including the start and end point of the interval. In BED format, however, the first base in a sequence is numbered 0, and the end base in an interval is not included as part of the interval, making the BED interval 0-1000. See this [blog](https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/) for a discussion. 
+
+If you find this fully closed vs half-open, 0-based vs 1-based stuff irritating, know that it will come up repeatedly, as it has for many decades (see [this](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html) 40+ year old polemic)
+
+At any rate... we can easily output our GTF intervals in BED format like this:
+
+```bash
+awk -F "\t" '{OFS="\t"}{newstart=$4-1}{print $1,newstart,$5}' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
+```
+
+Here we have grouped commands with `{}` and specified an "output field separator" (`OFS="\t"`) because `awk` will by default write spaces instead of tabs. We told awk to print field 1, our new variable `newstart`, and field 5. 
+
+Note that in this case, GTF has a few header lines (beginning with `#`) that we have mangled and included. 
+
+We can also summarize our data by doing operations across lines. Let's figure out how much of our genome falls into annotated genes:
+
+```bash
+awk -F "\t" '{if($3 ~ /gene/) n+=$5-$4+1 } END {print n}' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
+```
+
+In this case, we use a conditional `if($3 ~ /gene/)` to say that if field 3 is a gene record, we should add the difference between fields 5 and 4 plus 1 to the variable `n`. `n+=...` is a shorthand for `n=n+...`, so for each subsequent record the value of `n` is incremented rather than replaced by a new value. In `awk`, `END` indicates the following command should be executed when the file has finished processing. 
+
+We see here that 474,790,822 bases of our 1 gigabase genome falls inside of gene annotations. To figure out how much is actually exonic is a little more complicated and difficult to achieve with awk alone because each gene may have multiple transcripts, each with their own overlapping exons, though it could be done. 
+
+## Linux Commands in This Section
+ 
+| Command | Description                          |
+|---------|--------------------------------------|
+| cmnd     | desc              |
+
+
+## Exercises
+
+### Quiz: 
+This week's quiz is a practical demonstration of the skills from this section. Find it on Xanadu here: `/core/cbc/ISG5311/quizzes/week2quiz.docx`. Transfer it to your local computer, and using Microsoft Word, answer the questions it and upload it to blackboard. <details...>
+
+

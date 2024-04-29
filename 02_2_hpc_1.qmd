@@ -1,0 +1,368 @@
+---
+title: "SLURM: the job scheduler"
+---
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Query SLURM to determine resource availability |
+| Submit work and a resource request to be managed by SLURM |
+| Monitor the progress of work on SLURM |
+| Evaluate the results of work submitted to SLURM |
+| Start an interactive session on a compute node | 
+
+## High performance computing review
+
+Now that we've covered connecting to a remote server, basic command-line interface usage, and the fundamentals of writing a script, we're ready to explore how to actually use the Xanadu computer cluster. You should be familiar with this already from ISG5301, but Xanadu is not a single computer. It is a large number of computers networked together, most of which are far more powerful than a standard consumer-grade laptop or desktop. These individual computers are often referred to as **nodes**. Each of the nodes is connected to a **network-attached file system** (NFS) which stores user data. Because all the nodes are connected to this file system, no matter which of the nodes you may be working on at any given moment, you will have access to your data. 
+
+There are three main categories of nodes. 
+
+1. **Compute nodes**: These are the workhorses of the cluster. They typically have many CPUs (24-96) and memory ranging from 256G to 2TB (even a good consumer laptop won't usually have more than 8 CPUs 16G of memory). 
+2. **Login nodes**: These are much smaller computers, often with only 2 CPUs andn 8G of memory. They may not even be physical machines, but virtual ones. They are meant to serve as portals to more powerful resources. When users connect to Xanandu, they are assigned to one of several login nodes. 
+3. **The head node**: A head node is typically used only by system administrators to manage the system. It probably runs the workload manager. 
+
+Thus far, when we have connected to Xanadu we have connected to a **login** node. Because login nodes have few resources, which are shared among many users, **you should not use them for analysis**. The kind of light work we have done (navigating the file system, inspecting files) is suitable for the login node, but if you ever run the kind of command that has you thinking, "I'll just check social media for for a moment while this runs" then you have **far exceeded** what you should be doing on a login node. 
+
+## SLURM
+
+In order to request suitable resources for data analysis, we need to appeal to software that we will variously refer to as the **workload manager** or **job scheduler**. On Xanadu, we use the software [`SLURM`](https://slurm.schedmd.com/overview.html). It is very commonly used on HPCs, but there others such as [`PBS`](https://en.wikipedia.org/wiki/Portable_Batch_System) and [`LSF`](https://en.wikipedia.org/wiki/IBM_Spectrum_LSF). From a user perspective, these systems have many features in common, and in fact, Xanadu is set up to interpret `PBS` commands if necessary, though this is not recommended. 
+
+In this chapter we will cover how to use `SLURM` to ask what resources are available, request resources to do work, monitor the status of running jobs, and evaluate jobs when they have completed. 
+
+### The general approach
+
+When you have to do some computational work that requires cluster resources (and you will very soon), the process looks something like this:
+
+1. Decide what resources are needed to do the work.  
+2. Check to see whether the resources are available (whether they exist all, or are currently busy). 
+3. Submit the work with a resource request to the job scheduler (or simply request resources in the case of interactive work). 
+4. Monitor job progress until completion or failure (or if interactive work, do the work). 
+5. Evaluate the work. 
+6. (Possibly) Go back to (1) for the next step of your analysis. 
+
+We'll cover each of these below. 
+
+### What resources are needed?
+
+We will cover this question on a job-by-job basis when we start analyzing data as it can be somewhat complicated. 
+
+### What resources exist/are available?
+
+The two primary SLURM commands used here are `sinfo` and `squeue`. We can also look at the file `/etc/slurm/slurm.conf` to see a list of node *features* that we can request if necessary. 
+
+#### `sinfo`
+
+`sinfo` prints information about available compute nodes and their status. At the moment of writing, running `sinfo` with no options prints the following output:
+
+```
+PARTITION  AVAIL  TIMELIMIT  NODES  STATE NODELIST
+general*      up   infinite      1  drain xanadu-05
+general*      up   infinite     23    mix xanadu-[01,03-04,08,10,25,39,50-52,57-61,64-66,69-70,72-74]
+general*      up   infinite      4  alloc xanadu-[02,62-63,67]
+general*      up   infinite      5   idle xanadu-[46-47,49,53-54]
+vcell         up   infinite      4  drain xanadu-[78-81]
+vcell         up   infinite      3   idle xanadu-[76-77,82]
+vcellpu       up   infinite      1   idle xanadu-32
+himem         up   infinite      2    mix xanadu-[40,44]
+himem         up   infinite      2   idle xanadu-[06,43]
+himem2        up   infinite      2    mix xanadu-[07,75]
+xeon          up   infinite      1  drain xanadu-05
+xeon          up   infinite     18    mix xanadu-[03-04,08,39,50-52,57-61,64-66,69-70,72]
+xeon          up   infinite      4  alloc xanadu-[02,62-63,67]
+xeon          up   infinite      5   idle xanadu-[46-47,49,53-54]
+amd           up   infinite      2    mix xanadu-[10,25]
+mcbstudent    up   infinite      2    mix xanadu-[68,71]
+gpu           up   infinite      1  drain xanadu-05
+gpu           up   infinite      5    mix xanadu-[01,03-04,07-08]
+gpu           up   infinite      1  alloc xanadu-02
+gpu           up   infinite      3   idle xanadu-[06,84-85]
+crbm          up   infinite      2   idle xanadu-[55-56]
+```
+
+Nodes on clusters are sometimes, though not always divided into **partitions**. If they are, you must decide which partition you want to submit to. Partitions need not be mutually exclusive, and may have different behaviors and limitations. Key partitions on Xanadu are `general` and `himem`. In the basic `sinfo` output, you see nodes in each partition, divided into various categories, and a listing of the nodes in each category: **alloc** = allocated, i.e. all resources on these nodes have been assigned; **mix** = some resources on these nodes have been assigned and some remain available; **idle** = these nodes are currently unused; **drain** = these nodes are not accepting new jobs (probably they will be rebooted when current jobs finish). Xanadu actually has many more nodes than this, at the time of writing many had been removed for maintenance. 
+
+You will frequently want to see more detail than this. The following command will print information for each node, formatted according to the obscure syntax found in the `sinfo` man page. 
+
+```bash
+sinfo --format="%10P %6t %15O %15C %15F %10m %10e %15n %30E %10u"
+```
+
+The first few lines of output:
+
+```
+PARTITION  STATE  CPU_LOAD        CPUS(A/I/O/T)   NODES(A/I/O/T)  MEMORY     FREE_MEM   HOSTNAMES       REASON                         USER      
+general*   drain  0.01            0/0/36/36       0/0/1/1         225612     16760      xanadu-05       Kill task failed               root      
+general*   mix    18.37           28/8/0/36       1/0/0/1         257669     9569       xanadu-01       none                           Unknown   
+general*   mix    11.49           35/1/0/36       1/0/0/1         257845     45859      xanadu-03       none                           root      
+general*   mix    8.34            34/2/0/36       1/0/0/1         257845     1307       xanadu-04       none                           Unknown   
+general*   mix    2.41            9/27/0/36       1/0/0/1         257669     50949      xanadu-08       none                           Unknown   
+general*   mix    10.76           15/33/0/48      1/0/0/1         386972     52520      xanadu-10       none                           Unknown   
+general*   mix    12.61           44/4/0/48       1/0/0/1         257949     7961       xanadu-25       none                           Unknown   
+general*   mix    6.03            8/8/0/16        1/0/0/1         128825     26234      xanadu-39       none                           Unknown   
+general*   mix    0.06            8/32/0/40       1/0/0/1         257914     119938     xanadu-50       none                           Unknown   
+general*   mix    0.08            8/32/0/40       1/0/0/1         192032     13437      xanadu-51       none                           Unknown   
+```
+
+Here you get lots of useful information. The column `CPUS(A/I/O/T)` tells you how many cpus are **allocated**/**idle**/**other**/**total** on each node. You can also see the amount of memory and free memory (in megabytes) on each node. This can give you a pretty fine-grained sense of what resources currently exist in terms of CPU and memory, and how many resources are **idle** on the cluster. 
+
+#### `squeue`
+
+The `squeue` command lets users see what jobs have been submitted to the job queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available, and currently running jobs. Depending on SLURM configuration, this command may show *only* jobs you have submitted, or it may show *every* job. At the time of writing, Xanadu was configured to show *every* job. 
+
+Some example output from `squeue`:
+
+```
+  JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+7949897   general nf-MAIN_ ebrannan PD       0:00      1 (QOSMaxMemoryPerUser)
+7949952   general nf-MAIN_ vvuruput PD       0:00      1 (Resources)
+7949954   general nf-MAIN_ vvuruput PD       0:00      1 (Priority)
+7953478   general slow59.s mhossein PD       0:00      1 (Priority)
+7953479   general slow60.s mhossein PD       0:00      1 (Priority)
+7946600   general    busco shillima  R 2-20:56:08      1 xanadu-52
+7945409   general     bash    shird  R 3-01:21:06      1 xanadu-74
+7917445     himem R_divers pmartine  R 6-01:31:02      1 xanadu-40
+7953261 mcbstuden     bash meds5420  R    3:46:07      1 xanadu-68
+```
+
+The JOBID is a unique numerical identifier assigned by SLURM to *every* job it runs. This is important information we'll discuss later. NAME is the name the user gave SLURM for the job (truncated in this view). USER is user who submitted the job. ST is the status: PD = pending; R = running. NODELIST(REASON) is either the list of compute nodes the job was assigned to (e.g. xanadu-52 for job 7946600) or the reason the job is not yet running: "Priority" essentially means the job will start at any moment; "Resources" means the requested resources are busy; "QOSMaxMemoryPerUser" means the running the job would exceed the user's maximum memory allotment. Individual users have resource limits so that no one person can dominate the system. 
+
+You can use the flag `-u <user>` to restrict to a given userid. You can try `squeue -o "%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R"` for a little more spacious formatting. 
+
+#### `/etc/slurm/slurm.conf`
+
+SLURM has a configuration file `/etc/slurm/slurm.conf` that lists features of each node. Some of this is listed by `sinfo`, but occasionally you may run into software that has very specific needs. Something may require a particular *instruction set* be present on the CPUs, or you may require a particular type of GPU be present on the node. These **features** are listed at the end of this file, and these features can be requested using **feature constraints**. Try `cat /etc/slurm/slurm.conf`. Look near the end of the file at the section beginning `# COMPUTE NODES`:
+
+```
+# COMPUTE NODES
+NodeName=xanadu-01 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257669 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+NodeName=xanadu-02 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257669 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+NodeName=xanadu-03 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257845 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_M10,gpu_cc_5.2,gpu_A10,gpu_cc_8.6,simulations
+NodeName=xanadu-04 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257845 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+```
+
+Here you can see that node xanadu-01 has 36 CPUs, ~256G of memory, a Xeon cpu and an NVIDIA A10 GPU. 
+
+### Request resources (and submit work)
+
+So far we have shown you ways to ask questions about the cluster and its resources. Now we'll cover how to request them to get actual work done. There are two common use cases for analyzing data using cluster resources: running batch scripts that require no active user intervention, and doing interactive analysis. 
+
+#### Running batch jobs with `sbatch`
+
+When you run a batch job, you write a script that will run all the steps of a given analysis for you, hand that script to SLURM, and wait for it to complete (or fail). Using one command (or one script) you tell SLURM which resources you need, and what you want it to do. The command we use for this is `sbatch`. 
+
+Running `sbatch` is in essence, just like running a script as we did in the previous chapter, except that instead of the script being run by the current shell, you hand it to SLURM with your resource request, SLURM puts it in the job queue, and when a node (or nodes) with enough resources becomes available, assigns the job there and runs it for you. 
+
+Let's look at the most basic usage using our fully defined script from the previous chapter:
+
+```bash
+#!/bin/bash
+
+# this script will print the 10 most common words found in a text file and their frequencies
+
+# this line specifies the text file
+ORIGIN=darwin1859.txt
+
+# this line extracts and prints the word list
+grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
+```
+
+Save it to `commonWords.sh`. Note that because we are passing this file to SLURM, not directly to bash, we *definitely* need the shebang at the top. 
+
+On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and its associated quality of service (or QOS). Not all SLURM clusters require a QOS to be specified, but Xanadu does.
+
+To submit the script to be run on the general partition you can do:
+
+```bash
+sbatch -p general --qos=general commonWords.sh
+```
+
+Our script writes to stdout. Where did the results go? By default, to a file named `slurm-JOBID.out`. In my case at the time of writing `slurm-7953521.out`. You can inspect this file and the results should be there. 
+
+This basic approach will request a minimal amount of memory and number of CPUs which will be too little for most real data analysis. We can request more with some options:
+
+```bash
+sbatch -p general --qos=general -c 12 --mem=10G commonWords.sh
+```
+
+Now we're asking for 12 CPUs with `-c` and 10 gigabytes of memory with `--mem=10G`. Far more than is needed for this tiny job. What happens if you request more memory than is available on general partition?
+
+```bash
+sbatch -p general --qos=general -c 12 --mem=1000G commonWords.sh
+```
+
+An error!
+
+```
+sbatch: earror: Memory specification can not be satisfied
+sbatch: error: Batch job submission failed: Requested node configuration is not available
+```
+
+This is relatively straightforward. But where does stderr go? Can we direct that to a file? Can we name the jobs so we can see them in the queue? Or rename these slurm-JOBID files so that they are a little easier to sort through when we run are running lots of jobs?
+
+The answer is yes, but you can imagine our command-line is going to start getting very long and cumbersome. To solve this, we typically specify SLURM options in a **header** at the top of our script. 
+
+Let's put one in our script:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=commonWords
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 10
+#SBATCH --mem=20G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-user=MY_EMAIL@uconn.edu
+#SBATCH --mail-type=ALL
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+hostname
+date
+
+# this script will print the 10 most common words found in a text file and their frequencies
+
+# this line specifies the text file
+ORIGIN=darwin1859.txt
+
+# this line extracts and prints the word list
+grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
+```
+
+Any command-line option we can pass to `sbatch` can also be placed in a header that immediately follows the shebang. Each header line begins with `#SBATCH` and a command-line flag follows. If we need to, we can override any of these header lines with new values on the command-line, without altering the script. 
+
+Here we name the job `commonWords`, request 10 cpus and 20G of memory. The mail options are optional, but if you provide an e-mail, then SLURM will let you know when your job starts and ends. The last two options specify the file name format for any output written to stdout or stderr. The format is `jobname_jobid{.out,.err}`
+
+We also specify a few other options that aren't necessary and that we rarely change: `-n 1`, saying that we want SLURM to launch 1 task, and `-N 1` saying that we want the resources for the task to be on a single node. These will suit all of our work in this course. 
+
+You may also notice we added two extra lines to the top of the script `hostname` and `date`. These will write out which compute node the job ran on, and the date it began to the stdout. This can be helpful information if you need to seek help when troubleshooting. Sometimes individual nodes on the cluster, rather than user errors, can the source of problems. 
+
+Update `commonWords.sh` with this header and run it again. Now you can simply enter:
+
+```bash
+sbatch commonWords.sh
+```
+
+Now, instead of seeing a single file `slurm-<JOBID>.out`, you should see a pair of files: `commonWords_<JOBID>.out` and `commonWords_<JOBID>.err`. The `.out` file should contain the output from our script, along with the results of `hostname` and `date`, and `.err` should be empty (unless there were any errors). 
+
+So, to sum up we request resources and submit work to be run on the cluster by SLURM. Putting SLURM options in the script header is extremely useful, as it keeps a record of *how* we ran our code, not just what code we ran. 
+
+#### Starting interactive sessions with `srun`. 
+
+It is sometimes the case that we want to do analysis on the cluster that is more intensive than what is permissible on the login nodes, but we are unable to write all the steps into a batch script. This might be an exploratory analysis, where we don't know what the steps are yet, or we might be putting together a complicated set of piped commands and we want to test that the pipe is doing what we expect before we run the entire job.
+
+For this we use an **interactive session**.  In an interactive session, we request resources on a compute node, and SLURM drops us into a bash session on that node, rather than a login node. On the compute node we no longer have to worry about gumming things up for everyone else. SLURM will not let us exceed our CPU request, and if we run a program that attempts to exceed the memory request, the session will simply be canceled. 
+
+We use the `srun` command for this. The syntax for requesting an interactive session is:
+
+```bash
+srun -p general --qos=general -c 2 --mem=10G --pty bash
+```
+
+Try it. To ensure that you have successfully started an interactive session, type `hostname` at the prompt. You should see the name of a compute node that can be found in `sinfo`, something like `xanadu-01`, rather than a login host name like `hpc-ext-1`. 
+
+You can exit back to the login node with `exit`
+
+### Monitor job progress
+
+There are several strategies for monitoring job progress. We will talk about them here, and practice them later when we start doing longer-running jobs. 
+
+1. Check `squeue` to see if your job is pending, currently running, or has completed (or failed) and no longer in the queue. 
+2. Monitor output files. Check the stdout and stderr log files captured by SLURM. Many programs write progress messages or errors to these files. Check the output files themselves as well. 
+3. Log in to the compute node and run `top` to see how/if your process is running. 
+
+#### `squeue` again
+
+When the cluster is busy and jobs are large enough that they wait in the queue for a while before resources are available, you can use squeue as we did above to see what their status is. If they are running, you'll also be able to see how long they've been running. Jobs that complete too quickly or too slowly are sometimes a sign that something isn't right (or that your expectations aren't right). 
+
+#### Monitor output files
+
+You can monitor the `.out` and `.err` files, and output or log files produced by your script or the program you're running. In all of these cases, the first thing you can do is simply use `ls -l` and look at the time stamps. Are any of these files being updated? 
+
+Depending on the program or the nature of your script, the `.err`, or `.out` files are going to be key files to check. These are updated in real time. If there are errors, warnings, or progress messages, they are likely to be in one of these two files. Some programs will write helpful, succinct messages, and some will write an endless alphabet soup that makes it hard to distinguish normal progress from problems. It will all depend on the program. 
+
+When it comes to program- or script-specific files, you'll have to understand a little about the output you're expecting. Some programs write no output until they're complete, others write out results nearly as fast as they read data in. In the latter case, be sure to check on these files at least once and ensure that they're growing as the program is running. 
+
+#### Log in to your compute node
+
+There are lots of cases where you might want to get a more direct look at how your job is going. SLURM doesn't have good tools for this. The solution here is to actually log directly in to the compute node and have a look. First, check which node your job is running on using `squeue`. Then you have two options to get into the node. 
+
+First, you can use `srun` and request the node with, e.g. `-w xanadu-01`:
+
+```bash
+srun -w xanadu-01 -p general --qos=general -c 1 --mem=500G --pty bash
+```
+
+Here we request minimal resources so that we are more likely to quickly get the session started.  
+
+Second, if the node is fully subscribed and you can't get an interactive session, you can still get in from the login node with:
+
+```bash
+ssh xanadu-01
+```
+
+If you go this route, you should not do **anything** else other than check on your job. If you couldn't get an interactive session on your node, then all CPU or all memory has been requested, and you are essentially oversubscribing the node by logging in this way. You should check on your job quickly and type `exit` to log out. 
+
+With either method, once you're on the compute node, you can use the program `top` to see running processes. You will see ALL running processes on the node in a constantly updating list, including user and system processes. To see your own processes type `u` and then your username followed by `enter`. To sort processes by memory usage, type `shift-m` and by processor usage `shift-p`. `%CPU` refers to the percentage of a single CPU, so if you requested 10 cpus, you may see up to %1000 CPU usage. `%MEM` refers to the percentage of the total memory on the node. The `S` column indicates whether your process is running (R) or sleeping (S). In an ideal world, whatever you're running would be using all the CPU and all the memory you requested. In reality this is rarely the case. Resource usage often fluctuates. If you see that your processes are often sleeping, that can be a sign they aren't running efficiently and that something may be wrong. If you see that processes you are running never seem to be using as much CPU or memory as you requested, it may be that you requested too much, or that you forgot to tell the actual program you're running how many CPUs to use, for example.
+
+Type `q` to quit `top`. 
+
+### Evaluate the work
+
+When the job is no longer in the queue, it has completed, failed, or been canceled. You first need to figure out which this is! The two main approaches are to use the slurm commands `seff` and/or `sacct`, and to look at the same output files you looked at when monitoring the job's progress. 
+
+#### `seff` and `sacct`
+
+`seff` is the simplest approach. Simply type `seff <JOBID>` at the command line. You will get a report like this from our `commonWords.sh` job:
+
+```
+Job ID: 7953646
+Cluster: xanadu
+User/Group: nreid/cbc
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 10
+CPU Utilized: 00:00:01
+CPU Efficiency: 10.00% of 00:00:10 core-walltime
+Job Wall-clock time: 00:00:01
+Memory Utilized: 1.56 MB
+Memory Efficiency: 0.01% of 20.00 GB
+```
+
+Some of this is self-explanatory at this point. `CPU Utilized` is the sum of the CPU-hours used by the job. `Wall-clock time` means the actual time span over which the job ran. `CPU Efficiency` is `CPU Utilized` / (`cores per node` * `wall-clock time`), so the average rate of CPU usage. `Memory Efficiency` is the **peak** memory usage divided by the memory requested. This job was very simple and used virtually none of the resources we requested. This is *not* what you generally want to see, but because our job only took 1 second, it's not that big of a deal. If every job on the cluster had efficiencies ranging from 1-10%, it would be a pretty big waste. 
+
+
+`sacct` is pretty large and complicated SLURM function that can extract all kinds of job information. We won't get into it too much here except to say this command can provide some detail on a job:
+
+```bash
+sacct -o jobid%-11,jobname%30,nodelist%15,user%12,group%15,partition,state,ReqMem,MaxRSS,ReqCPUS,elapsed,Timelimit,submit -j <JOBID>
+```
+
+For this job we get this output:
+
+```
+      JobID                        JobName        NodeList         User           Group  Partition      State     ReqMem     MaxRSS  ReqCPUS    Elapsed  Timelimit              Submit 
+----------- ------------------------------ --------------- ------------ --------------- ---------- ---------- ---------- ---------- -------- ---------- ---------- ------------------- 
+7953646                        commonWords       xanadu-25        nreid             cbc    general  COMPLETED       20Gn                  10   00:00:01 21-00:00:+ 2024-04-28T15:57:09 
+```
+
+#### Checking output files
+
+The approach is basically the same as above. Check your log files for errors, warnings and progress messages. Check the program outputs to see that they are what you expect. That last bit requires some understanding of what you're trying to do. 
+
+### What resources *should* I request?
+
+This is a perennially challenging problem. In much of bioinformatics, software developers do not, or perhaps cannot, give general advice about what resources their program will need. There are so many axes of variation for different datasets: experimental design, species, tissue, sample size and more. For a given algorithm, these may drastically impact resource needs, or not impact them at all. 
+
+When analyzing a new dataset, doing a new type of analysis, or using a new piece of software, we generally advise people to expect to have to experiment a bit. We will talk about resource requests for different pieces of software as we move through the course. 
+
+That said, we have some general guidelines:
+
+1. Check the software documentation. It's quite possible there is a critical variable that defines how much memory or CPU the program requires, or can utilize, and that the developer has actually explained it for you quite clearly. 
+2. When you run the job for the first time, check the CPU and memory efficiency. See if the job failed because it ran out of memory usually `oom-kill` is somewhere in the `.err` file. Request more memory if so. Request fewer resources if efficiency was low. 
+3. Remember that when requesting CPUs, you **almost always** have to tell the actual program you are running how many CPUs are available to it. If you tell SLURM you want 10 CPUs, you usually have to provide an option (sometimes `-p` or `-t` or `-c`) telling the program how many it can use. 
+4. Try to tune your resource requests to your actual analyses. If you just copy-paste the same SLURM header requesting 24 CPUs and 100G of memory for every job, sometimes it won't be enough, and most of the time it will be way too much. Either way wastes resources for everyone, and your time. Bigger jobs often sit longer in the queue. Rerunning failed jobs is a huge pain. 
+
+The UConn Computational Biology Core has a document you can reference about resource requests (much of which is covered here) [here](https://github.com/CBC-UCONN/CBC_Docs/wiki/Requesting-resource-allocations-in-SLURM). 
+
+
+## Exercises

@@ -1,0 +1,25 @@
+---
+title: "HPC and SLURM"
+editor: source
+---
+
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Edit files | 
+| Use environment variables  |
+| Write loops to efficiently do repetitive tasks    |
+| Edit files on Xanadu in `nano`    |
+| Connect Visual Studio Code to Xanadu to edit files    |
+| Connect your desktop to Xanadu's file system to access files |
+| Write and execute scripts |
+| Query SLURM to determine resource availability |
+| Submit work and a resource request to be managed by SLURM |
+| Monitor the progress of work on SLURM |
+| Evaluate the results of work submitted to SLURM |
+| Start an interactive session on a compute node | 
+
+**Resources:**

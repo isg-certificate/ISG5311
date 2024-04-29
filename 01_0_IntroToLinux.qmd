@@ -1,0 +1,29 @@
+---
+title: "Intro to Linux and Bash"
+editor: source
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Connect to a remote computer cluster |
+| Navigate the Linux file system using the BASH shell                                     |
+| Manipulate files and directories |
+| Modify file ownership and permissions |
+| Use multiple strategies to get help and problem solve |
+| Ask questions about the status of the system |
+| Move files between computers                                     |
+| Work with file compression |
+| Inspect files |
+| Use regular expressions with `sed` and `grep` |
+| Pipe inputs and outputs |
+
+**Resources:**
+
+- <https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html>
+- <https://tldp.org/LDP/abs/html/index.html>
+- <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645>
+- <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207>
+- <https://github.com/onceupon/Bash-Oneliner>
