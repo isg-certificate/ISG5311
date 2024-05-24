@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Noah Reid">
-<meta name="dcterms.date" content="2023-09-14">
 
-<title>ISG 5311 - Genomic Data Analysis in Practice</title>
+<title>ISG 5311 - Genomic Data Analysis in Practice - Measuring Gene Expression I</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,7 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./01_0_IntroToLinux.html" rel="next">
+<link href="./04_1_rnaseq_overview.html" rel="next">
+<link href="./03_3_QC.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -75,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -102,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -201,7 +200,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
+            <a href="./04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Measuring Gene Expression I</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -335,10 +334,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
-  <ul class="collapse">
-  <li><a href="#materials-necessary-for-the-course" id="toc-materials-necessary-for-the-course" class="nav-link" data-scroll-target="#materials-necessary-for-the-course">Materials necessary for the course</a></li>
-  </ul></li>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
   </ul>
 </nav>
     </div>
@@ -347,26 +343,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ISG 5311 - Genomic Data Analysis in Practice</h1>
+<h1 class="title">Measuring Gene Expression I</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Noah Reid </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">September 14, 2023</p>
-    </div>
-  </div>
   
     
   </div>
@@ -374,22 +358,35 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This course is focused on imparting practical knowledge of how to conduct bioinformatic analyses, with a focus on teaching users to interact with computers using a command-line interface. The initial parts of the course will introduce you to the Linux operating system, the BASH shell, and how to access and schedule work on a high performance computing cluster. We will move from there to understanding sequencing data and exploring ways to manipulate and summarize it. Finally, we will explore a very common workflow, differential expression with bulk RNA-seq, as a model for how to organize and conduct an analysis project. In the last stage we will also introduce the R statistical computing language, and use differential expression analysis as a vehicle for learning about data visualization.</p>
-<section id="materials-necessary-for-the-course" class="level2">
-<h2 class="anchored" data-anchor-id="materials-necessary-for-the-course">Materials necessary for the course</h2>
-<p>You will need a laptop or desktop computer running a Windows, MacOS or Linux operating system. Most machines produced in the last few years will be sufficient because heavy computation will be done on a powerful remote computer cluster.</p>
-<p>You’ll be working at your a computer a lot during this course, often simultaneously using multiple applications, so it will be helpful to have the right setup. Screen real estate is an important factor. If you’re working at a desktop, the bigger the display(s) the better. If you are using a laptop, we recommend a desk space with a second display, mouse and keyboard, if possible. Something like this:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/workstation.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">A useful, though maybe not aesthetically pleasing, work station</figcaption>
-</figure>
-</div>
+<section id="learning-objectives" class="level1">
+<h1>Learning Objectives</h1>
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>Organize a computational project</td>
+</tr>
+<tr class="odd">
+<td>Retrieve data from public databases</td>
+</tr>
+<tr class="even">
+<td>Perform initial QC</td>
+</tr>
+<tr class="odd">
+<td>Align data against a reference genome</td>
+</tr>
+<tr class="even">
+<td>Quantify gene expression using an existing gene annotation</td>
+</tr>
+</tbody>
+</table>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -628,10 +625,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./03_3_QC.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./01_0_IntroToLinux.html" class="pagination-link">
-        <span class="nav-page-text">Intro to Linux and Bash</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./04_1_rnaseq_overview.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

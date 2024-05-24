@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,7 +64,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./seqdata_1.html" rel="next">
+<link href="./03_0_sequencing_data.html" rel="next">
 <link href="./02_2_hpc_1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -171,7 +205,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a href="./03_0_sequencing_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sequencing Data</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -180,16 +214,28 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./seqdata_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
- <span class="menu-text">RNA-seq</span></a>
+            <a href="./04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression I</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -197,8 +243,117 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./rnaseq_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -213,8 +368,21 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#data-storage-and-access" id="toc-data-storage-and-access" class="nav-link active" data-scroll-target="#data-storage-and-access"><span class="header-section-number">6.1</span> Data storage and access</a></li>
-  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software"><span class="header-section-number">6.2</span> Software</a></li>
+  <li><a href="#data-storage-and-access" id="toc-data-storage-and-access" class="nav-link active" data-scroll-target="#data-storage-and-access"><span class="header-section-number">6.1</span> Data storage and access</a>
+  <ul class="collapse">
+  <li><a href="#types-of-storage-on-xanadu" id="toc-types-of-storage-on-xanadu" class="nav-link" data-scroll-target="#types-of-storage-on-xanadu"><span class="header-section-number">6.1.1</span> Types of storage on Xanadu</a></li>
+  <li><a href="#how-to-manage-your-data" id="toc-how-to-manage-your-data" class="nav-link" data-scroll-target="#how-to-manage-your-data"><span class="header-section-number">6.1.2</span> How to manage your data:</a></li>
+  </ul></li>
+  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software"><span class="header-section-number">6.2</span> Software</a>
+  <ul class="collapse">
+  <li><a href="#software-types" id="toc-software-types" class="nav-link" data-scroll-target="#software-types"><span class="header-section-number">6.2.1</span> Software types</a></li>
+  <li><a href="#running-software" id="toc-running-software" class="nav-link" data-scroll-target="#running-software"><span class="header-section-number">6.2.2</span> Running software</a></li>
+  <li><a href="#the-module-system" id="toc-the-module-system" class="nav-link" data-scroll-target="#the-module-system"><span class="header-section-number">6.2.3</span> The module system</a></li>
+  <li><a href="#compiling-software" id="toc-compiling-software" class="nav-link" data-scroll-target="#compiling-software"><span class="header-section-number">6.2.4</span> Compiling software</a></li>
+  <li><a href="#conda" id="toc-conda" class="nav-link" data-scroll-target="#conda"><span class="header-section-number">6.2.5</span> Conda</a></li>
+  <li><a href="#software-containers" id="toc-software-containers" class="nav-link" data-scroll-target="#software-containers"><span class="header-section-number">6.2.6</span> Software containers</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">6.3</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -247,27 +415,274 @@ ul.task-list li input[type="checkbox"] {
 <td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
-<td></td>
+<td>Distinguish types of data storage available on Xanadu</td>
 </tr>
 <tr class="odd">
-<td></td>
+<td>Compile simple software from source</td>
+</tr>
+<tr class="even">
+<td>Install software in an isolated environment using <code>conda</code></td>
+</tr>
+<tr class="odd">
+<td>Run software inside a Singularity container</td>
 </tr>
 </tbody>
 </table>
-<p>We have two more important topics to cover before we move on to actually starting to analyze some real data.</p>
+<p>We have two more important topics to cover before we move on to actually starting to analyze some real data. How we manage data storage and software on Xanadu.</p>
 <section id="data-storage-and-access" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="data-storage-and-access"><span class="header-section-number">6.1</span> Data storage and access</h2>
-<p>home</p>
-<p>scratch</p>
-<p>tmp</p>
-<p>/isg/shared</p>
+<p>This is a complicated topic, and it’s hard to generalize in a way that will apply across organizations, or between HPC and cloud platforms. In general with big ’omic data sets, data storage can grow expensive and unwieldy over time. At many (perhaps most?) organizations, data storage for multi-user systems is regularly in flux, as technologies, cost, and the preferences of users and system administrators evolve. Storage systems may come very close to full before funding and approval come through for expansion, or addition of a new system. Cost models may shift, necessitating changes in user behavior or system policies. These issues can crop up rapidly, even in well run organizations with good communication. Because of this it will pay dividends for users to keep their data organized-to know exactly what they have and where-so they can respond nimbly to requests by system administrators or principal investigators.</p>
+<p>What does keeping data organized mean? First we’ll talk about storage on Xanadu, then we’ll talk about organization. In this section, “data” will refer to both raw data and the products of analysis, which can both be quite large in many cases. The term “large” is quite vague, but here we’ll refer to data on the scale of 10s of gigabytes to 1-2 terabytes, the kind of data that would be likely to challenge a typical consumer-grade computer’s storage. This is the range that most typical ’omic experiments fall in. There are certainly cases where researchers wish to analyze data from tens or hundreds of experiments, or massive datasets produced by large consortia (e.g.&nbsp;containing genome sequencing data from hundreds of thousands of individuals), but that sort of analysis requires specialized strategies and won’t be covered in this course.</p>
+<section id="types-of-storage-on-xanadu" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="types-of-storage-on-xanadu"><span class="header-section-number">6.1.1</span> Types of storage on Xanadu</h3>
+<p>Storage space falls into four main categories on Xanadu:</p>
+<ol type="1">
+<li>Space allocated to specific users/groups.</li>
+<li>Shared temporary space.</li>
+<li>Shared storage of active raw data and other resources</li>
+<li>Archival space</li>
+</ol>
+<p>We’ll talk about each in turn.</p>
+<section id="usergroup-allocated-space" class="level4" data-number="6.1.1.1">
+<h4 data-number="6.1.1.1" class="anchored" data-anchor-id="usergroup-allocated-space"><span class="header-section-number">6.1.1.1</span> User/group-allocated space</h4>
+<p><code>/home/FCAM/&lt;username&gt;</code>: All new users on receive a home directory with 1-2TB of storage. This is located in <code>/home/FCAM/&lt;username&gt;</code> on file system <code>cfs09</code>. You can see this size of this file system and how much space remains by <code>df -h</code>. This storage can <strong>only</strong> be accessed by the user. On Xanadu, attempts to open home directory permissions to share files with other users are a security risk and will be met with a stern lecture from a system administrator.</p>
+<p><code>/labs</code>: Principal investigators or collaborative research groups can also be assigned a space on file system <code>cfs09</code> in the directory <code>/labs</code>. These directories typically start at 5-10TB and can be expanded if necessary. Each of these directories is assigned to a Linux user group and accessible to that group. Typically this will be members of the PI’s lab, or everyone in a collaborative research project.</p>
+<p><code>cfs09</code> is a network-attached file system. Anything on it will be accessible from any node on the cluster.</p>
+</section>
+<section id="shared-temporary-space" class="level4" data-number="6.1.1.2">
+<h4 data-number="6.1.1.2" class="anchored" data-anchor-id="shared-temporary-space"><span class="header-section-number">6.1.1.2</span> Shared temporary space</h4>
+<p>Many analyses have large short-term storage needs. Sometimes raw data are duplicated 3-4 times during successive processing steps (it’s best to avoid doing this where possible though!) but the duplicates can be quickly deleted when the analysis completes. In those cases it doesn’t make sense to permanently increase storage allocations to users to accommodate the temporary data. Instead we have shared spaces.</p>
+<p><code>/scratch</code>: This directory is on the NFS <code>cfs08</code> is the primary shared temporary storage location. Again, with <code>df -h</code> you can see how large it is and how much space is available. Any user can create any directory, or series of directories, and store anything they want there. You should definitely use <code>/scratch</code> for temporary data storage, but you should never keep anything there you can’t afford to lose. Files that haven’t been used for 90 days are subject to deletion. That may seem like a lot, but it’s really not. Whole chunks of a final project for this course could disappear within a semester if they were stored there.</p>
+<p><code>/tmp</code>: This is another shared temporary storage location. <code>/tmp</code> is a place lots of software is configured to try to write temporary files to by default. On Xanadu <code>/tmp</code> is <strong>local</strong> to nodes. This means whatever is stored there during an analysis is <strong>only</strong> available to that node. <code>/tmp</code> is also small on Xanadu and can fill up quickly. Software my quietly try to write there and fail with the error <code>No space left on device</code>. If you think this is the problem, you can often either tell the software to use a different directory with a command-line option, or set the environment variable <code>TMPDIR</code> and export it like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">TMPDIR</span><span class="op">=</span><span class="st">"/scratch/</span><span class="va">$USER</span><span class="st">"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$TMPDIR</span> <span class="co"># in case it doesn't already exist</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="other-shared-storage" class="level4" data-number="6.1.1.3">
+<h4 data-number="6.1.1.3" class="anchored" data-anchor-id="other-shared-storage"><span class="header-section-number">6.1.1.3</span> Other shared storage</h4>
+<p><code>/isg/shared</code>: This location is where we keep globally installed software packages and commonly used databases. Users have read access to all of it, but for the most part do not have write access. This is on <code>cfs09</code>.</p>
+<p><code>/seqdata</code>: This directory houses raw data only. Mainly that produced by UConn’s sequencing core. It’s on the NFS <code>cfs15</code>. Only core staff have write access.</p>
+</section>
+<section id="archival-space" class="level4" data-number="6.1.1.4">
+<h4 data-number="6.1.1.4" class="anchored" data-anchor-id="archival-space"><span class="header-section-number">6.1.1.4</span> Archival space</h4>
+<p><code>/archive</code>: This space is meant for cold storage of raw data and/or finished analyses. Users and groups can offload finished projects or raw data that is no longer needed for active analyses here to free up space for on-going work. It is not meant to be read from or written to with high frequency.</p>
+</section>
+</section>
+<section id="how-to-manage-your-data" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="how-to-manage-your-data"><span class="header-section-number">6.1.2</span> How to manage your data:</h3>
+<p>We will return to this again when we talk about project organization, but we have some general principles:</p>
+<ol type="1">
+<li>Keep your raw data separate from analysis outputs. Set the raw data permissions to read-only.</li>
+<li>Keep your home directory organized. Each project deserves its own directory. You might consider a single directory to house all raw datasets.</li>
+<li>Storage is limited. Be mindful to structure analyses to minimize the creation of large intermediate products (e.g.&nbsp;using pipes where possible), and delete them when they are no longer useful.</li>
+<li>Periodically assess how much storage you’re using (<code>du -sh *</code> in your home directory is a good start).</li>
+<li>If your home directory is filling up, consider directing intermediate analysis products to <code>/scratch</code>. Though be sure that code and final analysis results are not kept there.</li>
+<li>Keep data compressed where possible. Nearly all raw genomic data and many other types of genomic files can be read and written in gzip compressed format.</li>
+</ol>
+</section>
 </section>
 <section id="software" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="software"><span class="header-section-number">6.2</span> Software</h2>
-<p>compiling</p>
-<p>the module system</p>
-<p>conda</p>
-<p>containers</p>
+<p>Software is another complicated topic in bioinformatics. There is an ever-increasing variety of ’omic data types and experiments, and software for dealing with them proliferates at an even greater rate. This software is often developed by researchers or statisticians, rather than professional software developers. These folks often do software development as an ancillary part of their role (or on an entirely voluntary basis), and their capacity for polishing a program to perfection, or providing user-support may be limited. Because of this, norms of good software development are not always heeded. This can result in idiosyncratic software that can be difficult to install, confusing to run, and prone to cryptic error messages.</p>
+<p>Even in the best case scenario, however, where important software is written and maintained with the support of expert software engineers who are paid for their efforts, the ecosystem of scientific software is becoming incredibly complex, with new software being built in a modular way out of pre-existing pieces. This often leads to a complex web of dependencies that can be challenging to resolve.</p>
+<p>In this course we are aiming to teach you some fundamental ways for obtaining and using diverse pieces of software. The strategies we suggest will probably get you to a point where you can access 95-99% of what you need pretty smoothly. The reality, unfortunately, is that last 1-5% can be a hugely frustrating time vacuum, and you will need to get used to going through a process of trying to install something yourself, hitting a wall, and seeking help.</p>
+<p>Below, we’ll cover some types of software you might use, how to run them, and some strategies for software installation.</p>
+<section id="software-types" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="software-types"><span class="header-section-number">6.2.1</span> Software types</h3>
+<p>Broadly speaking, when doing analysis we work with two types of software: software with command-line interfaces (CLI), and software with graphical user interfaces (GUI).</p>
+<p>Almost all powerful computational analysis is built around software with a CLI. This is because you need to be able to script an analysis and hand it off to be processed by a job scheduler on an HPC or in the cloud. There are, however, cases where a GUI is extremely helpful. These are things like integrated development environments (RStudio, VSCode) or software for data exploration (Integrated Genomics Viewer, a.k.a. IGV, which we’ll cover later).</p>
+<p>If a piece of software has a GUI, it has usually been professionally developed. Installing it on your local machine will probably be pretty smooth. Getting it to run on the cluster, or access data stored on the cluster, however, is where things get sticky. We talked about this a bit earlier, when we covered connecting VS Code to Xanadu, and mounting the Xanadu file system locally, but we will cover this more later.</p>
+<p>CLI software ranges widely in quality and complexity, and managing it is what we’ll cover below.</p>
+</section>
+<section id="running-software" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="running-software"><span class="header-section-number">6.2.2</span> Running software</h3>
+<p>To review: we have been running CLI software all through this course so far (<code>grep</code>, <code>sed</code>, <code>awk</code>, etc). When we invoke these pieces of software by name, BASH searches directories in our <code>PATH</code> variable to see if they exist. Software does not <em>have</em> to be in your path to run it though, you can also simply invoke it by name (with a path pointing to it). For example, type this on the command-line:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/isg/shared/apps/samtools/1.16.1/bin/samtools</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This should print the usage for the program <code>samtools</code>. If you wanted to be able to just type <code>samtool</code> to execute the program, you could append the directory to your path like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">"</span><span class="va">$PATH</span><span class="st">"</span>:/isg/shared/apps/samtools/1.16.1/bin/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or if you didn’t want to add anything to your <code>PATH</code>, you could create a variable and invoke it that way:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">SAMTOOLS</span><span class="op">=</span>/isg/shared/apps/samtools/1.16.1/bin/samtools</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="va">$SAMTOOLS</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Running a piece of software with no options, or with <code>-h</code> or <code>--help</code> will in most cases print helpful information about how to run the software (the “usage”). Even when you’re familiar with software, it will probably be difficult to remember the exact flags you need, or how to invoke them for. Checking the usage can be much quicker than referring to the documentation.</p>
+</div>
+</div>
+</section>
+<section id="the-module-system" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="the-module-system"><span class="header-section-number">6.2.3</span> The module system</h3>
+<p><code>samtools</code> is installed for all users of Xanadu. If you have a look at the enveloping directory <code>/isg/shared/apps/</code>, you will see more than 700 software packages that have been installed on Xanadu. Within a given software directory, there are subdirectories named by after the software version number, so in reality there are many more than 700 packages. We keep older software versions around so that when users build up their analyses, they don’t get the rug pulled out from under them if a piece of software changes its option flags or default behaviors when it is updated (this happen regularly).</p>
+<p>While having software on your PATH is super convenient, you can imagine that adding each software/version directory (plus any subdirectories containing essential accessory utilities) to the PATH variable would be extremely cumbersome, not to mention that having <code>samtools/1.16.1/bin/samtools</code> and <code>/samtools/1.9/bin/samtools</code> means that simply invoking <code>samtools</code> is ambiguous.</p>
+<p>For this reason, we use a <code>module</code> system. The module system allows users to <strong>load</strong> specific software versions they want to use in an analysis. At its simplest, the module system simply adds the software to your PATH variable. If any other environment variables need to be configured, the module system will set those up too.</p>
+<p>Try loading <code>samtools</code> version 1.16.1 like this:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then type <code>samtools</code>. You should get the usage. Type <code>echo $PATH</code> and you should see that the path to the samtools executable file should eb added to your <code>PATH</code> variable.</p>
+<p>You can unload the module with</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> unload samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or to get rid of all modules:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> purge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To see what changes a module makes to your environment you can do:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> display samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or look directly at the module file:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /isg/shared/modulefiles/samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To see a more complex module, look at this old version of the transcriptome assembly software Trinity:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> display trinity/2.8.5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this module, many other software dependencies are also <code>module load</code>-ed.&nbsp;</p>
+<p>You can list all available modules with:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> avail</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can add any bit of text to narrow the search like this:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> avail sam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can load as many modules as you like simultaneously, but be aware that some may have conflicting dependencies or environmental variables, and this may cause problems.</p>
+<p>Note that while you <em>can</em> invoke modules without version numbers like this:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>you <em>should not</em>. This version of the module system sorts the module versions alphanumerically and loads the last one. In reality, version “1.16.1” is <em>higher</em> than “1.9”, but “1.9” will sort last and thus be loaded. If you do <code>ls -l /isg/shared/apps/samtools/</code> you’ll note that version 1.9 was installed in <em>2019</em>. This document is being written in <em>2024</em>. Also, if <code>samtools/1.91</code> ever was installed, any script loading samtools without a version number would suddenly and silently switch samtools versions. Lastly, if you use modules in your scripts, writing the version number will help you be explicit and keep track of which versions you want to run.</p>
+<p>For Xanadu, you can request that new software modules be globally installed by filling out a form <a href="bioinformatics.uconn.edu">here</a>.</p>
+</section>
+<section id="compiling-software" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="compiling-software"><span class="header-section-number">6.2.4</span> Compiling software</h3>
+<p>While you can request that software be installed for you on Xanadu (and other clusters as well), there may be a long queue, or you may not even be sure you’re going to use the software yet and so installing a module would be premature. In those cases you can try installing it yourself. For some programs, you may be able to download a <strong>binary</strong> executable file that will work on most or all Linux distributions. In such cases, you only have to do something like this (for the variant caller <a href="https://github.com/freebayes/freebayes/releases">freebayes</a>):</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://github.com/freebayes/freebayes/releases/download/v1.3.6/freebayes-1.3.6-linux-amd64-static.gz</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> freebayes-1.3.6-linux-amd64-static.gz</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> ugo+x freebayes-1.3.6-linux-amd64-static.gz</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./freebayes-1.3.6-linux-amd64-static</span> <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In many cases an executable will not distributed, but the developer will provide instructions for compiling the software from the source code, creating the executable. Compilation simply means to convert the human-readable code as written by the developer into machine-code. Programming languages requiring compilation are typically faster than those where the human-readable code is interpreted on the fly.</p>
+<p>Let’s look at the case of the demographic history estimation software <a href="https://github.com/lh3/psmc"><code>PSMC</code></a>. The software is on <code>github</code>, a site for hosting version-controlled software repositories (we’ll get into lots of detail on this next semester).</p>
+<p>We can get the source code, which is written in the language <code>C</code>, by <a href="https://github.com/lh3/psmc">visiting the github repository</a> clicking on the green <code>code</code> button and copying the URL, then on Xanadu:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/lh3/psmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then we have, per the readme, about the simplest instructions you can have:</p>
+<pre><code>To compile the binaries, you may run
+
+    make; (cd utils; make)</code></pre>
+<p>So we do:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> psmc</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> utils</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We may see some warnings, but if compilation was successful we should have an executable <code>psmc</code> in the base directory, and a few more in the <code>utils</code> directory. We can do <code>./psmc</code> to see the usage.</p>
+<p>So what did we do here? <code>make</code> is a piece of software for automating things, mostly used for compilation, but also sometimes in data analysis (the concept has been expanded into a python-based workflow language <code>snakemake</code>). The author of this software provided a file <code>Makefile</code>, containing instructions for the compilation of <code>psmc</code>. When we ran <code>make</code>, it automatically looked for <code>Makefile</code> and followed the instructions.</p>
+<p>Compiling software can get more complicated than this sometimes. If you look at <code>Makefile</code> you’ll see the variable <code>CC=gcc</code>. <code>gcc</code> is a compiler for <code>C</code>. The version installed on Xanadu is <em>very old</em>. Some software will require a more recent version (which you can <code>module load</code>). Other software will require different build tools (such as <code>CMake</code>). Many pieces of software will require dependencies to be installed already, and expect to find them in a specific place.</p>
+<p>The takeaway here is that if you look at a code repository and it contains some relatively straightforward instructions for compilation, it’s probably worth a shot. Even without any real understanding of computer science, you can often get things working with a minimum of frustration or tinkering.</p>
+</section>
+<section id="conda" class="level3" data-number="6.2.5">
+<h3 data-number="6.2.5" class="anchored" data-anchor-id="conda"><span class="header-section-number">6.2.5</span> Conda</h3>
+<p>Some pieces of software will not be so simple, however. They may require particular dependencies that are not already installed. These dependencies may conflict with other existing dependencies. Webs of dependencies can be incredibly complex, and require very specific software versions. In these cases, manual installation can become a demoralizing grind, and even when successful, these types of installations can be easily broken inadvertently by a software update.</p>
+<p>For cases like these, we use the very popular package manager <code>conda</code>. <code>conda</code> has a two main features. First, it manages the creation of mostly isolated software environments into which you can install one or more pieces of software and their dependencies. This prevents conflicts with existing software installed on the system. If we think back to the <code>trinity</code> module we inspected above, all those specific pieces of software required by that version of trinity could be installed inside the conda environment.</p>
+<p>The second main feature of conda is thatits dependency solving algorithm. There are multiple repositories, including <a href="https://anaconda.org/anaconda/repo">anaconda</a>, <a href="https://conda-forge.org">conda-forge</a>, and <a href="https://bioconda.github.io">bioconda</a> that house “recipes” for software installations. These recipes list required software versions. If you ask conda to install one of these recipes in an environment, it will figure out the web of dependencies that are required to make it work on your system, collect them, and install them. This works remarkably well in many cases.</p>
+<p><code>conda</code> manages packages at the user level, so each user creates their own conda packages (though these can be shared). Xanadu doesn’t have “global” conda environments as we do with modules.</p>
+<section id="installing-miniconda" class="level4" data-number="6.2.5.1">
+<h4 data-number="6.2.5.1" class="anchored" data-anchor-id="installing-miniconda"><span class="header-section-number">6.2.5.1</span> Installing miniconda</h4>
+<p>To use <code>conda</code>, we’re going to install a version of it called <code>miniconda</code> in your home directory. The instructions are <a href="https://docs.anaconda.com/free/miniconda/miniconda-install/">here</a>, but we’ll also reproduce them below:</p>
+<p>Download and run the installer.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> Miniconda3-latest-Linux-x86_64.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Follow the prompts and let it install in your home directory and automatically initialize conda in your shell.</p>
+<p>Then, to stop conda from opening a base environment automatically:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashrc</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> auto_activate_base false</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s also configure some of those repositories we discussed above:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--add</span> channels defaults</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--add</span> channels bioconda</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--add</span> channels conda-forge</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> channel_priority strict</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And finally, to install a faster dependency solver than the conda default:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-n</span> base conda-libmamba-solver</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> solver libmamba</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now exit your bash session / log out of Xanadu and log back in.</p>
+<p>Ok, so what have we done here? We’ve created a few files and directories. To see them type <code>ls -la</code>. Files beginning with <code>.</code> are hidden by default. The <code>-a</code> flag in <code>ls</code> shows them.</p>
+<pre><code>-rw-r--r--  1 usr domain users  577 May  1 15:25 .bashrc
+drwxr-xr-x  2 usr domain users  512 May  1 15:19 .conda
+-rw-r--r--  1 usr domain users   26 May  1 15:27 .condarc
+drwxr-xr-x 19 usr domain users  10K May  1 15:19 miniconda3</code></pre>
+<p>The directory <code>miniconda3</code> will contain all the environments we create. <code>.conda</code> and <code>.condarc</code> are a conda cache directory and a configuration file respectively. We don’t need to edit <code>.condarc</code> by hand, just using the command <code>conda config</code>. <code>.bashrc</code> is a bash configuration file. If you <code>cat</code> that out, you’ll see the conda initialization code This sets up some environment variables and puts <code>conda</code> in your <code>PATH</code> variable. Every time you log in <code>.bashrc</code> is <code>source</code>-ed by the shell. Any changes you wish to be made to your shell environment can be specified here. We’ll revisit the <code>.bashrc</code> file again in the future.</p>
+<p>When you submit scripts via SLURM, you start a non-interactive shell and <code>.bashrc</code> is not <code>source</code>-ed.&nbsp;For now, you will have to add <code>source ~/.bashrc</code> to any scripts you want to use a conda environment in.</p>
+</section>
+<section id="using-miniconda" class="level4" data-number="6.2.5.2">
+<h4 data-number="6.2.5.2" class="anchored" data-anchor-id="using-miniconda"><span class="header-section-number">6.2.5.2</span> Using miniconda</h4>
+<p>Ok, so we’ve installed it, now how do we actually use conda? Let’s install a newer version of <a href="https://anaconda.org/bioconda/samtools"><code>samtools</code></a> than the one we discussed above. If you check the link above in the Files tab you’ll get a sense of which versions are available. The syntax is pretty flexible, but let’s be as explicit as possible about the steps:</p>
+<p>First create a new environment:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> samtools-1.20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then activate the environment:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate samtools-1.20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should see your prompt change, indicating the environment is active. Then install samtools:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install samtools=1.20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can also create an environment and install software in one step:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> samtools-1.20 samtool=1.20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If the environment is active, you should be able to type <code>samtools</code> and get the usage. Type:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> samtools</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And you should get something like <code>~/miniconda3/envs/samtools-1.20/bin/samtools</code>. And in your <code>PATH</code> variable you should see something like <code>/home/FCAM/&lt;username&gt;/miniconda3/envs/samtools-1.20/bin</code>.</p>
+<p>You can deactivate the environment with:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And now your PATH variable should be returned to its previous state and <code>which samtools</code> should give you an error, or point to the module we loaded previously (if you are somehow still in the same session). If you activate a conda environment while another is already activated, it will first be deactivated.</p>
+<p>A few more basic conda commands:</p>
+<p>To list your environments (when you have a lot you won’t remember them all!):</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To remove one</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env remove <span class="at">-n</span> <span class="op">&lt;</span>NAME<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To create a <code>.yml</code> file defining the environment:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> export <span class="at">-n</span> samtools-1.20 <span class="op">&gt;</span>samtools_env.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you give that file to someone else, they can recreate your environment with:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env create <span class="at">-f</span> <span class="op">&gt;</span>samtools_env.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>For more, the <a href="https://conda.io/projects/conda/en/latest/user-guide/index.html">conda user guide</a> has very clear and accessible documentation.</p>
+</section>
+</section>
+<section id="software-containers" class="level3" data-number="6.2.6">
+<h3 data-number="6.2.6" class="anchored" data-anchor-id="software-containers"><span class="header-section-number">6.2.6</span> Software containers</h3>
+<p>For our last topic in this section, we’re going to introduce <strong>software containers</strong>. We have discussed strategies for installing and using software of increasing complexity (complexity not necessarily of the applications of the software, but of its structure). In extreme cases, package managers installing in isolated environments sometimes still can’t quite get you where you want to be. This may be because there are fundamental features of the operating system you’re working on that make installing software challenging, or perhaps those features cause slight inconsistencies in the outputs of software across systems, or maybe available conda recipes seem broken (this does happen sometimes). Package managers may also be a challenge when you are running a pipeline that requires dozens of pieces of software in particular versions to be installed. In these cases, you may want to try using a containerized approach.</p>
+<p>A software container is very nearly a <a href="https://en.wikipedia.org/wiki/Virtual_machine">virtual machine</a>. They differ from VMs in that they still use the core operating system kernel, instead of completely emulating it. This means they are “lightweight” and carry a much lower performance burden than VMs. Because they virtualize the operating system and user interface though, they provide a greater level of isolation and consistency among systems than an environment managed by conda.</p>
+<p>I’ve framed this in terms of easing the burden of software installation, but containers have the added advantage of improving reproducibility and portability of analyses. This development has been critical for the development and distribution of complex software pipelines like those in the <a href="https://nf-co.re">nf-core repository</a>. It is very nearly a requirement that those pipelines be run using container systems.</p>
+<p>In this section we’re going to discuss <em>using existing software containers</em>. In the next semester we will cover building them.</p>
+<p>There are two main pieces of containerization software: <a href="https://www.docker.com"><code>Docker</code></a> and <a href="https://docs.sylabs.io/guides/3.5/user-guide/introduction.html"><code>Singularity</code></a>. They both have generally similar features and performance. Docker, however, requires <strong>root access</strong> to run containers. Root access is access to the most basic functions of a computer system, and it cannot be granted to users on HPC systems, as it represents a massive security risk and an operational vulnerability (a well meaning but inexperienced user doing something wrong as the root user could take down the whole cluster). Because cloud services use virtualized machines, they can offer users root access, so Docker is popular in that context. Singularity, however, does not require that level of access to run a container, making it much more compatible with HPC systems. Fortunately, software containers built using Docker can be converted to Singularity (though not vice versa), so being limited to using Singularity on an HPC is not a huge burden.</p>
+<section id="obtaining-a-singularity-container" class="level4" data-number="6.2.6.1">
+<h4 data-number="6.2.6.1" class="anchored" data-anchor-id="obtaining-a-singularity-container"><span class="header-section-number">6.2.6.1</span> Obtaining a singularity container</h4>
+<p>Let’s explore what it practically means to use Singularity. Let’s start an interactive session (you should <em>not</em> use singularity on login nodes):</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 2 <span class="at">--mem</span><span class="op">=</span>20G <span class="at">--pty</span> bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And then load a singularity module:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load singularity/vcell-3.10.0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we’ll use the command <code>singularity pull</code> to retrieve a container for a very commonly used QC program for high throughput sequence data <code>fastqc</code>:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> pull https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If this was successful, you should see a new file <code>fastqc:0.12.1--hdfd78af_0</code> in your current working directory.</p>
+</section>
+<section id="using-a-singularity-container" class="level4" data-number="6.2.6.2">
+<h4 data-number="6.2.6.2" class="anchored" data-anchor-id="using-a-singularity-container"><span class="header-section-number">6.2.6.2</span> Using a singularity container</h4>
+<p>There are two main ways we can use the container.</p>
+<ol type="1">
+<li>We can start up a shell and use it interactively.</li>
+<li>We can pass singularity a command along with the container and it will execute it inside the container.</li>
+</ol>
+<p>A container is <em>almost</em> a self-contained computer. To be useful, however, it needs to access the local file system. On Xanadu, by default, some local system paths will be made available inside it. It will bind your home directory, <code>/labs</code>, and <code>/isg/shared</code> among others. However, local directories like <code>/usr/bin</code> which contain lots of commonly used programs, will be masked by the directory with the same name <em>inside</em> the container.</p>
+<p>To see how this works, let’s check a few things on the local system first. Type</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should get a <code>command not found</code> error.</p>
+<p>Type:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/os-release </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should see that Xanadu is running the <code>CentOS</code> Linux distribution.</p>
+<p>Lastly type:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> /usr/bin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should see a <em>very</em> long list of programs.</p>
+<p>Now let’s try our first method of using the container: starting up a shell (it will usually be BASH):</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> shell fastqc:0.12.1--hdfd78af_0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Your prompt should change to <code>Singularity&gt;</code>.</p>
+<p>Try each of the above commands again. You should see that <code>fastqc</code> is now in your PATH and prints its usage. You will also notice that the linux distribution inside the container is <code>Debian</code>, and that a different, much shorter list of programs is found in <code>/usr/bin</code>. If you type <code>which fastqc</code> you’ll see that’s where it’s been installed.</p>
+<p>If you <code>ls</code> your home directory, you’ll see that your home is available inside the container.</p>
+<p>Type <code>exit</code> to exit the container.</p>
+<p>The second way we can use the container is by passing a command with <code>singularity exec</code>. To keep it simple, we’ll do <code>fastqc --help</code>:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> exec fastqc:0.12.1--hdfd78af_0 fastqc <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It should print the usage. Keep in the back of your mind that things can get a little bit wonky when quoting and shell variables are necessary when passing a command to a container.</p>
+</section>
+</section>
+</section>
+<section id="exercises" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">6.3</span> Exercises</h2>
+<p>Exercises for this section consist of practicing each of these skills. We’re going to ask you to compile software, install it using conda, and pull a singularity container, and to write a slurm script to print the usage for each of the programs we direct you to.</p>
 
 
 </section>
@@ -513,8 +928,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./seqdata_1.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Untitled</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./03_0_sequencing_data.html" class="pagination-link">
+        <span class="nav-page-text">Sequencing Data</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

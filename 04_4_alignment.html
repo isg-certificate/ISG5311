@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ISG 5311 - Genomic Data Analysis in Practice - 13&nbsp; Reference Alignment</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04_5_quantification.html" rel="next">
+<link href="./04_3_retrieving_data.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li><li class="breadcrumb-item"><a href="./04_4_alignment.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">ISG 5311 - Genomic Data Analysis in Practice</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./01_0_IntroToLinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Linux and Bash</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_1_setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Connected</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_2_gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with Linux</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_3_morelinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./02_0_HPCandSLURM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HPC and SLURM</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_1_scripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Scripts and putting it all together</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_2_hpc_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">SLURM: the job scheduler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_3_software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./03_0_sequencing_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequencing Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#indexing-the-reference-genome" id="toc-indexing-the-reference-genome" class="nav-link active" data-scroll-target="#indexing-the-reference-genome"><span class="header-section-number">13.1</span> Indexing the reference genome</a></li>
+  <li><a href="#aligning-to-the-reference" id="toc-aligning-to-the-reference" class="nav-link" data-scroll-target="#aligning-to-the-reference"><span class="header-section-number">13.2</span> Aligning to the reference</a></li>
+  <li><a href="#sambam-format" id="toc-sambam-format" class="nav-link" data-scroll-target="#sambam-format"><span class="header-section-number">13.3</span> SAM/BAM format</a>
+  <ul class="collapse">
+  <li><a href="#the-header" id="toc-the-header" class="nav-link" data-scroll-target="#the-header"><span class="header-section-number">13.3.1</span> The header</a></li>
+  <li><a href="#the-alignments" id="toc-the-alignments" class="nav-link" data-scroll-target="#the-alignments"><span class="header-section-number">13.3.2</span> The alignments</a></li>
+  <li><a href="#manipulating-alignments" id="toc-manipulating-alignments" class="nav-link" data-scroll-target="#manipulating-alignments"><span class="header-section-number">13.3.3</span> Manipulating alignments</a></li>
+  <li><a href="#visualizing-alignments" id="toc-visualizing-alignments" class="nav-link" data-scroll-target="#visualizing-alignments"><span class="header-section-number">13.3.4</span> Visualizing alignments</a></li>
+  </ul></li>
+  <li><a href="#alignment-qc" id="toc-alignment-qc" class="nav-link" data-scroll-target="#alignment-qc"><span class="header-section-number">13.4</span> Alignment QC</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>blah blah</td>
+</tr>
+</tbody>
+</table>
+<p>Now that we’ve got our genome, our annotation, and we’ve downloaded our sequence data and QC’ed it, we’re ready to begin the process of quantifying gene expression. Remember that the measurement we are making is <strong>a count of fragments of RNA derived from a given gene</strong>. In this chapter we will quantify gene expression by mapping our RNA fragments against a reference genome. We’ll use the annotation of the reference genome to determine which fragments originated from which genes. We’ll cover each of the steps needed for this analysis, and talk about the relevant file formats in depth.</p>
+<section id="indexing-the-reference-genome" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="indexing-the-reference-genome"><span class="header-section-number">13.1</span> Indexing the reference genome</h2>
+<p>The process of alignment to a reference genome requires identifying possible mapping locations for each read pair, scoring them, and then choosing the one with the best score (or possibly randomly selecting from among ties).</p>
+<p>It goes without saying that even small genomes are pretty large (at least among eurkaryotes), so the process of finding initial candidate matches would be quite time-consuming if you had to check every location in the genome for every read. To get around this, all commonly used reference alignment software creates an <strong>index</strong>. Indexes function much like they do in large texts: interesting topics (in this case short genomic subsequences) and their page numbers (genomic locations) are stored. When you want to find locations of interest, you find them quickly through the index, rather than scanning through the entire text.</p>
+<p>Variations on the genome index and the way it is searched have been a main target for innovation among different read aligners, so each one will require you to create a particular index.</p>
+<p>When aligning RNA-seq data to a reference genome, we have a particular challenge: most (but typically not all) reads have been derived from mature mRNAs with introns spliced out. That means the aligner needs to be able to identify when reads (or read pairs) span splice junctions and accurately align across them. When aligning RNA-seq data, we typically use <strong>spliced aligners</strong> designed to deal with this issue.</p>
+<p>Here we are going to use <a href="http://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a>. Creating an index with hisat2 is pretty simple. We’ll use script <code>scripts/03_align/01_index.sh</code>. It looks like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=hisat2_index</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 16</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=10G</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Index the Genome</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># load software</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># input/output directories</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../genome/hisat2_index</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$OUTDIR</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">hisat2-build</span> <span class="at">-p</span> 16 <span class="va">$GENOME</span> <span class="va">$OUTDIR</span>/Fhet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We should be getting pretty familiar with the general organization of our scripts now, so go ahead and run this with <code>sbatch 01_index.sh</code>. When it completes, it should have created an index, which is actually a series of files, with the path/prefix <code>$OUTDIR/Fhet</code>. When aligning reads, you’ll specify that path/prefix, not the reference genome itself. We don’t need to be concerned with what’s in these index files, as we will never need to parse or modify them.</p>
+</section>
+<section id="aligning-to-the-reference" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="aligning-to-the-reference"><span class="header-section-number">13.2</span> Aligning to the reference</h2>
+<p>Now we have our index ready to go, we’re ready to align reads to the reference genome (again using <code>HISAT2</code>). Producing a usable alignment file requires a few steps:</p>
+<ol type="1">
+<li>Alignment. Read pairs are passed to the aligner, and alignments information produced. Reads come out in the order they went in, but as a single file this time (more on the format below).</li>
+<li>Position-sorting. For the alignment file to be useful, reads need to be sorted by their mapping position in the genome. This allows us to index the file and quickly access all the reads from a given genomic region.</li>
+<li>Compressing. Alignment records contain all the same information as a fastq file PLUS the alignment information, so we want to keep these files compressed (more on the format below, we don’t use gzip for this one).</li>
+<li>Indexing. Just like with the genome, we index the alignment files for rapid access to data from particular genomic regions.</li>
+</ol>
+<p>You can do steps 1-3 one by one, producing intermediate alignment files each time, but this will cause your data to balloon and require you to clean up intermediate files. We’re going to take care of it in a pipe.</p>
+<p>Our script is another array script: <code>scripts/03_align/02_align.sh</code>. It looks like this:</p>
+<div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="annotated-cell-2-2"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=align</span></span>
+<span id="annotated-cell-2-3"><a href="#annotated-cell-2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="annotated-cell-2-4"><a href="#annotated-cell-2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-2-5" class="code-annotation-target"><a href="#annotated-cell-2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 3</span></span>
+<span id="annotated-cell-2-6"><a href="#annotated-cell-2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
+<span id="annotated-cell-2-7"><a href="#annotated-cell-2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=xeon</span></span>
+<span id="annotated-cell-2-8"><a href="#annotated-cell-2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="annotated-cell-2-9"><a href="#annotated-cell-2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="annotated-cell-2-10"><a href="#annotated-cell-2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="annotated-cell-2-11"><a href="#annotated-cell-2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%A_%a.out</span></span>
+<span id="annotated-cell-2-12"><a href="#annotated-cell-2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%A_%a.err</span></span>
+<span id="annotated-cell-2-13"><a href="#annotated-cell-2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --array=[1-20]%10</span></span>
+<span id="annotated-cell-2-14"><a href="#annotated-cell-2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-15"><a href="#annotated-cell-2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="annotated-cell-2-16"><a href="#annotated-cell-2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="annotated-cell-2-17"><a href="#annotated-cell-2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-18"><a href="#annotated-cell-2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="annotated-cell-2-19"><a href="#annotated-cell-2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Align reads to genome</span></span>
+<span id="annotated-cell-2-20"><a href="#annotated-cell-2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="annotated-cell-2-21"><a href="#annotated-cell-2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1</span>
+<span id="annotated-cell-2-22"><a href="#annotated-cell-2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span>
+<span id="annotated-cell-2-23"><a href="#annotated-cell-2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-24"><a href="#annotated-cell-2-24" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/02_qc/trimmed_fastq</span>
+<span id="annotated-cell-2-25"><a href="#annotated-cell-2-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
+<span id="annotated-cell-2-26"><a href="#annotated-cell-2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${OUTDIR}</span></span>
+<span id="annotated-cell-2-27"><a href="#annotated-cell-2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-28"><a href="#annotated-cell-2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># this is an array job. </span></span>
+<span id="annotated-cell-2-29"><a href="#annotated-cell-2-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># one task will be spawned for each sample</span></span>
+<span id="annotated-cell-2-30"><a href="#annotated-cell-2-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for each task, we specify the sample as below</span></span>
+<span id="annotated-cell-2-31"><a href="#annotated-cell-2-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># use the task ID to pull a single line, containing a single accession number from the accession list</span></span>
+<span id="annotated-cell-2-32"><a href="#annotated-cell-2-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># then construct the file names in the call to hisat2 as below</span></span>
+<span id="annotated-cell-2-33"><a href="#annotated-cell-2-33" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-34" class="code-annotation-target"><a href="#annotated-cell-2-34" aria-hidden="true" tabindex="-1"></a><span class="va">INDEX</span><span class="op">=</span>../../genome/hisat2_index/Fhet</span>
+<span id="annotated-cell-2-35"><a href="#annotated-cell-2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-36"><a href="#annotated-cell-2-36" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="annotated-cell-2-37"><a href="#annotated-cell-2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-38"><a href="#annotated-cell-2-38" aria-hidden="true" tabindex="-1"></a><span class="va">SAMPLE</span><span class="op">=</span><span class="va">$(</span><span class="fu">sed</span> <span class="at">-n</span> <span class="va">${SLURM_ARRAY_TASK_ID}</span>p <span class="va">${ACCLIST})</span></span>
+<span id="annotated-cell-2-39"><a href="#annotated-cell-2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-40"><a href="#annotated-cell-2-40" aria-hidden="true" tabindex="-1"></a><span class="co"># run hisat2</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-2-41" class="code-annotation-target"><a href="#annotated-cell-2-41" aria-hidden="true" tabindex="-1"></a><span class="ex">hisat2</span> <span class="dt">\</span></span>
+<span id="annotated-cell-2-42"><a href="#annotated-cell-2-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">-p</span> 4 <span class="dt">\</span></span>
+<span id="annotated-cell-2-43"><a href="#annotated-cell-2-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">-x</span> <span class="va">${INDEX}</span> <span class="dt">\</span></span>
+<span id="annotated-cell-2-44"><a href="#annotated-cell-2-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">-1</span> <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_trim_1.fastq.gz <span class="dt">\</span></span>
+<span id="annotated-cell-2-45"><a href="#annotated-cell-2-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">-2</span> <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_trim_2.fastq.gz <span class="kw">|</span> <span class="dt">\</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-2-46" class="code-annotation-target"><a href="#annotated-cell-2-46" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> sort <span class="at">-@</span> 1 <span class="at">-T</span> <span class="va">${OUTDIR}</span>/<span class="va">${SAMPLE}</span> <span class="at">-</span> <span class="op">&gt;</span><span class="va">${OUTDIR}</span>/<span class="va">${SAMPLE}</span>.bam</span>
+<span id="annotated-cell-2-47"><a href="#annotated-cell-2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-48"><a href="#annotated-cell-2-48" aria-hidden="true" tabindex="-1"></a><span class="co"># index bam files</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-2-49" class="code-annotation-target"><a href="#annotated-cell-2-49" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> index <span class="va">${OUTDIR}</span>/<span class="va">${SAMPLE}</span>.bam</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-annotation="1" data-code-cell="annotated-cell-2" data-code-lines="5,6">The amount of memory required for aligners depends on the size of the genome being analyzed. The <em>F. heteroclitus</em> genome is about 1GB, and our index takes about 1.5G of disk space. We requested 15G of memory above, but probably could have gotten by with more like 5G. We request 3 cpus (2 for the aligner and 1 for the sorter). The aligner could probably go faster with a few more, but this doesn’t take too long as it is.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-annotation="2" data-code-cell="annotated-cell-2" data-code-lines="34">Note that we provide only the path and prefix to our index files.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-annotation="3" data-code-cell="annotated-cell-2" data-code-lines="41">Our alignment command, broken up across a few lines with <code>\</code>. It’s fairly straightforward. It writes to the standard out. We capture it with a pipe and send it to be sorted and compressed.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-annotation="4" data-code-cell="annotated-cell-2" data-code-lines="46">Here we are using <code>samtools sort</code> to sort the file. <code>-@ 1</code> means use a single CPU. <code>-T ${OUTDIR}/${SAMPLE}</code> is specifying the location and prefix of any temporary files (sorting can create many, many temporary alignment files and then merge them). <code>-</code> tells samtools to read from the standard input (the pipe). And finally we write to a file with the suffix <code>.bam</code>, which is the compressed alignment format, written by default.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-annotation="5" data-code-cell="annotated-cell-2" data-code-lines="49">For the last step, we create the index file with <code>samtools index</code>. This will produce a file with the suffix <code>.bam.bai</code> in the same directory as the bam.</span>
+</dd>
+</dl>
+<p>Submit this script with <code>sbatch 02_align.sh</code> and monitor it. Ensure that all alignments complete successfully, and that you wind up with 20 <code>.bam</code> files and 20 <code>.bam.bai</code> files in the output directory. Check the <code>.err</code> file. hisat2 produces a helpful (but annoying to parse) summary of the alignment rate. Not all aligners do this. An example:</p>
+<pre><code>13732517 reads; of these:
+  13732517 (100.00%) were paired; of these:
+    4263933 (31.05%) aligned concordantly 0 times
+    9249450 (67.35%) aligned concordantly exactly 1 time
+    219134 (1.60%) aligned concordantly &gt;1 times
+    ----
+    4263933 pairs aligned concordantly 0 times; of these:
+      445817 (10.46%) aligned discordantly 1 time
+    ----
+    3818116 pairs aligned 0 times concordantly or discordantly; of these:
+      7636232 mates make up the pairs; of these:
+        4634197 (60.69%) aligned 0 times
+        2823388 (36.97%) aligned exactly 1 time
+        178647 (2.34%) aligned &gt;1 times
+83.13% overall alignment rate</code></pre>
+<p>Ideally, reads will map exactly one time. When reads map zero times, there isn’t a good match in the reference genome. If they map more than once, a very similar sequence occurs multiple times in the reference.</p>
+<p>Concordant alignment means the pairs of sequences have an orientation and distance between them consistent with expectations. The expected orientation is for pairs to be on opposite strands, (they were generated from opposite ends of a single fragment of DNA) and “inward” facing. The expected distance is often calculated from the library itself (the fragment size distribution is library specific), but generally read pairs ought not be mapped to separate contigs or chromosomes. When any of these expectations are violated, pairs are marked as discordantly mapping.</p>
+<p>Ideally we would see a concordant alignment rate higher than 67%, but this genome is an older assembly. It is highly fragmented and probably missing some sequences. That would contribute to cases where reads map discordantly (across contigs, particularly) or one or both reads in a pair fails to map. An overall alignment rate of 83% is not stellar, but not terrible either. For a good library on a highly contiguous and complete genome the overall mapping percentage could be expected to be in the high 80s to 90s.</p>
+</section>
+<section id="sambam-format" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="sambam-format"><span class="header-section-number">13.3</span> SAM/BAM format</h2>
+<p>Now we have our alignments in <code>.bam</code> files. <code>BAM</code> stands for <strong>binary alignment/map</strong> It is (barring some minor differences) the compressed, binary version of <code>SAM</code>, or <strong>sequence alignment/map</strong> format. Even though we always store our files in BAM, we are going to cover <code>SAM</code> format here in some detail, as it is the plain-text, human-readable format, and as you will see, it is trivial to convert between them as necessary.</p>
+<p>You can find the official specification with lots of detail and definitions <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">here</a>. We’re going to go over the basics here. As with many formats in bioinformatics,</p>
+<section id="the-header" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="the-header"><span class="header-section-number">13.3.1</span> The header</h3>
+<p><code>SAM</code> files begin with a <strong>header</strong>. All header lines start with <code>@</code> and a tag indicating the contents. The first line gives the SAM version and the sort order, e.g.:</p>
+<pre><code>@HD VN:1.0  SO:coordinate</code></pre>
+<p>Next comes a sequence dictionary (<code>@SQ</code>), which lists the names and lengths of sequences in the reference genome:</p>
+<pre><code>@SQ SN:KN805525.1   LN:6356336
+@SQ SN:KN805526.1   LN:6250690
+@SQ SN:KN811289.1   LN:6115441
+...</code></pre>
+<p>There may be some others for some types of alignment, but the last lines in our files contain program calls (<code>@PG</code>) used to produce the file:</p>
+<pre><code>@PG ID:hisat2   PN:hisat2   VN:2.2.1    CL:"/isg/shared/apps/hisat2/2.2.1/hisat2-align-s --wrapper basic-0 -p 2 -x ../../genome/hisat2_index/Fhet --read-lengths 101,100,98,99,97,96,95,86,93,92,91,59,87,63,55,90,75,68,85,83,78,77,76,74,73,70,65,94,89,88,82,81,67,66,52,45,79,64,50,80,72,71,69,54,51,84,61,56,53,48,47,60,57,46,62,58,49 -1 /tmp/1614887.inpipe1 -2 /tmp/1614887.inpipe2"
+@PG ID:samtools.1   PN:samtools PP:samtools VN:1.16.1   CL:samtools sort -@ 1 -T ../../results/03_align/alignments/SRR12475447 -</code></pre>
+<p>Note that the hisat2 call is different from our actual command line. The <code>hisat2</code> program we used is a wrapper script that called a separate program to do the alignments.</p>
+</section>
+<section id="the-alignments" class="level3" data-number="13.3.2">
+<h3 data-number="13.3.2" class="anchored" data-anchor-id="the-alignments"><span class="header-section-number">13.3.2</span> The alignments</h3>
+<p>After the header comes alignment data in tabular format. The tabular data has 11 mandatory columns, though many aligners add more custom columns after. The mandatory columns are:</p>
+<table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column Number</th>
+<th>Column Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>QNAME</td>
+<td>Query template name. Unique identifier for each read or read pair.</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>FLAG</td>
+<td>Bitwise FLAG. Describes properties of the read, such as paired, mapped, etc.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>RNAME</td>
+<td>Reference sequence name.</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>POS</td>
+<td>1-based leftmost mapping position.</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>MAPQ</td>
+<td>Mapping quality. A Phred-scaled quality score.</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>CIGAR</td>
+<td>CIGAR string. Base-level alignment of the read to the reference.</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>RNEXT</td>
+<td>Reference sequence the mate is mapped to.</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>PNEXT</td>
+<td>Position of the mate/next read. 1-based, leftmost.</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>TLEN</td>
+<td>Template length. Length of fragment inferred from mapped read pair</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>SEQ</td>
+<td>Nucleotide sequence.</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>QUAL</td>
+<td>Base qualities. ASCII-encoded base quality scores for the read sequence.</td>
+</tr>
+</tbody>
+</table>
+<p>A few example alignments:</p>
+<pre><code>SRR12475447.2760    163 KN805525.1  223713  60  13M2350N88M =   226185  223 GCTCAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAACGTTCTCTAGCGTGAACTTCTCCGCTCTCCTCTGTCTCTCCTGAAACATGCGAGAGCCTCGA   BBBFFFFFFFFFFIIIIIIIIIIIIIIIFIIIFIIIIIIIIIIIIIIIIIFIIIIIIIIIIIIFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFB   AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0  MD:Z:101    YS:i:-11    YT:Z:CP XS:A:-  NH:i:1
+SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC   700B&lt;7B&lt;7BB&lt;FFFBBBF7700B'FB7F&lt;0007B'7&lt;&lt;&lt;FFFBBBB&lt;B&lt;&lt;0B   AS:i:-2 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:35A17  YS:i:-7 YT:Z:CP XS:A:-  NH:i:1
+SRR12475447.2726    83  KN805525.1  223729  60  101M    =   223510  -335    GGAAACACACTGATTATGGTCCCTGTGCATTTTATCCAACCCTCAAATGACAACGCACGGACAGTTTTATGCTTTAGCTGTAACAGTGATACTAGTCTTCC   BBBBBBBBFBBBBBFFFFBBBBFFFBFFFFFFFFFBBB&lt;IIIFIIIIFFFFFFIIIFFBIFFIIIIIFFFFIIIIIIIIIIFIIIIIIFFFFFFFFFFBBB   AS:i:-5 ZS:i:-7 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:94T6   YS:i:-15    YT:Z:CP NH:i:1
+SRR12475447.2727    83  KN805525.1  223743  60  101M    =   223469  -375    TATGGTCCCTGTGCATTTTATCCAACCCTCAAATGACAACGCACGGACAGTTTTATGCTTTAGCTGTAACAGTGATACTAGTCTTCCCCTGACGACAGCTG   &lt;070BBB0BB&lt;&lt;77&lt;&lt;B&lt;BB&lt;77&lt;0&lt;BFFFBBB&lt;&lt;&lt;FB&lt;BBFBB&lt;BIFFFFBFFFF&lt;BBBBFBBFIIFBFIFB&lt;FFBFF&lt;BBFFBBFBBBFFFFFFFB&lt;&lt;B   AS:i:-5 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:80T20  YS:i:-15    YT:Z:CP NH:i:1</code></pre>
+<p>Some of the columns are straightforward, but others bear some explanation.</p>
+<p><code>FLAG</code> contains a fair bit of information encoded in a single integer. We have four different values of FLAG in the above example: 164,147 and 83 (x2). The easiest way to understand what these flags mean is to visit <a href="https://broadinstitute.github.io/picard/explain-flags.html">Decoding SAM flags</a>. If you go there and enter <code>147</code>, you’ll see boxes checked for “read paired”, “read mapped in proper pair”, “read reverse strand”, and “second in pair”. This indicates this read is R2, mapped in a proper pair and on the reverse strand. You can infer that its mate will be on the forward strand. <code>163</code> only differs in that the <em>mate</em> is on the reverse strand. <code>83</code> indicates the read is properly paired, on the reverse strand and <em>first</em> in the pair. You can filter on these flags, or any combination of them, as we will see below.</p>
+<p><code>MAPQ</code> contains a Phred-scaled probability that the read mapping is in error. This is a function of whether or not there are other locations in the genome with competitive alignment scores. If there are multiple equally plausible mapping locations, this number will be 0. The lowest probability of error hisat2 will assign is 60 (or 10<sup>-6</sup>). Unmapped reads will have <code>*</code>.</p>
+<p><code>CIGAR</code> gives the base-level alignment of the read to the reference. It’s formatted as <number><letter>, where “number” is a number of bases and “letter” is indicates if the bases are aligned 1-1 to the reference, or something else is going on (an insertion, deletion, splice, or unaligned bases). The specification gives all the details, but in our examples <code>101M</code> indicates 101 bases of this read are aligned to the genome. They don’t have to have identical nucleotides, just be aligned one-to-one. <code>10M2350N43M</code> indicates 10 bases are aligned (<code>10M</code>), followed by a 2,350 “skipped bases” (<code>2350N</code>) then 43 more mapped bases (<code>43M</code>). The skipped bases are how hisat2 indicates a splice junction.</letter></number></p>
+<p><code>TLEN</code> gives the template length implied by genomic span of the mapped reads (the spec says “observed template length”, but I don’t like this term because it does not incorporate insertions/deletions, some of which may occur in the gap between reads when they don’t overlap). This number is positive for the left-most mapping fragment and negative for the rightmost mapping fragment.</p>
+<p>Files that are taken straight from the aligner, or deliberately sorted by query name will have mate pairs on adjacent lines. This is not true of coordinate-sorted reads, for which mates may be quite some distance away in the file.</p>
+<p>A pair of reads will look like this:</p>
+<pre><code>SRR12475447.2735    99  KN805525.1  221834  60  101M    =   223716  1935    GGGTCATCTTTGTAAGGAGAGAGCCTCTCATAAAGTCTCTCTCATAGCTCATTAGATTCAGGACTGTAGCCGAGTCCCCATCCTCTTGGTGCTCTGTTGAA   &lt;BBFFFFFFFFF&lt;BBBFF&lt;BB&lt;BFFFFBFFF'&lt;&lt;BFFFFBBFFFFBFFFIIIIBF&lt;B&lt;BBBFB7&lt;BBB&lt;FFFBFB&lt;&lt;BBB&lt;BBBBB'7&lt;&lt;B&lt;BBBBBBBBB   AS:i:-7 XN:i:0  XM:i:2  XO:i:0  XG:i:0  NM:i:2  MD:Z:69T16C14   YS:i:-2 YT:Z:CP NH:i:1
+SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC   700B&lt;7B&lt;7BB&lt;FFFBBBF7700B'FB7F&lt;0007B'7&lt;&lt;&lt;FFFBBBB&lt;B&lt;&lt;0B   AS:i:-2 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:35A17  YS:i:-7 YT:Z:CP XS:A:-  NH:i:1</code></pre>
+<p>Note the opposite-signed and very long TLEN. Presumably the length is due to the gap between the reads spanning an exon (in addition to the splice in one of the reads). Most sequenced fragments from Illumina will actually be between 200-600bp.</p>
+</section>
+<section id="manipulating-alignments" class="level3" data-number="13.3.3">
+<h3 data-number="13.3.3" class="anchored" data-anchor-id="manipulating-alignments"><span class="header-section-number">13.3.3</span> Manipulating alignments</h3>
+</section>
+<section id="visualizing-alignments" class="level3" data-number="13.3.4">
+<h3 data-number="13.3.4" class="anchored" data-anchor-id="visualizing-alignments"><span class="header-section-number">13.3.4</span> Visualizing alignments</h3>
+<p>check contig names and number!</p>
+</section>
+</section>
+<section id="alignment-qc" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="alignment-qc"><span class="header-section-number">13.4</span> Alignment QC</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./04_3_retrieving_data.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./04_5_quantification.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

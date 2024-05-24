@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ISG 5311 - Genomic Data Analysis in Practice - 12&nbsp; Retrieving data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04_4_alignment.html" rel="next">
+<link href="./04_2_project_organization.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li><li class="breadcrumb-item"><a href="./04_3_retrieving_data.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">ISG 5311 - Genomic Data Analysis in Practice</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./01_0_IntroToLinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Linux and Bash</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_1_setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Connected</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_2_gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with Linux</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_3_morelinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./02_0_HPCandSLURM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HPC and SLURM</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_1_scripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Scripts and putting it all together</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_2_hpc_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">SLURM: the job scheduler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_3_software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./03_0_sequencing_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequencing Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis II</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#getting-set-up" id="toc-getting-set-up" class="nav-link active" data-scroll-target="#getting-set-up"><span class="header-section-number">12.1</span> Getting set up</a>
+  <ul class="collapse">
+  <li><a href="#getting-the-scripts" id="toc-getting-the-scripts" class="nav-link" data-scroll-target="#getting-the-scripts"><span class="header-section-number">12.1.1</span> Getting the scripts</a></li>
+  </ul></li>
+  <li><a href="#downloading-data-from-the-sra" id="toc-downloading-data-from-the-sra" class="nav-link" data-scroll-target="#downloading-data-from-the-sra"><span class="header-section-number">12.2</span> Downloading data from the SRA</a>
+  <ul class="collapse">
+  <li><a href="#where-do-we-get-the-data" id="toc-where-do-we-get-the-data" class="nav-link" data-scroll-target="#where-do-we-get-the-data"><span class="header-section-number">12.2.1</span> Where do we get the data?</a></li>
+  <li><a href="#running-tasks-in-parallel" id="toc-running-tasks-in-parallel" class="nav-link" data-scroll-target="#running-tasks-in-parallel"><span class="header-section-number">12.2.2</span> Running tasks in parallel</a></li>
+  <li><a href="#finally-the-download-script" id="toc-finally-the-download-script" class="nav-link" data-scroll-target="#finally-the-download-script"><span class="header-section-number">12.2.3</span> Finally, the download script</a></li>
+  </ul></li>
+  <li><a href="#downloading-genomes-from-ensembl" id="toc-downloading-genomes-from-ensembl" class="nav-link" data-scroll-target="#downloading-genomes-from-ensembl"><span class="header-section-number">12.3</span> Downloading genomes from ENSEMBL</a></li>
+  <li><a href="#sequence-data-qc" id="toc-sequence-data-qc" class="nav-link" data-scroll-target="#sequence-data-qc"><span class="header-section-number">12.4</span> Sequence data QC</a>
+  <ul class="collapse">
+  <li><a href="#fastqc-on-raw-data" id="toc-fastqc-on-raw-data" class="nav-link" data-scroll-target="#fastqc-on-raw-data"><span class="header-section-number">12.4.1</span> FastQC on raw data</a></li>
+  <li><a href="#multiqc-on-raw-data" id="toc-multiqc-on-raw-data" class="nav-link" data-scroll-target="#multiqc-on-raw-data"><span class="header-section-number">12.4.2</span> MultiQC on raw data</a></li>
+  <li><a href="#running-trimmomatic-in-a-slurm-array" id="toc-running-trimmomatic-in-a-slurm-array" class="nav-link" data-scroll-target="#running-trimmomatic-in-a-slurm-array"><span class="header-section-number">12.4.3</span> Running Trimmomatic in a SLURM array</a></li>
+  <li><a href="#fastqc-and-multiqc" id="toc-fastqc-and-multiqc" class="nav-link" data-scroll-target="#fastqc-and-multiqc"><span class="header-section-number">12.4.4</span> FastQC and MultiQC</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">12.5</span> Exercises</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>blah blah</td>
+</tr>
+</tbody>
+</table>
+<section id="getting-set-up" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="getting-set-up"><span class="header-section-number">12.1</span> Getting set up</h2>
+<p>As we walk through this RNA-seq workflow you will do the following at each step:</p>
+<ol type="1">
+<li>Go over the details of a script that has already been written.</li>
+<li>Run the script.</li>
+<li>Check that the script completed successfully.</li>
+<li>Examine the output.</li>
+<li>As an exercise, modify the script in one or more ways.</li>
+</ol>
+<section id="getting-the-scripts" class="level3" data-number="12.1.1">
+<h3 data-number="12.1.1" class="anchored" data-anchor-id="getting-the-scripts"><span class="header-section-number">12.1.1</span> Getting the scripts</h3>
+<p>The scripts you’ll run and modify are in a code repository on <a href="https://github.com">GitHub</a>. GitHub is a web platform that hosts code repositories. It’s built on the version control software <a href="https://git-scm.com"><code>git</code></a>. We will cover git extensively next semester.</p>
+<p>You can see our scripts <a href="https://github.com/isg-certificate/rnaseq">here</a>. Note that this repository already has the skeletal project organization we discussed in the previous chapter. To download the scripts to your home directory on Xanadu, we’re going to use <code>git</code>, specifically the subcommand <code>clone</code>, to create a local copy of this repository. Git is available by default on Xanadu nodes, including the login node, so we don’t need load any modules.</p>
+<p>To clone any git repository you have access to, you can go to the repository’s GitHub site, click on the big green button in the upper right that says <code>&lt;&gt; Code</code>, select “HTTPS”, and copy the URL. Then, in general:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="op">&lt;</span>URL<span class="op">&gt;</span> <span class="op">&lt;</span>directory_name<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can omit <code>&lt;directory_name&gt;</code> and the name of the repository will be used.</p>
+<p>Let’s name our first local copy of the repository <code>rnaseq_tutorial</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/isg-certificate/rnaseq.git rnaseq_tutorial</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The directory tree should start like this:</p>
+<pre><code>rnaseq_tutorial/
+├── metadata
+│&nbsp;&nbsp; └── SraRunTable.txt
+├── README.md
+└── scripts
+    ├── 01_rawdata
+    │&nbsp;&nbsp; ├── 01_downloadSRA.sh
+    │&nbsp;&nbsp; └── 02_downloadGenome.sh
+    ├── 02_QC
+    │&nbsp;&nbsp; ├── 01_fastqc.sh
+    │&nbsp;&nbsp; ├── 02_multiqc.sh
+    │&nbsp;&nbsp; └── ...    
+    ├── 03_...</code></pre>
+<p>You can modify these scripts in any way you like without impacting the remote repository on GitHub (you don’t have permission to push changes there). You can also create as many clones of the repository as you like as long as you give them different names.</p>
+</section>
+</section>
+<section id="downloading-data-from-the-sra" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="downloading-data-from-the-sra"><span class="header-section-number">12.2</span> Downloading data from the SRA</h2>
+<section id="where-do-we-get-the-data" class="level3" data-number="12.2.1">
+<h3 data-number="12.2.1" class="anchored" data-anchor-id="where-do-we-get-the-data"><span class="header-section-number">12.2.1</span> Where do we get the data?</h3>
+<p>Our first step is to download RNA-seq data. As we mentioned in the overview chapter, we’re going to walk through the workflow using real expression data from <a href="https://www.science.org/doi/10.1126/science.aah4993">this paper</a>:</p>
+<blockquote class="blockquote">
+<p>Reid, Noah M., et al.&nbsp;“The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish.” Science 354.6317 (2016): 1305-1308.</p>
+</blockquote>
+<p>The data have been deposited in a database at <a href="https://www.ncbi.nlm.nih.gov">NCBI</a>. There are actually many interconnecting databases at NCBI, and this dataset touches on several of them. To start with, the data have been organized into a <strong>BioProject</strong>. BioProjects accessions are umbrellas that can encompass a wide variety of data, including assembled genomes, resequencing data, expression data and more. Our BioProject has accession number <a href="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658029">PRJNA658029</a>. If you follow the link, you’ll find information about the experiment, including links to other databases. 75 individual fish embryos were selected for sequencing, so there are 75 accessions in the <strong>BioSample</strong> database.</p>
+<p>The key link here is to <a href="https://www.ncbi.nlm.nih.gov/sra">SRA</a> or the Sequence Read Archive. SRA houses raw sequencing datasets, and holds an <a href="https://www.ncbi.nlm.nih.gov/sra/docs/sragrowth/">enormous amount of data</a>. Many scientific journals require sequence data to be deposited in the SRA as a condition of publication. If you click on the SRA experiment link, you should get to a page that lists SRA accessions for each of our samples. At the top, there should be a link, <code>Send results to run selector</code>. If you click there, you should be able to view a table containing the metadata for all of our samples, including their population of origin and their experimental PCB-126 exposure. Downloading this table will give you the same file that is found in the <code>metadata</code> directory of the git repository.</p>
+<p>Note also that the BioProject page has a link to <strong>GEO</strong>, or the Gene Expression Omnibus. That database also houses the count data generated from these samples that was used in the original publication.</p>
+<p>To download the data, we’re going to use <code>sratools</code>, a toolkit created by NCBI to access the SRA.</p>
+<p>The expression data are <strong>unstranded, paired-end sequenced RNA-seq</strong>. You should now know what paired-end refers to, but <em>unstranded</em> means that the cDNA has been sequenced without respect to strand. In a stranded RNA-seq library, reads will all be derived from one strand or the other.</p>
+</section>
+<section id="running-tasks-in-parallel" class="level3" data-number="12.2.2">
+<h3 data-number="12.2.2" class="anchored" data-anchor-id="running-tasks-in-parallel"><span class="header-section-number">12.2.2</span> Running tasks in parallel</h3>
+<p>We’re going to download the data using the script <code>scripts/01_rawdata/01_downloadSRA.sh</code>. But before we do that, we need to talk about running tasks in <strong>parallel</strong>. Part of the reason we use computer clusters for bioinformatics is that consumer laptops and desktops don’t have the computational power required to accomplish some tasks. In truth, however, individual CPU cores on a consumer machine might not be much slower, if at all, than the individual CPU cores on Xanadu. Xanadu, however, is composed of many nodes, and on each of these nodes are 32-96 CPU cores, compared with 8-12 on a high end consumer computer. The increased computing speed we get from using a cluster primarily comes from the ability to divide work up into pieces and use many CPU cores simultaneously, or <em>in parallel</em>.</p>
+<p>There are two general types of parallel computing applications:</p>
+<ol type="1">
+<li><strong>Coupled applications</strong>, in which parallel processes need to communicate with each other, at least sometimes.</li>
+<li><strong>“Embarrassingly parallel”</strong> applications, in which parallel processes are independent.</li>
+</ol>
+<p>Many programs that require parallel operations to be coupled are written so that they can easily use many CPU cores on a single computer. As we have seen in some past applications, you may provide the flag <code>-t</code> or <code>-p</code> to specify the number of CPU cores to be used. Because the CPU cores are all in a single machine, they can communicate easily.</p>
+<p>This type of within-machine parallelism is <strong>very common</strong> in bioinformatics software. The main thing to know about this is that though many programs can be sped up by allowing them to use more processors, but the speedup is seldom linear. Adding more processors comes with increasing overhead for managing them, and for most applications, how quickly returns diminish depends on the program. We rarely use more than 8-12 CPUs for a single program.</p>
+<p>In some coupled applications, however, even the 96 CPUs on Xanadu’s are insufficient. In those cases, coupled parallel processes need to be able to communicate <em>across nodes</em>. That adds an extra layer of complexity, which is often handled by <a href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a>, or “Message Passing Interface”. Applications requiring this large scale parallelism are often written to use MPI to manage it. Between-node coupled parallelism is fairly uncommon in bioinformatics, and we won’t cover it in this course.</p>
+<p>There are some cases where extremely high coupled parallelism is required, and the overhead of MPI is inefficient. For those cases, we often use graphical processing units (<code>GPUs</code>). These days, the most common use cases involve machine learning models. Basecalling raw Nanopore signal data essentially requires a GPU to complete in a reasonable amount of time. Multiple nodes on Xanadu have GPUs available. Next semester we will use GPU resources in some of our workflows.</p>
+<p><strong>Embarrassingly parallel</strong> problems are <strong>extremely common</strong> in bioinformatics. It is very often the case that a large analysis can be broken up into many small, independent pieces. Most commonly, we break these problems up by sample (think of running <code>fastqc</code> on, say, 75 RNA-seq samples) or by genomic region (think of searching for genetic variants in 10,000 genomic windows).</p>
+<p>There are two typical ways to manage embarrassingly parallel jobs on an HPC:</p>
+<ol type="1">
+<li>Use a program like <code>GNU parallel</code></li>
+<li>Use a SLURM array</li>
+</ol>
+<p>We’re going to cover <code>GNU parallel</code> in this section, and SLURM arrays just a few sections down.</p>
+<section id="gnu-parallel" class="level4" data-number="12.2.2.1">
+<h4 data-number="12.2.2.1" class="anchored" data-anchor-id="gnu-parallel"><span class="header-section-number">12.2.2.1</span> GNU parallel</h4>
+<p>Usually just called <a href="http://www.gnu.org/software/parallel"><code>parallel</code></a>, this program is one of the most commonly used Linux utilities. It’s a very powerful and flexible program and we’ll cover only a couple of approaches to using it here, but there is an <a href="https://www.gnu.org/software/parallel/parallel_tutorial.html">extensive tutorial</a>.</p>
+<p>The basic idea is that given a list of inputs, parallel can be used to operate on each element of the list simultaneously.</p>
+<p>Let’s create a test file:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"A\nB\nC"</span> <span class="op">&gt;</span>abc-file.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It should read:</p>
+<pre><code>A
+B
+C</code></pre>
+<p>You can run parallel on this file like this:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-a</span> abc-file.txt echo {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>{}</code> is used as a placeholder for the input value and you can use it to construct command lines. In this simple case you can leave it out. There are lots of options for modifying it (see the docs) but we’re going to keep it simple here.</p>
+<p>Alternatively, you can have it read from stdin like this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> abc-file.txt <span class="kw">|</span> <span class="ex">parallel</span> echo {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or like this:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> echo {} <span class="op">&lt;</span> abc-file.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Oor directly from the command line, using whitespace as a separator:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> echo {} ::: A B C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Importantly, you can limit the number of jobs that run simultaneously with <code>-j</code></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 2 echo {} ::: A B C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And you can get it to “dry run” by simply printing the commands instead of running them. This is critical to check when building complex command lines:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">--dry-run</span> <span class="at">-j</span> 2 echo {} ::: A B C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you’re having trouble formatting the command line you want, you can resort to constructing it in bash and just sending it to parallel to be read from stdin:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">cat</span> abc-file.txt<span class="va">)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> <span class="bu">echo</span> <span class="st">"echo </span><span class="va">$i</span><span class="st">"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="kw">|</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="finally-the-download-script" class="level3" data-number="12.2.3">
+<h3 data-number="12.2.3" class="anchored" data-anchor-id="finally-the-download-script"><span class="header-section-number">12.2.3</span> Finally, the download script</h3>
+<p>Ok, so you’re logged into Xanadu, you’ve cloned the git repository, you get the gist of <code>parallel</code>. You’re ready to walk through our script and run it. The script is found in <code>scripts/01_rawdata/01_downloadSRA.sh</code>. It’s written to be run from that directory, so <code>cd</code> there to have a look.</p>
+<p>We’ll go through the script in chunks.</p>
+<p>First, the SLURM header. We’re requesting 12 cpus and 15G. We’re going to run two downloads simultaneously in this script, with one CPU per execution of the download tool, but we’ll compress 12 samples at a time after they’ve finished downloading, so we request 12 CPUs. We’re submitting to general partition with general QOS.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=fasterq_dump_xanadu</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 12</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is not required, but we often start scripts with these commands to make it simpler to keep track of when and where (on xanadu) they ran.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We’re loading <code>parallel</code> and <code>sratoolkit</code> here. <code>sratoolkit</code> has the tool we’ll use to download the data.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load software</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load sratoolkit/3.0.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Oooh look! Comments that help us keep track of what data exactly we’re going to download.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The data are from this study:</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE156460</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658029</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Below we’re specifying variables that point to things we’ll use further down in the script. We find that obscuring paths and filenames with descriptive variables can help make them much more readable and organized. Note that we’re using relative paths here. This helps keep our project directory self-contained and minimizes problems if things get moved around on the cluster. It also means the script needs to be run from this location.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../data/fastq</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${OUTDIR}</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="va">METADATA</span><span class="op">=</span>../../metadata/SraRunTable.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that <code>OUTDIR</code> does not exist yet. We create it in this script so that we can write our fastq files there. This a small example of writing everything you do into a script. In this case, a key project directory is created only when it is needed.</p>
+<p><code>METADATA</code> is a file that is a part of the repository and was downloaded when you cloned it. It’s the SRA metadata mentioned in a section above. You can do <code>less</code> on the file to see what it looks like. The metadata file contains all 75 samples from all 8 populations. We’re just going to work with 2 populations here, so we’re going to extract the SRA accession numbers for those samples and put them into a text file:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract rows matching our population names, pull out the SRA accession number (the first column)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-E</span> <span class="st">"Elizabeth River|King's Creek"</span> <span class="va">$METADATA</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 1 <span class="at">-d</span> <span class="st">","</span> <span class="op">&gt;</span><span class="va">$ACCLIST</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Make sure you know why we use these options with <code>cut</code>: <code>-f 1 -d ","</code>, and then have a look at the accession list file. We will return to this file over and over again to construct file names in future scripts. The accession list should have 20 elements in it.</p>
+<p>Finally, we run the program <code>fasterq-dump</code>:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use parallel to download 2 accessions at a time. </span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="ex">parallel</span> <span class="at">-j</span> 2 <span class="st">"fasterq-dump -O </span><span class="va">${OUTDIR}</span><span class="st"> {}"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Try manually creating all these variables in an interactive session and running this command line with the <code>--dry-run</code> option. As I mentioned, when writing your own scripts this is a critical step for checking for mistakes.</p>
+<p><code>fasterq-dump</code> does not automatically compress the fastq files, so to be efficient with disk space we will compress them:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="va">${OUTDIR}</span>/<span class="pp">*</span>fastq <span class="kw">|</span> <span class="ex">parallel</span> <span class="at">-j</span> 12 gzip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Submit this job with <code>sbatch 01_downloadSRA.sh</code>. Monitor it periodically for progress or errors. It should take under an hour. Look back at the chapter on monitoring SLURM jobs if you need to refresh. Make sure you look at <code>.out</code> and <code>.err</code>.</p>
+<p>This is going to sound silly, <em>but check that you have the correct number of files in your output directory</em>. This is a basic sanity check and people often do not do it. SRA network connections can be problematic, and downloads are occasionally interrupted, so it’s important not to just assume this worked.</p>
+<p>Notes:</p>
+<ul>
+<li>There are THREE files per sample. This is because these data were uploaded after an initial QC step, and orphaned reads were included. We’re going to ignore these.</li>
+<li>From the moment you get your hands on data, you should start treating it skeptically. Ask if it meets your expectations. Look at the file sizes for our data. <code>SRR12475446</code> has comparatively <em>very</em> little data. Ultimately we will have to drop this sample.</li>
+</ul>
+</section>
+</section>
+<section id="downloading-genomes-from-ensembl" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="downloading-genomes-from-ensembl"><span class="header-section-number">12.3</span> Downloading genomes from ENSEMBL</h2>
+<p>Our analysis here is going to be reference-genome based. This means we’re going to align our RNA-seq data to a reference genome and use the gene annotation to attribute RNA fragments to genes. We need to download the genome and annotation in order to do this.</p>
+<p>While NCBI and Europe’s equivalent, <a href="https://www.ebi.ac.uk/ena/browser/home">ENA</a>, are probably the two biggest concentrations of public raw sequence data, genome, and particularly genome annotations, are housed in more dispersed databases. NCBI has an annotation pipeline it runs on many genomes. When researchers generate an annotation as part of a project, they will often deposit it in generic data repository. There are some taxon-specific databases as well, such as <a href="http://flybase.org">flybase</a> and <a href="https://phytozome-next.jgi.doe.gov">phytozome</a>.</p>
+<p>We’re going to get our genome and annotation from <a href="https://useast.ensembl.org/index.html">ENSEMBL</a>. ENSEMBL is a database for vertebrate genomes. They generate their own annotations, and resources for comparing genes and genomes among species. Using ENSEMBL will allow us to easily extract functional information for <em>F. heteroclitus</em> genes that we would otherwise have to infer ourselves with a separate pipeline.</p>
+<p>ENSEMBLE releases new versions periodically. Annotated genes have accession numbers that are tied to ENSEMBLE release versions. Automated gene annotation is a constantly improving field, so gene models can change a lot, even if the underlying genome assembly does not. It’s important when getting data from ENSEMBL to get it from a specific version of the database, and to keep track of which version you’re using.</p>
+<p>Note also that ENSEMBL doesn’t sequence genomes. They pull genomes in from other organizations. Our genome is identical to an NCBI accessioned genome, for which they provide an NCBI accession number (GCA_000826765.1).</p>
+<p>Getting the data is pretty straightforward. We visit our <a href="https://useast.ensembl.org/Fundulus_heteroclitus/Info/Index">organism’s page</a> and follow the appropriate links to get URLs which we use with <code>wget</code>. The FASTA file for the genome we want has the suffix <code>dna_sm.toplevel.fa.gz</code>. <code>sm</code> means repetitive elements have been softmasked. We’re also going to grab the annotation in <code>GTF</code> format and the inferred transcript sequences (suffix <code>cdna.all.fa.gz</code>).</p>
+<p>The script is straightforward. It requires few resources.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=get_genome</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 4</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=2G</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We’re going to index the genome with samtools (more in a moment).</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load software</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As before, we’re going to create our output directory as part of the script.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># output directory</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="va">GENOMEDIR</span><span class="op">=</span>../../genome</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$GENOMEDIR</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>More useful comments!</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we're using Fundulus heteroclitus from ensembl v112</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># we'll download the genome, GTF annotation and transcript fasta</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># https://useast.ensembl.org/Fundulus_heteroclitus/Info/Index</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># note that in these URLs we are downloading v112 specifically. </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Download the files.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the genome</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-P</span> <span class="va">${GENOMEDIR}</span> http://ftp.ensembl.org/pub/release-112/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa.gz</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># download the GTF annotation</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-P</span> <span class="va">${GENOMEDIR}</span> http://ftp.ensembl.org/pub/release-112/gtf/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf.gz</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># download the transcript fasta</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-P</span> <span class="va">${GENOMEDIR}</span> http://ftp.ensembl.org/pub/release-112/fasta/fundulus_heteroclitus/cdna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.cdna.all.fa.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Decompress the files. Unfortunately, reference genome/transcriptome fasta files need to be decompressed for lots of applications.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># decompress files</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="va">${GENOMEDIR}</span>/<span class="pp">*</span>gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Finally, we’re going to create simple indexes for the fasta files with <code>samtools faidx</code>.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate simple samtools fai indexes </span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> faidx <span class="va">${GENOMEDIR}</span>/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> faidx <span class="va">${GENOMEDIR}</span>/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.cdna.all.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>All the outputs from this script should be pretty self-explanatory, except the index files (suffix <code>.fai</code>), which we covered in the chapter on sequence data formats. Remember to check the <code>.err</code> and <code>.out</code> files for errors or warnings, and to verify that your files downloaded.</p>
+</section>
+<section id="sequence-data-qc" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="sequence-data-qc"><span class="header-section-number">12.4</span> Sequence data QC</h2>
+<p>In the previous module we discussed doing quality control on Illumina data using FastQC, MultiQC and Trimmomatic. Here we will do each of these steps on our newly downloaded data.</p>
+<section id="fastqc-on-raw-data" class="level3" data-number="12.4.1">
+<h3 data-number="12.4.1" class="anchored" data-anchor-id="fastqc-on-raw-data"><span class="header-section-number">12.4.1</span> FastQC on raw data</h3>
+<p>The script for FastQC is <code>scripts/02_QC/01_fastqc.sh</code>. The full script looks like this:</p>
+<div class="sourceCode" id="annotated-cell-28"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-28-1"><a href="#annotated-cell-28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="annotated-cell-28-2"><a href="#annotated-cell-28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=fastqc</span></span>
+<span id="annotated-cell-28-3"><a href="#annotated-cell-28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="annotated-cell-28-4"><a href="#annotated-cell-28-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-28-5" class="code-annotation-target"><a href="#annotated-cell-28-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 10</span></span>
+<span id="annotated-cell-28-6"><a href="#annotated-cell-28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=20G</span></span>
+<span id="annotated-cell-28-7"><a href="#annotated-cell-28-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="annotated-cell-28-8"><a href="#annotated-cell-28-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="annotated-cell-28-9"><a href="#annotated-cell-28-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="annotated-cell-28-10"><a href="#annotated-cell-28-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="annotated-cell-28-11"><a href="#annotated-cell-28-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="annotated-cell-28-12"><a href="#annotated-cell-28-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="annotated-cell-28-13"><a href="#annotated-cell-28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-28-14"><a href="#annotated-cell-28-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="kw">`</span><span class="fu">hostname</span><span class="kw">`</span></span>
+<span id="annotated-cell-28-15"><a href="#annotated-cell-28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-28-16"><a href="#annotated-cell-28-16" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="annotated-cell-28-17"><a href="#annotated-cell-28-17" aria-hidden="true" tabindex="-1"></a><span class="co"># FastQC</span></span>
+<span id="annotated-cell-28-18"><a href="#annotated-cell-28-18" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-28-19" class="code-annotation-target"><a href="#annotated-cell-28-19" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.12.1</span>
+<span id="annotated-cell-28-20"><a href="#annotated-cell-28-20" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="annotated-cell-28-21"><a href="#annotated-cell-28-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-28-22"><a href="#annotated-cell-28-22" aria-hidden="true" tabindex="-1"></a><span class="co"># set input/output directory variables</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-28-23" class="code-annotation-target"><a href="#annotated-cell-28-23" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../data/fastq/</span>
+<span id="annotated-cell-28-24"><a href="#annotated-cell-28-24" aria-hidden="true" tabindex="-1"></a><span class="va">REPORTDIR</span><span class="op">=</span>../../results/02_qc/fastqc_reports</span>
+<span id="annotated-cell-28-25"><a href="#annotated-cell-28-25" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$REPORTDIR</span></span>
+<span id="annotated-cell-28-26"><a href="#annotated-cell-28-26" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-28-27" class="code-annotation-target"><a href="#annotated-cell-28-27" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="annotated-cell-28-28"><a href="#annotated-cell-28-28" aria-hidden="true" tabindex="-1"></a><span class="co"># run fastp in parallel, 10 samples at a time</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-28-29" class="code-annotation-target"><a href="#annotated-cell-28-29" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="ex">parallel</span> <span class="at">-j</span> 10 <span class="dt">\</span></span>
+<span id="annotated-cell-28-30"><a href="#annotated-cell-28-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fastqc --outdir </span><span class="va">$REPORTDIR</span><span class="st"> </span><span class="va">$INDIR</span><span class="st">/{}_{1..2}.fastq.gz"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-28" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-lines="5,6" data-code-annotation="1">We’ll use 10 CPUs and 20G of memory.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-lines="19,20" data-code-annotation="2">We will again use parallel to run fastqc in parallel on multiple files.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-lines="23" data-code-annotation="3">Specify the input and output directories as variables, and create the output directory.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-lines="27" data-code-annotation="4">Re-use the accession list we created previously.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-lines="29" data-code-annotation="5">Run fastqc in parallel. Note here we are <em>also</em> using a shell expansion <code>{1..2}</code> to simplify things. This runs fastqc on both files in a pair.</span>
+</dd>
+</dl>
+<p>Run this script with <code>sbatch 01_fastqc.sh</code>. Monitor it and ensure that it produces the output you expect with no errors. Run <code>seff &lt;jobid&gt;</code> to see how efficiently we used our resource request.</p>
+<p>Download (or connect to Xanadu’s file system) and look at a few of the HTML reports. You don’t need to check them all because…</p>
+</section>
+<section id="multiqc-on-raw-data" class="level3" data-number="12.4.2">
+<h3 data-number="12.4.2" class="anchored" data-anchor-id="multiqc-on-raw-data"><span class="header-section-number">12.4.2</span> MultiQC on raw data</h3>
+<p>FastQC is going to produce 40 HTML reports - too many to comfortably look through one by one. We’ll use MultiQC to aggregate the reports.</p>
+<p>The script is <code>scripts/02_QC/02_multiqc.sh</code>. It looks like this:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=multiqc</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 2</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=10G</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate reports using MultiQC</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.15</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/02_qc/fastqc_reports/</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/02_qc/multiqc</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a><span class="co"># run on fastqc output</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> <span class="va">${OUTDIR}</span> <span class="va">${INDIR}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It should require little explanation at this point. Get the HTML file and look at it in a browser. You should see some minor adapter contamination consistent with read-through. This is unlikely to be a problem at this very small level, but we’re going to trim it out anyway.</p>
+<p>FastQC will label adapter contamination as “Illumina universal adapter”. If you try to search for this term, you’ll find it to be ambiguous. You’ll remember that you need to supply adapters to Trimmomatic to be trimmed. So how can you figure this out? FastQC’s adapter list is found here <code>/isg/shared/apps/fastqc/0.12.1/Configuration/adapter_list.txt</code>. You can see our adapter sequence is <code>AGATCGGAAGAG</code>. Trimmomatic is pre-packaged with common adapters here <code>/isg/shared/apps/Trimmomatic/0.39/adapters/</code>. Let’s see if this sequence matches any of them:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"AGATCGGAAGAG"</span> /isg/shared/apps/Trimmomatic/0.39/adapters/<span class="pp">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We get results:</p>
+<pre><code>/isg/shared/apps/Trimmomatic/0.39/adapters/NexteraPE-PE.fa:AGATCGGAAGAG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-PE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-PE.fa:AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa:AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa:AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA</code></pre>
+<p>Let’s use <code>/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa</code> in Trimmomatic.</p>
+</section>
+<section id="running-trimmomatic-in-a-slurm-array" class="level3" data-number="12.4.3">
+<h3 data-number="12.4.3" class="anchored" data-anchor-id="running-trimmomatic-in-a-slurm-array"><span class="header-section-number">12.4.3</span> Running Trimmomatic in a SLURM array</h3>
+<p>Quality trimming requires a bit more resources for each job than than FastQC, and it takes longer to do. Here we’ll use a SLURM array to run each trimming job independently. SLURM arrays are a feature of SLURM that allows you to essentially write a single script and have it run repeatedly. There is a <a href="https://github.com/CBC-UCONN/Job-Arrays-on-Xanadu">guide to running SLURM arrays on Xanadu</a>. Please read through it, try out the simple examples there, and then come back here.</p>
+<p>So the idea is that, much like a bash loop, or running GNU parallel, in an array job script, we write generic code, and then figure out how to substitute in the specific files or parameters for each instance of the array. The advantage of arrays over using parallel, is that each instance of the array (or “array task”) will be scheduled independently, receive its own resource allocation, and can run on any node where there is space for that job. This makes arrays better suited than parallel for repetitive jobs that require substantial resources. For example, if you had 30 tasks that each required 1 cpu and 10G of RAM, running that job with GNU parallel would require the majority of resources on a single node (30 CPUs and 300G of RAM), and there might be a wait for those resources to become available. If you run the job as an array, however, each task can be slotted in on any node where resources are available, so your tasks will fan out and soak up smaller chunks of unused resources. If you have 1000 jobs, each requiring 20G of RAM and 10 CPUs, restricting yourself to a single node with GNU parallel will take <em>much</em> longer than allowing those jobs to spread out over the cluster. Only 4-6 could run at a time, depending on the node, whereas 40 could run simultaneously with an array (user max CPU limit on general partition is 400).</p>
+<p>So, to sum up, SLURM arrays are a key means to execute parallel jobs on Xanadu.</p>
+<p>For a SLURM array, every instance (or task) has a unique numerical value assigned to the environment variable <code>SLURM_ARRAY_TASK_ID</code>. We’re going to use that variable to make substitutions into our generic code. Our script is <code>scripts/02_QC/03_trimmomatic.sh</code>. It looks like this:</p>
+<div class="sourceCode" id="annotated-cell-32"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-32-1"><a href="#annotated-cell-32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="annotated-cell-32-2"><a href="#annotated-cell-32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=trimmomatic</span></span>
+<span id="annotated-cell-32-3"><a href="#annotated-cell-32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="annotated-cell-32-4"><a href="#annotated-cell-32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-32-5" class="code-annotation-target"><a href="#annotated-cell-32-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 1</span></span>
+<span id="annotated-cell-32-6"><a href="#annotated-cell-32-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
+<span id="annotated-cell-32-7"><a href="#annotated-cell-32-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="annotated-cell-32-8"><a href="#annotated-cell-32-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="annotated-cell-32-9"><a href="#annotated-cell-32-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="annotated-cell-32-10"><a href="#annotated-cell-32-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-32-11" class="code-annotation-target"><a href="#annotated-cell-32-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%A_%a.out</span></span>
+<span id="annotated-cell-32-12"><a href="#annotated-cell-32-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%A_%a.err</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-32-13" class="code-annotation-target"><a href="#annotated-cell-32-13" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --array=[1-20]%10</span></span>
+<span id="annotated-cell-32-14"><a href="#annotated-cell-32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-15"><a href="#annotated-cell-32-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="annotated-cell-32-16"><a href="#annotated-cell-32-16" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="annotated-cell-32-17"><a href="#annotated-cell-32-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-18"><a href="#annotated-cell-32-18" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="annotated-cell-32-19"><a href="#annotated-cell-32-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Trimmomatic</span></span>
+<span id="annotated-cell-32-20"><a href="#annotated-cell-32-20" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="annotated-cell-32-21"><a href="#annotated-cell-32-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-22"><a href="#annotated-cell-32-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load Trimmomatic/0.39</span>
+<span id="annotated-cell-32-23"><a href="#annotated-cell-32-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="annotated-cell-32-24"><a href="#annotated-cell-32-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-25"><a href="#annotated-cell-32-25" aria-hidden="true" tabindex="-1"></a><span class="co"># set input/output directory variables</span></span>
+<span id="annotated-cell-32-26"><a href="#annotated-cell-32-26" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../data/fastq/</span>
+<span id="annotated-cell-32-27"><a href="#annotated-cell-32-27" aria-hidden="true" tabindex="-1"></a><span class="va">TRIMDIR</span><span class="op">=</span>../../results/02_qc/trimmed_fastq</span>
+<span id="annotated-cell-32-28"><a href="#annotated-cell-32-28" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$TRIMDIR</span></span>
+<span id="annotated-cell-32-29"><a href="#annotated-cell-32-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-30"><a href="#annotated-cell-32-30" aria-hidden="true" tabindex="-1"></a><span class="co"># adapters to trim out</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-32-31" class="code-annotation-target"><a href="#annotated-cell-32-31" aria-hidden="true" tabindex="-1"></a><span class="va">ADAPTERS</span><span class="op">=</span>/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa</span>
+<span id="annotated-cell-32-32"><a href="#annotated-cell-32-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-33"><a href="#annotated-cell-32-33" aria-hidden="true" tabindex="-1"></a><span class="co"># accession list</span></span>
+<span id="annotated-cell-32-34"><a href="#annotated-cell-32-34" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="annotated-cell-32-35"><a href="#annotated-cell-32-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-36"><a href="#annotated-cell-32-36" aria-hidden="true" tabindex="-1"></a><span class="co"># run trimmomatic</span></span>
+<span id="annotated-cell-32-37"><a href="#annotated-cell-32-37" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-32-38" class="code-annotation-target"><a href="#annotated-cell-32-38" aria-hidden="true" tabindex="-1"></a><span class="va">SAMPLE</span><span class="op">=</span><span class="va">$(</span> <span class="fu">sed</span> <span class="at">-n</span> <span class="va">${SLURM_ARRAY_TASK_ID}</span>p <span class="va">${ACCLIST}</span> <span class="va">)</span></span>
+<span id="annotated-cell-32-39"><a href="#annotated-cell-32-39" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-32-40" class="code-annotation-target"><a href="#annotated-cell-32-40" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-jar</span> <span class="va">$Trimmomatic</span> PE <span class="at">-threads</span> 4 <span class="dt">\</span></span>
+<span id="annotated-cell-32-41"><a href="#annotated-cell-32-41" aria-hidden="true" tabindex="-1"></a>        <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_1.fastq.gz <span class="dt">\</span></span>
+<span id="annotated-cell-32-42"><a href="#annotated-cell-32-42" aria-hidden="true" tabindex="-1"></a>        <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_2.fastq.gz <span class="dt">\</span></span>
+<span id="annotated-cell-32-43"><a href="#annotated-cell-32-43" aria-hidden="true" tabindex="-1"></a>        <span class="va">${TRIMDIR}</span>/<span class="va">${SAMPLE}</span>_trim_1.fastq.gz <span class="va">${TRIMDIR}</span>/<span class="va">${SAMPLE}</span>_trim_orphans_1.fastq.gz <span class="dt">\</span></span>
+<span id="annotated-cell-32-44"><a href="#annotated-cell-32-44" aria-hidden="true" tabindex="-1"></a>        <span class="va">${TRIMDIR}</span>/<span class="va">${SAMPLE}</span>_trim_2.fastq.gz <span class="va">${TRIMDIR}</span>/<span class="va">${SAMPLE}</span>_trim_orphans_2.fastq.gz <span class="dt">\</span></span>
+<span id="annotated-cell-32-45"><a href="#annotated-cell-32-45" aria-hidden="true" tabindex="-1"></a>        ILLUMINACLIP:<span class="st">"</span><span class="va">${ADAPTERS}</span><span class="st">"</span>:2:30:10 <span class="dt">\</span></span>
+<span id="annotated-cell-32-46"><a href="#annotated-cell-32-46" aria-hidden="true" tabindex="-1"></a>        SLIDINGWINDOW:4:25 MINLEN:45</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-32" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="5" data-code-annotation="1">15G is probably overkill for Trimmomatic. We’ll check at the end.</span>
+</dd>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="11,12" data-code-annotation="2">These options specify the array job <code>.err</code> and <code>.out</code> file name formats. The file names will be <code>&lt;jobname&gt;_&lt;jobid&gt;_&lt;SLURM_ARRAY_TASK_ID&gt;.{err,.out}</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="13" data-code-annotation="3">This specifies the array task IDs, in this case a range: <code>[1-20]</code> and the number of jobs to run at once: <code>%10</code>. If you leave out the number of simultaneous jobs to run, the array will run as many as your resource allocation (and available resources) allow. If the array is large enough, this will prevent you from running any other jobs.</span>
+</dd>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="31" data-code-annotation="4">The adapter sequences we determined we should supply.</span>
+</dd>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="38" data-code-annotation="5">In contrast to GNU parallel or a loop, we need a way to pull out a single sample for each array task. Here we use <code>sed</code> to extract a sample ID by its line number in our list of accessions.</span>
+</dd>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-32" data-code-lines="40" data-code-annotation="6">This is our Trimmomatic command line, which we covered in the section on sequence QC.</span>
+</dd>
+</dl>
+<p>With array jobs, as with loops and with GNU parallel, you may want to test that you have written the generic code correctly, and that the substitutions will occur as you expect. You could modify your code to simply echo important file paths and check the <code>.out</code> files to ensure things are correct:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=trimmomatic</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 1                    </span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%A_%a.out       </span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%A_%a.err       </span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --array=[1-20]%10     </span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Trimmomatic</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load Trimmomatic/0.39</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="co"># set input/output directory variables</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../data/fastq/</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="va">TRIMDIR</span><span class="op">=</span>../../results/02_qc/trimmed_fastq</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$TRIMDIR</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="co"># adapters to trim out</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="va">ADAPTERS</span><span class="op">=</span>/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa </span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="co"># accession list</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a><span class="co"># run trimmomatic</span></span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="va">SAMPLE</span><span class="op">=</span><span class="va">$(</span> <span class="fu">sed</span> <span class="at">-n</span> <span class="va">${SLURM_ARRAY_TASK_ID}</span>p <span class="va">${ACCLIST}</span> <span class="va">)</span> </span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$SAMPLE</span></span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_1.fastq.gz</span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a><span class="co"># java -jar $Trimmomatic PE -threads 4 \ </span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a><span class="co">#         ${INDIR}/${SAMPLE}_1.fastq.gz \</span></span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a><span class="co">#         ${INDIR}/${SAMPLE}_2.fastq.gz \</span></span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a><span class="co">#         ${TRIMDIR}/${SAMPLE}_trim_1.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_1.fastq.gz \</span></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a><span class="co">#         ${TRIMDIR}/${SAMPLE}_trim_2.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_2.fastq.gz \</span></span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a><span class="co">#         ILLUMINACLIP:"${ADAPTERS}":2:30:10 \</span></span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a><span class="co">#         SLIDINGWINDOW:4:25 MINLEN:45</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can also simply set some of these variables in an interactive session and check if they get constructed correctly:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../data/fastq/</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="va">SLURM_ARRAY_TASK_ID</span><span class="op">=</span>5</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="va">SAMPLE</span><span class="op">=</span><span class="va">$(</span> <span class="fu">sed</span> <span class="at">-n</span> <span class="va">${SLURM_ARRAY_TASK_ID}</span>p <span class="va">${ACCLIST}</span> <span class="va">)</span> </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$SAMPLE</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${INDIR}</span>/<span class="va">${SAMPLE}</span>_1.fastq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It’s advisable to try these methods of testing before launching a new array script.</p>
+<p>Run the script now with <code>sbatch 03_trimmomatic.sh</code>.</p>
+<p>You should see using <code>squeue</code> that up to 10 jobs are spawned simultaneously, and that new <code>fastq.gz</code> files are growing in the results directory. When the jobs have all completed, check that they were successful, and examine the resource efficiency for a few of the array tasks (<code>seff &lt;jobid&gt;_&lt;taskid&gt;</code>)</p>
+<p>Trimmomatic will not print much in the way of progress reports. It will give a short summary in the <code>.err</code> file about how many reads were retained. To grab those, do</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"Surviving"</span> trimmomatic_<span class="op">&lt;</span>JOBID<span class="op">&gt;</span>_<span class="pp">*</span>err <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-V</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That will pull out the summary for each file and sort the summaries by the array task ID.</p>
+<p>To get a better sense of how our data were impacted, we will run FastQC and MultiQC again below.</p>
+</section>
+<section id="fastqc-and-multiqc" class="level3" data-number="12.4.4">
+<h3 data-number="12.4.4" class="anchored" data-anchor-id="fastqc-and-multiqc"><span class="header-section-number">12.4.4</span> FastQC and MultiQC</h3>
+<p>We will run these programs just as we did previously. We have new scripts: <code>scripts/02_QC/04_fastqc_trim.sh</code> and <code>scripts/02_QC/05_multiqc_trim.sh</code>. Because we’ve covered this material already, we can use this as an opportunity to check out another feature of SLURM: dependencies.</p>
+<p>You can set SLURM jobs to start only after some condition is satisfied. The option is <code>-d</code> or <code>--dependency</code> and you specify them as <code>--dependency=type:jobid</code>. The most type we’ll use here is <code>afterok</code>, which means the dependent job will begin after the specified job completes without error. See <a href="https://slurm.schedmd.com/sbatch.html">here</a> for more details.</p>
+<p>So if we do:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> 05_fastqc_trim.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And get the message</p>
+<pre><code>Submitted batch job 8017345</code></pre>
+<p>We can submit MultiQC, which requires the fastqc output as:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--dependency</span><span class="op">=</span>afterok:8017345 05_multiqc.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can automatically grab the job ID like this and submit both scripts:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="va">JOBID</span><span class="op">=</span><span class="va">$(</span><span class="ex">sbatch</span> <span class="at">--parsable</span> 04_fastqc_trim.sh<span class="va">)</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--dependency</span><span class="op">=</span>afterok:<span class="va">${JOBID}</span> 05_multiqc.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When these are complete, download the FastQC and MultiQC results and compare them in terms of the number of sequences, the quality scores and the adapter content.</p>
+</section>
+</section>
+<section id="exercises" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="exercises"><span class="header-section-number">12.5</span> Exercises</h2>
+<p>For this section, your assignment is to clone a new copy of the github repository and modify the scripts we have done so far to run with <strong>all 75 samples</strong> in the experiment.</p>
+<p>Answer the following questions:</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./04_2_project_organization.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./04_4_alignment.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

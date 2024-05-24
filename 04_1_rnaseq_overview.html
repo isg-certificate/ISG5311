@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Noah Reid">
-<meta name="dcterms.date" content="2023-09-14">
 
-<title>ISG 5311 - Genomic Data Analysis in Practice</title>
+<title>ISG 5311 - Genomic Data Analysis in Practice - 10&nbsp; Overview of differential expression with RNA-seq</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,7 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./01_0_IntroToLinux.html" rel="next">
+<link href="./04_2_project_organization.html" rel="next">
+<link href="./04_0_measuring_expression_1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -75,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li><li class="breadcrumb-item"><a href="./04_1_rnaseq_overview.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -102,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -210,7 +209,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
   </div>
 </li>
@@ -335,10 +334,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
-  <ul class="collapse">
-  <li><a href="#materials-necessary-for-the-course" id="toc-materials-necessary-for-the-course" class="nav-link" data-scroll-target="#materials-necessary-for-the-course">Materials necessary for the course</a></li>
-  </ul></li>
+  <li><a href="#a-model-workflow" id="toc-a-model-workflow" class="nav-link active" data-scroll-target="#a-model-workflow"><span class="header-section-number">10.1</span> A model workflow</a></li>
+  <li><a href="#workflow-steps" id="toc-workflow-steps" class="nav-link" data-scroll-target="#workflow-steps"><span class="header-section-number">10.2</span> Workflow steps</a></li>
+  <li><a href="#focal-data" id="toc-focal-data" class="nav-link" data-scroll-target="#focal-data"><span class="header-section-number">10.3</span> Focal data</a></li>
+  <li><a href="#excercises" id="toc-excercises" class="nav-link" data-scroll-target="#excercises"><span class="header-section-number">10.4</span> Excercises</a></li>
   </ul>
 </nav>
     </div>
@@ -347,26 +346,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ISG 5311 - Genomic Data Analysis in Practice</h1>
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Noah Reid </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">September 14, 2023</p>
-    </div>
-  </div>
   
     
   </div>
@@ -374,22 +361,52 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This course is focused on imparting practical knowledge of how to conduct bioinformatic analyses, with a focus on teaching users to interact with computers using a command-line interface. The initial parts of the course will introduce you to the Linux operating system, the BASH shell, and how to access and schedule work on a high performance computing cluster. We will move from there to understanding sequencing data and exploring ways to manipulate and summarize it. Finally, we will explore a very common workflow, differential expression with bulk RNA-seq, as a model for how to organize and conduct an analysis project. In the last stage we will also introduce the R statistical computing language, and use differential expression analysis as a vehicle for learning about data visualization.</p>
-<section id="materials-necessary-for-the-course" class="level2">
-<h2 class="anchored" data-anchor-id="materials-necessary-for-the-course">Materials necessary for the course</h2>
-<p>You will need a laptop or desktop computer running a Windows, MacOS or Linux operating system. Most machines produced in the last few years will be sufficient because heavy computation will be done on a powerful remote computer cluster.</p>
-<p>You’ll be working at your a computer a lot during this course, often simultaneously using multiple applications, so it will be helpful to have the right setup. Screen real estate is an important factor. If you’re working at a desktop, the bigger the display(s) the better. If you are using a laptop, we recommend a desk space with a second display, mouse and keyboard, if possible. Something like this:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/workstation.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">A useful, though maybe not aesthetically pleasing, work station</figcaption>
-</figure>
-</div>
-
-
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>blah blah</td>
+</tr>
+</tbody>
+</table>
+<section id="a-model-workflow" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="a-model-workflow"><span class="header-section-number">10.1</span> A model workflow</h2>
+<p>Beginning with this section of the course we’re going to walk through the steps of a model workflow: <strong>differential expression with RNA-seq</strong>. This is a common application of high-throughput sequencing data, and will introduce a number of concepts and techniques applicable across diverse workflows.</p>
 </section>
+<section id="workflow-steps" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="workflow-steps"><span class="header-section-number">10.2</span> Workflow steps</h2>
+<p>A differential expression analysis has these basic steps:</p>
+<ol type="1">
+<li>Retrieve and QC data.</li>
+<li>Quantify gene (or transcript) expression.</li>
+<li>Test for differences in expression among treatment groups.</li>
+<li>Interpret differential expression results via ranking, gene set enrichment, and/or pathway analysis.</li>
+</ol>
+<p>Steps 1 and 2 are typically done using Linux tools on the HPC. Steps 3 and 4 will require us to introduce a new language, <a href="https://www.r-project.org"><code>R</code></a>. Specialized software has been written for differential expression analysis in R, but R is very widely used in statistical analysis, data cleaning, and generating visualizations.</p>
+</section>
+<section id="focal-data" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="focal-data"><span class="header-section-number">10.3</span> Focal data</h2>
+<p>We’re going to walk through the workflow using a real dataset from <a href="https://www.science.org/doi/10.1126/science.aah4993">this paper</a>:</p>
+<blockquote class="blockquote">
+<p>Reid, Noah M., et al.&nbsp;“The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish.” Science 354.6317 (2016): 1305-1308.</p>
+</blockquote>
+<p>The Atlantic killifish (also known as the mummichog, <em>Fundulus heteroclitus</em>) is an abundant inhabitant of estuaries along the Atlantic coast of North America. Some of these estuaries were intensely polluted by heavy industry in the middle of the 20th century. Pollutants are diverse, but include highly toxic polychlorinated biphenyls (PCBs), polycyclic aromatic hydrocarbons (PAHs) and dioxins. These pollutants cause adverse effects in nearly all vertebrates, but exposure is particularly damaging during early development.</p>
+<p>In several distinct heavily polluted estuaries, killifish persist. These fish show extremely high resistance to these pollutants compared to fish from nearby sites with minimal pollution. The resistance is heritable across many generations in fish bred in the lab, indicating it has a genetic basis.</p>
+<p>The authors of this study wanted to determine the genomic basis of adaptation to toxic pollution in these fish, and learn whether it differed among populations at different polluted sites. They collected population genomic and gene expression data from 4 pairs of populations (one sensitive, one tolerant) to address this question. The population genomic data were generated from wild-caught fish. The expression data were the result of an experiment conducted with lab-bred fish from each population. See the paper for details, but in brief: embryos were exposed to either a DMSO control, or PCB-126. RNA from whole embryos was extracted to measure gene expression, with 4-6 replicates per treatment group.</p>
+<p>The authors measured gene expression with RNA-seq. RNA-seq will be covered in more detail in ISG5301, but briefly: RNA-seq is a catchall term that refers to RNA that has been extracted from a tissue or organism, reverse-transcribed into cDNA, and then fragmented and sequenced on the Illumina platform. We frequently use RNA-seq to quantify transcript or gene expression. To do this we make the assumption that the number of fragments of a given transcript or gene found in our sequencing library is roughly proportional to the frequency of that transcript in the cell population we extracted the RNA from.</p>
+<p>There are <em>lots</em> of caveats here, which we will cover in due time. At any rate, our goal in the first half of this workflow is to generate counts of RNA fragments attributable to a given gene or transcript to use as a measurement of expression.</p>
+<p>The RNA-seq data is what we’ll use here. In the chapters that follow, we’ll use data from the Elizabeth River/King’s Creek pair of populations, and exercises will require you to expand the analysis to include more populations.</p>
+</section>
+<section id="excercises" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="excercises"><span class="header-section-number">10.4</span> Excercises</h2>
+<p>Read the paper linked above and answer the following questions:</p>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -628,10 +645,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./04_0_measuring_expression_1.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Measuring Gene Expression I</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./01_0_IntroToLinux.html" class="pagination-link">
-        <span class="nav-page-text">Intro to Linux and Bash</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./04_2_project_organization.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
