@@ -665,23 +665,23 @@ C</code></pre>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-28" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-28" data-code-lines="5,6" data-code-annotation="1">We’ll use 10 CPUs and 20G of memory.</span>
+<span data-code-annotation="1" data-code-cell="annotated-cell-28" data-code-lines="5,6">We’ll use 10 CPUs and 20G of memory.</span>
 </dd>
 <dt data-target-cell="annotated-cell-28" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-28" data-code-lines="19,20" data-code-annotation="2">We will again use parallel to run fastqc in parallel on multiple files.</span>
+<span data-code-annotation="2" data-code-cell="annotated-cell-28" data-code-lines="19,20">We will again use parallel to run fastqc in parallel on multiple files.</span>
 </dd>
 <dt data-target-cell="annotated-cell-28" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-28" data-code-lines="23" data-code-annotation="3">Specify the input and output directories as variables, and create the output directory.</span>
+<span data-code-annotation="3" data-code-cell="annotated-cell-28" data-code-lines="23">Specify the input and output directories as variables, and create the output directory.</span>
 </dd>
 <dt data-target-cell="annotated-cell-28" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-cell="annotated-cell-28" data-code-lines="27" data-code-annotation="4">Re-use the accession list we created previously.</span>
+<span data-code-annotation="4" data-code-cell="annotated-cell-28" data-code-lines="27">Re-use the accession list we created previously.</span>
 </dd>
 <dt data-target-cell="annotated-cell-28" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-cell="annotated-cell-28" data-code-lines="29" data-code-annotation="5">Run fastqc in parallel. Note here we are <em>also</em> using a shell expansion <code>{1..2}</code> to simplify things. This runs fastqc on both files in a pair.</span>
+<span data-code-annotation="5" data-code-cell="annotated-cell-28" data-code-lines="29">Run fastqc in parallel. Note here we are <em>also</em> using a shell expansion <code>{1..2}</code> to simplify things. This runs fastqc on both files in a pair.</span>
 </dd>
 </dl>
 <p>Run this script with <code>sbatch 01_fastqc.sh</code>. Monitor it and ensure that it produces the output you expect with no errors. Run <code>seff &lt;jobid&gt;</code> to see how efficiently we used our resource request.</p>
@@ -789,27 +789,27 @@ C</code></pre>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-32" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="5" data-code-annotation="1">15G is probably overkill for Trimmomatic. We’ll check at the end.</span>
+<span data-code-annotation="1" data-code-cell="annotated-cell-32" data-code-lines="5">15G is probably overkill for Trimmomatic. We’ll check at the end.</span>
 </dd>
 <dt data-target-cell="annotated-cell-32" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="11,12" data-code-annotation="2">These options specify the array job <code>.err</code> and <code>.out</code> file name formats. The file names will be <code>&lt;jobname&gt;_&lt;jobid&gt;_&lt;SLURM_ARRAY_TASK_ID&gt;.{err,.out}</code></span>
+<span data-code-annotation="2" data-code-cell="annotated-cell-32" data-code-lines="11,12">These options specify the array job <code>.err</code> and <code>.out</code> file name formats. The file names will be <code>&lt;jobname&gt;_&lt;jobid&gt;_&lt;SLURM_ARRAY_TASK_ID&gt;.{err,.out}</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-32" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="13" data-code-annotation="3">This specifies the array task IDs, in this case a range: <code>[1-20]</code> and the number of jobs to run at once: <code>%10</code>. If you leave out the number of simultaneous jobs to run, the array will run as many as your resource allocation (and available resources) allow. If the array is large enough, this will prevent you from running any other jobs.</span>
+<span data-code-annotation="3" data-code-cell="annotated-cell-32" data-code-lines="13">This specifies the array task IDs, in this case a range: <code>[1-20]</code> and the number of jobs to run at once: <code>%10</code>. If you leave out the number of simultaneous jobs to run, the array will run as many as your resource allocation (and available resources) allow. If the array is large enough, this will prevent you from running any other jobs.</span>
 </dd>
 <dt data-target-cell="annotated-cell-32" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="31" data-code-annotation="4">The adapter sequences we determined we should supply.</span>
+<span data-code-annotation="4" data-code-cell="annotated-cell-32" data-code-lines="31">The adapter sequences we determined we should supply.</span>
 </dd>
 <dt data-target-cell="annotated-cell-32" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="38" data-code-annotation="5">In contrast to GNU parallel or a loop, we need a way to pull out a single sample for each array task. Here we use <code>sed</code> to extract a sample ID by its line number in our list of accessions.</span>
+<span data-code-annotation="5" data-code-cell="annotated-cell-32" data-code-lines="38">In contrast to GNU parallel or a loop, we need a way to pull out a single sample for each array task. Here we use <code>sed</code> to extract a sample ID by its line number in our list of accessions.</span>
 </dd>
 <dt data-target-cell="annotated-cell-32" data-target-annotation="6">6</dt>
 <dd>
-<span data-code-cell="annotated-cell-32" data-code-lines="40" data-code-annotation="6">This is our Trimmomatic command line, which we covered in the section on sequence QC.</span>
+<span data-code-annotation="6" data-code-cell="annotated-cell-32" data-code-lines="40">This is our Trimmomatic command line, which we covered in the section on sequence QC.</span>
 </dd>
 </dl>
 <p>With array jobs, as with loops and with GNU parallel, you may want to test that you have written the generic code correctly, and that the substitutions will occur as you expect. You could modify your code to simply echo important file paths and check the <code>.out</code> files to ensure things are correct:</p>
