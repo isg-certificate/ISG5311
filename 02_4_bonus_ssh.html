@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISG 5311 - Genomic Data Analysis in Practice - 17&nbsp; Untitled</title>
+<title>ISG 5311 - Genomic Data Analysis in Practice - 7&nbsp; Bonus: Making it easier to log in to the cluster</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,8 +64,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./08_0_writing.html" rel="next">
-<link href="./07_0_statistical_analysis_2.html" rel="prev">
+<link href="./02_5_bonus_bashrc.html" rel="next">
+<link href="./02_3_software.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -74,7 +108,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07_0_statistical_analysis_2.html">Statistical Analysis II</a></li><li class="breadcrumb-item"><a href="./07_1_stats_2.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_0_HPCandSLURM.html">HPC and SLURM</a></li><li class="breadcrumb-item"><a href="./02_4_bonus_ssh.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -167,6 +201,18 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_4_bonus_ssh.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_5_bonus_bashrc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bonus: Customizing your shell</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -181,19 +227,19 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
   </div>
 </li>
       </ul>
@@ -210,48 +256,31 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Measuring Gene Expression II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
   </div>
 </li>
       </ul>
@@ -259,16 +288,28 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis I</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis I: R and RStudio</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Getting to Know R and RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_2_baseRswirl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Base R with Swirl</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_3_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R and the Tidyverse</span></span></a>
   </div>
 </li>
       </ul>
@@ -276,16 +317,34 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis II: Differential expression analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Overview</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Count Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
   </div>
 </li>
       </ul>
@@ -294,15 +353,15 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Writing Reports</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -311,15 +370,15 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Presentations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -334,7 +393,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section"><span class="header-section-number">18</span> </a></li>
+  <li><a href="#ssh-keys" id="toc-ssh-keys" class="nav-link active" data-scroll-target="#ssh-keys"><span class="header-section-number">7.1</span> SSH keys</a>
+  <ul class="collapse">
+  <li><a href="#the-ssh-config" id="toc-the-ssh-config" class="nav-link" data-scroll-target="#the-ssh-config"><span class="header-section-number">7.1.1</span> The SSH config</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -343,7 +405,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></h1>
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></h1>
 </div>
 
 
@@ -358,10 +420,69 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="section" class="level1" data-number="18">
-<h1 data-number="18"><span class="header-section-number">18</span> </h1>
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>Make logging in to Xanadu easier</td>
+</tr>
+</tbody>
+</table>
+<p>So far logging in to Xanadu has required significant typing: <code>ssh username@xanadu-submit-ext.cam.uchc.edu</code> followed by your password. But we can make this easier in a few ways! First, we can create <strong>ssh keys</strong> that will authenticate you, so you won’t have to enter a password. Second, we can edit a configuration file to create a shortcut (or several shortcuts) to Xanadu login nodes.</p>
+<section id="ssh-keys" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="ssh-keys"><span class="header-section-number">7.1</span> SSH keys</h2>
+<p>We at the CBC are certainly not experts in cryptography, so we won’t try to explain the details. In simple form, an ssh key is a means of verifying your identity that does not require a password. It consists of a pair of files, a <strong>public</strong> key, and a <strong>private</strong> key. You place the public key on a remote server, and keep the private key on your local machine. When you try to log in to the remote server, it essentially asks your machine a question that can only be answered by the private key. It’s extremely important that you keep your private key <em>private</em> and secure, as in some ways it serves as a password. The public key is less sensitive.</p>
+<p>So how do we create and use SSH keys? Linux-based systems come with software for creating and managing SSH keys.</p>
+<p>For this, we’ll start in a local terminal window (i.e.&nbsp;one that is <em>not</em> logged in to Xanadu). Go to the hidden directory <code>.ssh</code> that should be found in your home directory.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/.ssh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you don’t have this directory, create it with <code>mkdir ~/.ssh</code>, and then <code>cd</code> into it. Any files in the Linux file system that begin with <code>.</code> are hidden by default from directory listings. You can see them with <code>ls -a</code>.</p>
+<p>Now, to create an ssh key pair type:</p>
+<pre><code>ssh-keygen -b 2048</code></pre>
+<p>First will ask you to name the file, but you don’t have to. It will use the default name in parentheses.</p>
+<p>Then it will ask you to create a passphrase. You don’t have to do this, but it will make the key more secure. If you don’t, anyone who gets your key pair will be able to log in to Xanadu.</p>
+<p>If you used the default names, and you type <code>ls</code> you should have the files:</p>
+<pre><code>id_rsa 
+id_rsa.pub </code></pre>
+<p><code>id_rsa.pub</code> is the public key and <code>id_rsa</code>, the private one. Now, use <code>scp</code> to upload the public key to Xanadu:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> username@transfer.cam.uchc.edu:~/.ssh/ id_rsa.pub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you don’t have a <code>.ssh</code> directory on Xanadu, log in and create one, then try uploading again.</p>
+<p>Finally, to avoid having to enter the ssh key passphrase (if you created one), you should do:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-add</span> id_rsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And enter your passphrase at the prompt if you created one.</p>
+<p>Now when you log in, you should not have to enter your password.</p>
+<section id="the-ssh-config" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="the-ssh-config"><span class="header-section-number">7.1.1</span> The SSH config</h3>
+<p>The second thing we can do to ease connecting to Xanadu is to modify our ssh configuration file, simply called <code>config</code>.</p>
+<p>This file, if it already exists will also be in the <code>.ssh</code> hidden directory. Go there now. If the file does not exist, create it with</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I’m going to suggest using <code>nano</code> to edit this file for now, but you can use any editor you like.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then enter:</p>
+<pre><code>Host xanadu
+Hostname xanadu-submit-ext.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa</code></pre>
+<p>Remember to subsitute <code>username</code> for your own username, and if you renamed the ssh keys, change the name here as well.</p>
+<p><code>xanadu</code> will be the name of the shortcut, you can change this if you want. You could cut it down to just <code>x</code> if you want to absolutely minimize typing.</p>
+<p>Now you should be able to log in with <code>ssh xanadu</code>.</p>
+<p>You can set one of these up for the transfer node as well:</p>
+<pre><code>Host transfer
+Hostname transfer.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa</code></pre>
+<p>Or if you want to have shortcuts for specific login nodes (numbers 1-5):</p>
+<pre><code>Host hpc1
+Hostname hpc-ext-1.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa</code></pre>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -600,13 +721,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./07_0_statistical_analysis_2.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Statistical Analysis II</span>
+      <a href="./02_3_software.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./08_0_writing.html" class="pagination-link">
-        <span class="nav-page-text">Writing Reports</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./02_5_bonus_bashrc.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bonus: Customizing your shell</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

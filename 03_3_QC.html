@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISG 5311 - Genomic Data Analysis in Practice - 9&nbsp; Sequence QC</title>
+<title>ISG 5311 - Genomic Data Analysis in Practice - 11&nbsp; Sequence QC</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_0_sequencing_data.html">Sequencing Data</a></li><li class="breadcrumb-item"><a href="./03_3_QC.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_0_sequencing_data.html">Sequencing Data</a></li><li class="breadcrumb-item"><a href="./03_3_QC.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -201,6 +201,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_4_bonus_ssh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_5_bonus_bashrc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bonus: Customizing your shell</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -215,19 +227,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
   </div>
 </li>
       </ul>
@@ -244,48 +256,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Measuring Gene Expression II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
   </div>
 </li>
       </ul>
@@ -293,16 +288,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis I</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis I: R and RStudio</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Getting to Know R and RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_2_baseRswirl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Base R with Swirl</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_3_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R and the Tidyverse</span></span></a>
   </div>
 </li>
       </ul>
@@ -310,16 +317,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis II: Differential expression analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Overview</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Count Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
   </div>
 </li>
       </ul>
@@ -328,15 +353,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Writing Reports</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -345,15 +370,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Presentations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -368,14 +393,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#quality-control-of-sequence-data" id="toc-quality-control-of-sequence-data" class="nav-link active" data-scroll-target="#quality-control-of-sequence-data"><span class="header-section-number">9.1</span> Quality control of sequence data</a>
+  <li><a href="#quality-control-of-sequence-data" id="toc-quality-control-of-sequence-data" class="nav-link active" data-scroll-target="#quality-control-of-sequence-data"><span class="header-section-number">11.1</span> Quality control of sequence data</a>
   <ul class="collapse">
-  <li><a href="#collecting-basic-summaries" id="toc-collecting-basic-summaries" class="nav-link" data-scroll-target="#collecting-basic-summaries"><span class="header-section-number">9.1.1</span> Collecting basic summaries</a></li>
-  <li><a href="#trimming" id="toc-trimming" class="nav-link" data-scroll-target="#trimming"><span class="header-section-number">9.1.2</span> Trimming</a></li>
-  <li><a href="#detecting-mixtures-and-contamination" id="toc-detecting-mixtures-and-contamination" class="nav-link" data-scroll-target="#detecting-mixtures-and-contamination"><span class="header-section-number">9.1.3</span> Detecting mixtures and contamination</a></li>
+  <li><a href="#collecting-basic-summaries" id="toc-collecting-basic-summaries" class="nav-link" data-scroll-target="#collecting-basic-summaries"><span class="header-section-number">11.1.1</span> Collecting basic summaries</a></li>
+  <li><a href="#trimming" id="toc-trimming" class="nav-link" data-scroll-target="#trimming"><span class="header-section-number">11.1.2</span> Trimming</a></li>
+  <li><a href="#detecting-mixtures-and-contamination" id="toc-detecting-mixtures-and-contamination" class="nav-link" data-scroll-target="#detecting-mixtures-and-contamination"><span class="header-section-number">11.1.3</span> Detecting mixtures and contamination</a></li>
   </ul></li>
-  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc"><span class="header-section-number">9.2</span> MultiQC</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.3</span> Exercises:</a></li>
+  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc"><span class="header-section-number">11.2</span> MultiQC</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">11.3</span> Exercises:</a></li>
   </ul>
 </nav>
     </div>
@@ -384,7 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></h1>
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></h1>
 </div>
 
 
@@ -412,8 +437,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<section id="quality-control-of-sequence-data" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="quality-control-of-sequence-data"><span class="header-section-number">9.1</span> Quality control of sequence data</h2>
+<section id="quality-control-of-sequence-data" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="quality-control-of-sequence-data"><span class="header-section-number">11.1</span> Quality control of sequence data</h2>
 <p>In this section we’re going to work on doing some standard quality checks for sequencing data. There are three basic topics to cover here:</p>
 <ol type="1">
 <li>Collecting basic summaries</li>
@@ -421,10 +446,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Contamination detection</li>
 </ol>
 <p>The only one that is absolutely required across all data types and experiments is the collection of basic summaries. Your sequencing center may be lovely and your lab scientists ultra-competent, but you can’t just trust that you’ve got the data you expect, you have to actually look at it. There is no worse feeling than troubleshooting a pipeline step-by-step backward from the final products, only to discover if you had just taken a few minutes to scrutinize the data before you got started, the last many hours (days? weeks?) of your work would not have been wasted. Once you look at summary data, you can decide whether you can proceed, or if further action is required.</p>
-<section id="collecting-basic-summaries" class="level3" data-number="9.1.1">
-<h3 data-number="9.1.1" class="anchored" data-anchor-id="collecting-basic-summaries"><span class="header-section-number">9.1.1</span> Collecting basic summaries</h3>
-<section id="illumina-data" class="level4" data-number="9.1.1.1">
-<h4 data-number="9.1.1.1" class="anchored" data-anchor-id="illumina-data"><span class="header-section-number">9.1.1.1</span> Illumina data</h4>
+<section id="collecting-basic-summaries" class="level3" data-number="11.1.1">
+<h3 data-number="11.1.1" class="anchored" data-anchor-id="collecting-basic-summaries"><span class="header-section-number">11.1.1</span> Collecting basic summaries</h3>
+<section id="illumina-data" class="level4" data-number="11.1.1.1">
+<h4 data-number="11.1.1.1" class="anchored" data-anchor-id="illumina-data"><span class="header-section-number">11.1.1.1</span> Illumina data</h4>
 <p>We typically use <code>fastqc</code> to characterize Illumina data. It’s been around a long time, and it does a fine job of covering summaries we want to look at for most applications. It flags statistics when they are worrisome, but this is less useful, because these flags are tuned to apply to whole genome sequencing data (WGS), so if you have a sequencing library that has different characteristics (e.g.&nbsp;RNA-seq), fastqc will often flag it as problematic though it may not be.</p>
 <p>Paired-end sequence is typically delivered in two separate files, which we analyze separately with fastqc.</p>
 <p>The usage for fastqc is very simple:</p>
@@ -436,8 +461,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The main output from fastqc is an HTML file which is viewed in a web browser. You can also aggregate many of these HTML files into a single report using multiqc (see below).</p>
 <p>For an explanation of fastqc output, please watch <a href="https://www.youtube.com/watch?v=bz93ReOv87Y">this video</a> created by the developers, look at their example reports <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">here</a> and read the brief descriptions of the analysis modules <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/">here</a>.</p>
 </section>
-<section id="oxford-nanopore-technologies-data" class="level4" data-number="9.1.1.2">
-<h4 data-number="9.1.1.2" class="anchored" data-anchor-id="oxford-nanopore-technologies-data"><span class="header-section-number">9.1.1.2</span> Oxford Nanopore Technologies data</h4>
+<section id="oxford-nanopore-technologies-data" class="level4" data-number="11.1.1.2">
+<h4 data-number="11.1.1.2" class="anchored" data-anchor-id="oxford-nanopore-technologies-data"><span class="header-section-number">11.1.1.2</span> Oxford Nanopore Technologies data</h4>
 <p>ONT data straight from the sequencer is a bit more complex than Illumina data. The raw signal data is often delivered alongside fastq files (or sometimes BAM alignment files - more on that later). Furthermore, the data are often chunked up into many smaller files that you may need to concatenate together for further analysis.</p>
 <p>The signal data is delivered in fast5 (deprecated) or pod5 format. You will need the signal data if you want to re-basecall, or do modified basecalling (i.e identify methylated bases). We won’t cover that this semester.</p>
 <p>When basecalling is complete, a file, usually named <code>sequencing_summary.txt</code> is produced. This file can be used to quickly generate summaries of the quality and length distribution of the reads. This information can be generated directly from the reads themselves, but it’s slower. While there can’t be much length variation in Illumina data (even if you quality trim it, every read is going to be &lt;= 300bp), for Nanopore data the length distribution can be very wide and highly variable among runs and so it’s a key variable for understanding your data.</p>
@@ -470,14 +495,14 @@ Note
 </div>
 </div>
 </section>
-<section id="pacbio" class="level4" data-number="9.1.1.3">
-<h4 data-number="9.1.1.3" class="anchored" data-anchor-id="pacbio"><span class="header-section-number">9.1.1.3</span> PacBio</h4>
+<section id="pacbio" class="level4" data-number="11.1.1.3">
+<h4 data-number="11.1.1.3" class="anchored" data-anchor-id="pacbio"><span class="header-section-number">11.1.1.3</span> PacBio</h4>
 <p>PacBio HiFi data is nice and simple. It’s not paired-end, and since we don’t usually look at the “subreads” that make up the HiFi consensus sequences, we are usually only concerned with a single fastq file.</p>
 <p>To summarize, you can use PacBio’s proprietary smrtlink software and feed it an XML formatted file produced by the sequencer. Like the helper files from ONT, though, these are not typically available in public databases, so we recommend just using NanoPlot on the fastq file, as above.</p>
 </section>
 </section>
-<section id="trimming" class="level3" data-number="9.1.2">
-<h3 data-number="9.1.2" class="anchored" data-anchor-id="trimming"><span class="header-section-number">9.1.2</span> Trimming</h3>
+<section id="trimming" class="level3" data-number="11.1.2">
+<h3 data-number="11.1.2" class="anchored" data-anchor-id="trimming"><span class="header-section-number">11.1.2</span> Trimming</h3>
 <p>Trimming is something we typically do only with Illumina data. There are three aspects to it:</p>
 <ol type="1">
 <li>Removing adapter contamination (“read-through” contamination is the most common type by far).</li>
@@ -506,8 +531,8 @@ Note
 <p>A couple of notes: - <code>\</code> at the end of each line tells the bash interpreter to ignore the line break so that all 7 lines above are treated as a single continuous line. This simply allows more clarity with long command lines. - <code>java -jar program.jar &lt;options&gt;</code> is a common way to run programs written in Java. In the module system we usually have the module create an environment variable upon loading that contains the path to the jarfile. Try loading Trimmomatic and doing <code>echo $Trimmomatic</code> now. You can see how it is set by doing <code>module display Trimmomatic/0.39</code> and looking at the <code>setenv</code> line. - <code>ILLUMINACLIP</code> provides the parameters needed to search for adapters. Read through the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">documentation</a> to understand it better. - <code>SLIDINGWINDOW</code> gives parameters for sliding window quality trimming (if any 4 bases drop below a mean Q of 25, the rest of the read is trimmed) - <code>MINLEN</code> should be self-explanatory.</p>
 <p>We may do other quality filtering for ONT and PacBio data, depending on application, but that is typically length and/or mean quality filtering, which can be easily accomplished using <code>seqkit</code>, which we demonstrated previously, or taxonomy-based filtering which we will cover in the next section. For more in depth filtering of long reads by quality and length you can also try <a href="https://github.com/rrwick/Filtlong"><code>filtlong</code></a>, but we won’t cover it here.</p>
 </section>
-<section id="detecting-mixtures-and-contamination" class="level3" data-number="9.1.3">
-<h3 data-number="9.1.3" class="anchored" data-anchor-id="detecting-mixtures-and-contamination"><span class="header-section-number">9.1.3</span> Detecting mixtures and contamination</h3>
+<section id="detecting-mixtures-and-contamination" class="level3" data-number="11.1.3">
+<h3 data-number="11.1.3" class="anchored" data-anchor-id="detecting-mixtures-and-contamination"><span class="header-section-number">11.1.3</span> Detecting mixtures and contamination</h3>
 <p>Sometimes our sequence data is a mixture of DNA or RNA from different organisms. This may be a result of biology. That is, for some organisms, tissues, or data types, we may be unable to completely separate our focal organism’s DNA or RNA from one or more other organisms. In this case, non-target DNA is usually derived from a taxonomically distant organism.</p>
 <p>Mixtures may also be a result of inadvertent contamination in the field or laboratory. Depending on the context, mixtures may be of distant or closely related organisms.</p>
 <p>When we are concerned this may be the case, there are QC steps we can take. When it is detected, what we decide to do depends on our downstream application. We may want to remove non-target reads at this stage, or we may want to retain them and manage their influence on our analysis later.</p>
@@ -540,8 +565,8 @@ Note
 <p>The stdout captured by <code>outdir/centrifuge_results.txt</code> will give the classification of every read. <code>outdir/report.tsv</code> will give the taxonomic summary.</p>
 </section>
 </section>
-<section id="multiqc" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="multiqc"><span class="header-section-number">9.2</span> MultiQC</h2>
+<section id="multiqc" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="multiqc"><span class="header-section-number">11.2</span> MultiQC</h2>
 <p><a href="https://multiqc.info"><code>MultiQC</code></a> is a fantastic tool for aggregating quality reports across samples and pieces of software. It can read in reports from most things we’ll use and digest them into a readable format. This is particularly useful when you have many samples. You can imagine that checking fastqc html files individually for 20 or 30 (or 800) samples can range from tedious to virtually impossible. MultiQC gives you a quick overview of everything that can key you into problems when they exist.</p>
 <p>MultiQC has very simple usage:<br>
 </p>
@@ -550,8 +575,8 @@ Note
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> multiqc_out input_dir</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>-o</code> specifies an output directory. <code>-f</code> means “force-overwrite” if the directory already exists and contains results (handy when re-running or testing scripts). MultiQC will search <code>input_dir</code> and subdirectories for summary files it recognizes.</p>
 </section>
-<section id="exercises" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.3</span> Exercises:</h2>
+<section id="exercises" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">11.3</span> Exercises:</h2>
 <p>In the directory <code>/core/cbc/gdafiles/ISG5311/data/sequence_examples/</code> we have 6 sequencing data from our three focal platforms. You will run various QC steps on each.</p>
 <p>In the <code>Illumina</code> subdirectory, we have three datasets:</p>
 <ol type="1">
@@ -844,7 +869,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./03_2_platforms.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

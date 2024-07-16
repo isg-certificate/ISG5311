@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISG 5311 - Genomic Data Analysis in Practice - 13&nbsp; Reference Alignment</title>
+<title>ISG 5311 - Genomic Data Analysis in Practice - 15&nbsp; Reference Alignment</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li><li class="breadcrumb-item"><a href="./04_4_alignment.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_0_measuring_expression_1.html">Measuring Gene Expression I</a></li><li class="breadcrumb-item"><a href="./04_4_alignment.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -201,6 +201,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_4_bonus_ssh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_5_bonus_bashrc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bonus: Customizing your shell</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -215,19 +227,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_2_platforms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_3_QC.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
   </div>
 </li>
       </ul>
@@ -244,48 +256,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_2_project_organization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_4_alignment.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_5_quantification.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a href="./05_0_measuring_expression_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Measuring Gene Expression II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_1_rnaseq_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
   </div>
 </li>
       </ul>
@@ -293,16 +288,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis I</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis I: R and RStudio</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06_1_stats_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Getting to Know R and RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_2_baseRswirl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Base R with Swirl</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_3_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R and the Tidyverse</span></span></a>
   </div>
 </li>
       </ul>
@@ -310,16 +317,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Statistical Analysis II</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+ <span class="menu-text">Statistical Analysis II: Differential expression analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07_1_stats_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Overview</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Count Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
   </div>
 </li>
       </ul>
@@ -328,15 +353,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="./08_0_writing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Writing Reports</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -345,15 +370,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="./09_0_presentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Presentations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09_1_presentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
   </div>
 </li>
       </ul>
@@ -368,22 +393,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#indexing-the-reference-genome" id="toc-indexing-the-reference-genome" class="nav-link active" data-scroll-target="#indexing-the-reference-genome"><span class="header-section-number">13.1</span> Indexing the reference genome</a></li>
-  <li><a href="#aligning-to-the-reference" id="toc-aligning-to-the-reference" class="nav-link" data-scroll-target="#aligning-to-the-reference"><span class="header-section-number">13.2</span> Aligning to the reference</a></li>
-  <li><a href="#sambam-format" id="toc-sambam-format" class="nav-link" data-scroll-target="#sambam-format"><span class="header-section-number">13.3</span> SAM/BAM format</a>
+  <li><a href="#indexing-the-reference-genome" id="toc-indexing-the-reference-genome" class="nav-link active" data-scroll-target="#indexing-the-reference-genome"><span class="header-section-number">15.1</span> Indexing the reference genome</a></li>
+  <li><a href="#aligning-to-the-reference" id="toc-aligning-to-the-reference" class="nav-link" data-scroll-target="#aligning-to-the-reference"><span class="header-section-number">15.2</span> Aligning to the reference</a></li>
+  <li><a href="#sambam-format" id="toc-sambam-format" class="nav-link" data-scroll-target="#sambam-format"><span class="header-section-number">15.3</span> SAM/BAM format</a>
   <ul class="collapse">
-  <li><a href="#the-header" id="toc-the-header" class="nav-link" data-scroll-target="#the-header"><span class="header-section-number">13.3.1</span> The header</a></li>
-  <li><a href="#the-alignments" id="toc-the-alignments" class="nav-link" data-scroll-target="#the-alignments"><span class="header-section-number">13.3.2</span> The alignments</a></li>
-  <li><a href="#manipulating-alignments" id="toc-manipulating-alignments" class="nav-link" data-scroll-target="#manipulating-alignments"><span class="header-section-number">13.3.3</span> Manipulating alignments</a></li>
-  <li><a href="#visualizing-alignments" id="toc-visualizing-alignments" class="nav-link" data-scroll-target="#visualizing-alignments"><span class="header-section-number">13.3.4</span> Visualizing alignments</a></li>
+  <li><a href="#the-header" id="toc-the-header" class="nav-link" data-scroll-target="#the-header"><span class="header-section-number">15.3.1</span> The header</a></li>
+  <li><a href="#the-alignments" id="toc-the-alignments" class="nav-link" data-scroll-target="#the-alignments"><span class="header-section-number">15.3.2</span> The alignments</a></li>
+  <li><a href="#manipulating-alignments" id="toc-manipulating-alignments" class="nav-link" data-scroll-target="#manipulating-alignments"><span class="header-section-number">15.3.3</span> Manipulating alignments</a></li>
+  <li><a href="#visualizing-alignments" id="toc-visualizing-alignments" class="nav-link" data-scroll-target="#visualizing-alignments"><span class="header-section-number">15.3.4</span> Visualizing alignments</a></li>
   </ul></li>
-  <li><a href="#alignment-qc" id="toc-alignment-qc" class="nav-link" data-scroll-target="#alignment-qc"><span class="header-section-number">13.4</span> Alignment QC</a>
+  <li><a href="#alignment-qc" id="toc-alignment-qc" class="nav-link" data-scroll-target="#alignment-qc"><span class="header-section-number">15.4</span> Alignment QC</a>
   <ul class="collapse">
-  <li><a href="#samtools-stats" id="toc-samtools-stats" class="nav-link" data-scroll-target="#samtools-stats"><span class="header-section-number">13.4.1</span> <code>samtools stats</code></a></li>
-  <li><a href="#qualimap" id="toc-qualimap" class="nav-link" data-scroll-target="#qualimap"><span class="header-section-number">13.4.2</span> <code>qualimap</code></a></li>
-  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc"><span class="header-section-number">13.4.3</span> MultiQC</a></li>
+  <li><a href="#samtools-stats" id="toc-samtools-stats" class="nav-link" data-scroll-target="#samtools-stats"><span class="header-section-number">15.4.1</span> <code>samtools stats</code></a></li>
+  <li><a href="#qualimap" id="toc-qualimap" class="nav-link" data-scroll-target="#qualimap"><span class="header-section-number">15.4.2</span> <code>qualimap</code></a></li>
+  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc"><span class="header-section-number">15.4.3</span> MultiQC</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">13.5</span> Results</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">15.5</span> Results</a></li>
   </ul>
 </nav>
     </div>
@@ -392,7 +417,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reference Alignment</span></h1>
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></h1>
 </div>
 
 
@@ -416,13 +441,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
-<td>blah blah</td>
+<td>Align data against a reference genome</td>
+</tr>
+<tr class="odd">
+<td>Perform alignment QC</td>
+</tr>
+<tr class="even">
+<td>Manipulate alignments in SAM/BAM format</td>
 </tr>
 </tbody>
 </table>
 <p>Now that we’ve got our genome, our annotation, and we’ve downloaded our sequence data and QC’ed it, we’re ready to begin the process of quantifying gene expression. Remember that the measurement we are making is <strong>a count of fragments of RNA derived from a given gene</strong>. In this chapter we will quantify gene expression by mapping our RNA fragments against a reference genome. We’ll use the annotation of the reference genome to determine which fragments originated from which genes. We’ll cover each of the steps needed for this analysis, and talk about the relevant file formats in depth.</p>
-<section id="indexing-the-reference-genome" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="indexing-the-reference-genome"><span class="header-section-number">13.1</span> Indexing the reference genome</h2>
+<section id="indexing-the-reference-genome" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="indexing-the-reference-genome"><span class="header-section-number">15.1</span> Indexing the reference genome</h2>
 <p>The process of alignment to a reference genome requires identifying possible mapping locations for each read pair, scoring them, and then choosing the one with the best score (or possibly randomly selecting from among ties).</p>
 <p>It goes without saying that even small genomes are pretty large (at least among eurkaryotes), so the process of finding initial candidate matches would be quite time-consuming if you had to check every location in the genome for every read. To get around this, all commonly used reference alignment software creates an <strong>index</strong>. Indexes function much like they do in large texts: interesting topics (in this case short genomic subsequences) and their page numbers (genomic locations) are stored. When you want to find locations of interest, you find them quickly through the index, rather than scanning through the entire text.</p>
 <p>Variations on the genome index and the way it is searched have been a main target for innovation among different read aligners, so each one will require you to create a particular index.</p>
@@ -460,8 +491,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">hisat2-build</span> <span class="at">-p</span> 16 <span class="va">$GENOME</span> <span class="va">$OUTDIR</span>/Fhet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We should be getting pretty familiar with the general organization of our scripts now, so go ahead and run this with <code>sbatch 01_index.sh</code>. When it completes, it should have created an index, which is actually a series of files, with the path/prefix <code>$OUTDIR/Fhet</code>. When aligning reads, you’ll specify that path/prefix, not the reference genome itself. We don’t need to be concerned with what’s in these index files, as we will never need to parse or modify them.</p>
 </section>
-<section id="aligning-to-the-reference" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="aligning-to-the-reference"><span class="header-section-number">13.2</span> Aligning to the reference</h2>
+<section id="aligning-to-the-reference" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="aligning-to-the-reference"><span class="header-section-number">15.2</span> Aligning to the reference</h2>
 <p>Now we have our index ready to go, we’re ready to align reads to the reference genome (again using <code>HISAT2</code>). Producing a usable alignment file requires a few steps:</p>
 <ol type="1">
 <li>Alignment. Read pairs are passed to the aligner, and alignments information produced. Reads come out in the order they went in, but as a single file this time (more on the format below).</li>
@@ -523,23 +554,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-2" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-annotation="1" data-code-cell="annotated-cell-2" data-code-lines="5,6">The amount of memory required for aligners depends on the size of the genome being analyzed. The <em>F. heteroclitus</em> genome is about 1GB, and our index takes about 1.5G of disk space. We requested 15G of memory above, but probably could have gotten by with more like 5G. We request 3 cpus (2 for the aligner and 1 for the sorter). The aligner could probably go faster with a few more, but this doesn’t take too long as it is.</span>
+<span data-code-lines="5,6" data-code-cell="annotated-cell-2" data-code-annotation="1">The amount of memory required for aligners depends on the size of the genome being analyzed. The <em>F. heteroclitus</em> genome is about 1GB, and our index takes about 1.5G of disk space. We requested 15G of memory above, but probably could have gotten by with more like 5G. We request 3 cpus (2 for the aligner and 1 for the sorter). The aligner could probably go faster with a few more, but this doesn’t take too long as it is.</span>
 </dd>
 <dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-annotation="2" data-code-cell="annotated-cell-2" data-code-lines="34">Note that we provide only the path and prefix to our index files.</span>
+<span data-code-lines="34" data-code-cell="annotated-cell-2" data-code-annotation="2">Note that we provide only the path and prefix to our index files.</span>
 </dd>
 <dt data-target-cell="annotated-cell-2" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-annotation="3" data-code-cell="annotated-cell-2" data-code-lines="41">Our alignment command, broken up across a few lines with <code>\</code>. It’s fairly straightforward. It writes to the standard out. We capture it with a pipe and send it to be sorted and compressed.</span>
+<span data-code-lines="41" data-code-cell="annotated-cell-2" data-code-annotation="3">Our alignment command, broken up across a few lines with <code>\</code>. It’s fairly straightforward. It writes to the standard out. We capture it with a pipe and send it to be sorted and compressed.</span>
 </dd>
 <dt data-target-cell="annotated-cell-2" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-annotation="4" data-code-cell="annotated-cell-2" data-code-lines="46">Here we are using <code>samtools sort</code> to sort the file. <code>-@ 1</code> means use a single CPU. <code>-T ${OUTDIR}/${SAMPLE}</code> is specifying the location and prefix of any temporary files (sorting can create many, many temporary alignment files and then merge them). <code>-</code> tells samtools to read from the standard input (the pipe). And finally we write to a file with the suffix <code>.bam</code>, which is the compressed alignment format, written by default.</span>
+<span data-code-lines="46" data-code-cell="annotated-cell-2" data-code-annotation="4">Here we are using <code>samtools sort</code> to sort the file. <code>-@ 1</code> means use a single CPU. <code>-T ${OUTDIR}/${SAMPLE}</code> is specifying the location and prefix of any temporary files (sorting can create many, many temporary alignment files and then merge them). <code>-</code> tells samtools to read from the standard input (the pipe). And finally we write to a file with the suffix <code>.bam</code>, which is the compressed alignment format, written by default.</span>
 </dd>
 <dt data-target-cell="annotated-cell-2" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-annotation="5" data-code-cell="annotated-cell-2" data-code-lines="49">For the last step, we create the index file with <code>samtools index</code>. This will produce a file with the suffix <code>.bam.bai</code> in the same directory as the bam.</span>
+<span data-code-lines="49" data-code-cell="annotated-cell-2" data-code-annotation="5">For the last step, we create the index file with <code>samtools index</code>. This will produce a file with the suffix <code>.bam.bai</code> in the same directory as the bam.</span>
 </dd>
 </dl>
 <p>Submit this script with <code>sbatch 02_align.sh</code> and monitor it. Ensure that all alignments complete successfully, and that you wind up with 20 <code>.bam</code> files and 20 <code>.bam.bai</code> files in the output directory. Check the <code>.err</code> file. hisat2 produces a helpful (but annoying to parse) summary of the alignment rate. Not all aligners do this. An example:</p>
@@ -562,12 +593,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Concordant alignment means the pairs of sequences have an orientation and distance between them consistent with expectations. The expected orientation is for pairs to be on opposite strands, (they were generated from opposite ends of a single fragment of DNA) and “inward” facing. The expected distance is often calculated from the library itself (the fragment size distribution is library specific), but generally read pairs ought not be mapped to separate contigs or chromosomes. When any of these expectations are violated, pairs are marked as discordantly mapping.</p>
 <p>Ideally we would see a concordant alignment rate higher than 67%, but this genome is an older assembly. It is highly fragmented and probably missing some sequences. That would contribute to cases where reads map discordantly (across contigs, particularly) or one or both reads in a pair fails to map. An overall alignment rate of 83% is not stellar, but not terrible either. For a good library on a highly contiguous and complete genome the overall mapping percentage could be expected to be in the high 80s to 90s.</p>
 </section>
-<section id="sambam-format" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="sambam-format"><span class="header-section-number">13.3</span> SAM/BAM format</h2>
+<section id="sambam-format" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="sambam-format"><span class="header-section-number">15.3</span> SAM/BAM format</h2>
 <p>Now we have our alignments in <code>.bam</code> files. <code>BAM</code> stands for <strong>binary alignment/map</strong> It is (barring some minor differences) the compressed, binary version of <code>SAM</code>, or <strong>sequence alignment/map</strong> format. Even though we always store our files in BAM, we are going to cover <code>SAM</code> format here in some detail, as it is the plain-text, human-readable format, and as you will see, it is trivial to convert between them as necessary.</p>
 <p>You can find the official specification with lots of detail and definitions <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">here</a>. We’re going to go over the basics here. As with many formats in bioinformatics,</p>
-<section id="the-header" class="level3" data-number="13.3.1">
-<h3 data-number="13.3.1" class="anchored" data-anchor-id="the-header"><span class="header-section-number">13.3.1</span> The header</h3>
+<section id="the-header" class="level3" data-number="15.3.1">
+<h3 data-number="15.3.1" class="anchored" data-anchor-id="the-header"><span class="header-section-number">15.3.1</span> The header</h3>
 <p><code>SAM</code> files begin with a <strong>header</strong>. All header lines start with <code>@</code> and a tag indicating the contents. The first line gives the SAM version and the sort order, e.g.:</p>
 <pre><code>@HD VN:1.0  SO:coordinate</code></pre>
 <p>Next comes a sequence dictionary (<code>@SQ</code>), which lists the names and lengths of sequences in the reference genome:</p>
@@ -580,8 +611,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 @PG ID:samtools.1   PN:samtools PP:samtools VN:1.16.1   CL:samtools sort -@ 1 -T ../../results/03_align/alignments/SRR12475447 -</code></pre>
 <p>Note that the hisat2 call is different from our actual command line. The <code>hisat2</code> program we used is a wrapper script that called a separate program to do the alignments.</p>
 </section>
-<section id="the-alignments" class="level3" data-number="13.3.2">
-<h3 data-number="13.3.2" class="anchored" data-anchor-id="the-alignments"><span class="header-section-number">13.3.2</span> The alignments</h3>
+<section id="the-alignments" class="level3" data-number="15.3.2">
+<h3 data-number="15.3.2" class="anchored" data-anchor-id="the-alignments"><span class="header-section-number">15.3.2</span> The alignments</h3>
 <p>After the header comes alignment data in tabular format. The tabular data has 11 mandatory columns, though many aligners add more custom columns after. The mandatory columns are:</p>
 <table class="table">
 <colgroup>
@@ -670,13 +701,13 @@ SRR12475447.2727    83  KN805525.1  223743  60  101M    =   223469  -375    TATG
 SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC   700B&lt;7B&lt;7BB&lt;FFFBBBF7700B'FB7F&lt;0007B'7&lt;&lt;&lt;FFFBBBB&lt;B&lt;&lt;0B   AS:i:-2 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:35A17  YS:i:-7 YT:Z:CP XS:A:-  NH:i:1</code></pre>
 <p>Note the opposite-signed and very long TLEN. Presumably the length is due to the gap between the reads spanning an exon (in addition to the splice in one of the reads). Most sequenced fragments from Illumina will actually be between 200-600bp.</p>
 </section>
-<section id="manipulating-alignments" class="level3" data-number="13.3.3">
-<h3 data-number="13.3.3" class="anchored" data-anchor-id="manipulating-alignments"><span class="header-section-number">13.3.3</span> Manipulating alignments</h3>
+<section id="manipulating-alignments" class="level3" data-number="15.3.3">
+<h3 data-number="15.3.3" class="anchored" data-anchor-id="manipulating-alignments"><span class="header-section-number">15.3.3</span> Manipulating alignments</h3>
 <p>To manipulate SAM/BAM files we typically use <a href="http://www.htslib.org"><code>samtools</code></a>, a large toolkit with functions for viewing, editing and summarizing. We’re going to cover a few key modules here, but you should skim the documentation afterward to get a sense of what else you can do with it. Log in to Xanadu and start an interactive session now. Load samtools:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Type <code>samtools</code> to see all available submodules. To see the usage and options for any one of them, try, e.g.&nbsp;<code>samtools view --help</code>.</p>
-<section id="samtools-view" class="level4" data-number="13.3.3.1">
-<h4 data-number="13.3.3.1" class="anchored" data-anchor-id="samtools-view"><span class="header-section-number">13.3.3.1</span> <code>samtools view</code></h4>
+<section id="samtools-view" class="level4" data-number="15.3.3.1">
+<h4 data-number="15.3.3.1" class="anchored" data-anchor-id="samtools-view"><span class="header-section-number">15.3.3.1</span> <code>samtools view</code></h4>
 <p>The most basic function in samtools is <code>view</code>. We can use it to convert between SAM and BAM format. In practice this the tool we frequently use to spot-check alignments, or to quickly summarize data from a genomic region. Go to the alignments directory you have created, <code>results/03_align/alignments</code>, and let’s try some things out.</p>
 <p>The following will simply print the first 10 alignments in the file in SAM format (remember, BAM is not human readable):</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view SRR12475447.bam <span class="kw">|</span> <span class="fu">head</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -720,8 +751,8 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <p>Splices in the CIGAR string are encoded as a number of bases in the reference genome followed by the letter N. In this example, <code>20M5329N81M</code>, <code>5329N</code> represents a read that is aligned in two pieces 5,329 bases apart. This is probably an intron, though read mappers are not perfect. So to extract that pattern from CIGAR, we use the following options in grep: <code>-o</code> extracts the regex match. <code>-P</code> uses “perl-style” regular expressions. The “perl-style” regular expressions are required in grep to use the “positive lookbehind” <code>(?=N)</code>, which means the match string must be followed by an <code>N</code>, but <code>N</code> is not included in the match. So the regex <code>"[0-9]+(?=N)"</code> matches one or more numbers followed by an <code>N</code>. In total, our “one-liner” (broken up across multiple lines here!) extracts splice lengths from each CIGAR, counts them up and sorts them by frequency.</p>
 <p>We have a number of splices supported by many reads, so in the 50kb region we are looking at, there are probably one ore more genes with reasonably high expression levels.</p>
 </section>
-<section id="other-modules-in-samtools" class="level4" data-number="13.3.3.2">
-<h4 data-number="13.3.3.2" class="anchored" data-anchor-id="other-modules-in-samtools"><span class="header-section-number">13.3.3.2</span> Other modules in <code>samtools</code></h4>
+<section id="other-modules-in-samtools" class="level4" data-number="15.3.3.2">
+<h4 data-number="15.3.3.2" class="anchored" data-anchor-id="other-modules-in-samtools"><span class="header-section-number">15.3.3.2</span> Other modules in <code>samtools</code></h4>
 <p>To get an overall summary of your alignment, there are two tools: <code>samtools stats</code> and <code>samtools flagstats</code>. We saw <code>flagstats</code> above. <code>stats</code> provides lots of useful summaries, and we’ll cover it in more detail below.</p>
 <p>We used <code>samtools sort</code> above to position sort our BAM files.</p>
 <p>We saw an <code>faidx</code> command as part of <code>seqkit</code>, and it does the same thing here: creates a simple fasta index and allows you to extract sequence from it. Usually used on reference genomes.</p>
@@ -743,8 +774,8 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <p>As you would expect, out of the 50,001 sites in this window, 41,538 have &lt; 10x coverage (29,124 have exactly 0).</p>
 </section>
 </section>
-<section id="visualizing-alignments" class="level3" data-number="13.3.4">
-<h3 data-number="13.3.4" class="anchored" data-anchor-id="visualizing-alignments"><span class="header-section-number">13.3.4</span> Visualizing alignments</h3>
+<section id="visualizing-alignments" class="level3" data-number="15.3.4">
+<h3 data-number="15.3.4" class="anchored" data-anchor-id="visualizing-alignments"><span class="header-section-number">15.3.4</span> Visualizing alignments</h3>
 <p>To visualize alignments, samtools has a function called <code>tview</code>, but it’s a pretty miserable experience in general. We usually use a GUI program <a href="https://igv.org"><code>IGV</code></a>, which we will demonstrate here.</p>
 <p>You’ll need to run IGV <strong>locally</strong>, not on Xanadu, so first download it from the link above.</p>
 <p>To view data hosted on Xanadu, you’ll need to either download what you want to view (not ideal), or connect your computer’s file system to Xanadu’s (see Chapter 4.4.4 for instructions on that). Remember, to connect to Xanadu this way you’ll need to be connected to the CAM VPN.</p>
@@ -767,11 +798,11 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <p>IGV is good for spot checking regions of interest in BAM files, and for getting a sense of what alignment data actually look like. Take some time to explore this and get a sense of what’s going on.</p>
 </section>
 </section>
-<section id="alignment-qc" class="level2" data-number="13.4">
-<h2 data-number="13.4" class="anchored" data-anchor-id="alignment-qc"><span class="header-section-number">13.4</span> Alignment QC</h2>
+<section id="alignment-qc" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="alignment-qc"><span class="header-section-number">15.4</span> Alignment QC</h2>
 <p>We’ve now gotten our sequence data aligned to the reference genome, and you’re hopefully coming to grips with SAM formatted alignments and how we can manage them. Now we’re going to cover a couple tools we can use to get high level summaries of our alignments that can help us spot problems, or be assured of the quality of our data and analysis.</p>
-<section id="samtools-stats" class="level3" data-number="13.4.1">
-<h3 data-number="13.4.1" class="anchored" data-anchor-id="samtools-stats"><span class="header-section-number">13.4.1</span> <code>samtools stats</code></h3>
+<section id="samtools-stats" class="level3" data-number="15.4.1">
+<h3 data-number="15.4.1" class="anchored" data-anchor-id="samtools-stats"><span class="header-section-number">15.4.1</span> <code>samtools stats</code></h3>
 <p>The first tool we’re going to use is <code>samtools stats</code>. This tool generates a large variety of summary tables for each bam alignment file. We’re going to focus on just one table it produces, the “summary numbers” table. The usage of <code>stats</code> is simple:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> stats <span class="va">$INDIR</span>/myfile.bam <span class="op">&gt;</span><span class="va">$OUTDIR</span>/myfile.stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Many tables are captured in the output file, but they are all prefixed with an abbreviation. To get the summary numbers table we do:</p>
@@ -880,38 +911,38 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-31" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-annotation="1" data-code-cell="annotated-cell-31" data-code-lines="36">Hopefully this idiom is becoming familiar at this point!</span>
+<span data-code-lines="36" data-code-cell="annotated-cell-31" data-code-annotation="1">Hopefully this idiom is becoming familiar at this point!</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-annotation="2" data-code-cell="annotated-cell-31" data-code-lines="42">This is a bash array. We are taking all the stats output files and putting them in a list.</span>
+<span data-code-lines="42" data-code-cell="annotated-cell-31" data-code-annotation="2">This is a bash array. We are taking all the stats output files and putting them in a list.</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-annotation="3" data-code-cell="annotated-cell-31" data-code-lines="45">Initialize our table with <em>just</em> the rownames</span>
+<span data-code-lines="45" data-code-cell="annotated-cell-31" data-code-annotation="3">Initialize our table with <em>just</em> the rownames</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-annotation="4" data-code-cell="annotated-cell-31" data-code-lines="48">Loop over every stats file.</span>
+<span data-code-lines="48" data-code-cell="annotated-cell-31" data-code-annotation="4">Loop over every stats file.</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-annotation="5" data-code-cell="annotated-cell-31" data-code-lines="49">This is a bit new. <code>paste</code> is like the horizontal version of <code>cat</code>. We’re adding new columns to this file. By default they are tab-separated. <code>&lt;(command)</code> is called a “process substitution”. It’s like a pipe inside the command line. Instead of a file, we’re passing the output of <code>grep ^SN $file | cut -f 3</code> as the second argument to <code>paste</code>.</span>
+<span data-code-lines="49" data-code-cell="annotated-cell-31" data-code-annotation="5">This is a bit new. <code>paste</code> is like the horizontal version of <code>cat</code>. We’re adding new columns to this file. By default they are tab-separated. <code>&lt;(command)</code> is called a “process substitution”. It’s like a pipe inside the command line. Instead of a file, we’re passing the output of <code>grep ^SN $file | cut -f 3</code> as the second argument to <code>paste</code>.</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="6">6</dt>
 <dd>
-<span data-code-annotation="6" data-code-cell="annotated-cell-31" data-code-lines="50">We redirected the previous line to <code>SN2.txt</code>, which now contains the previous iteration’s version of <code>SN.txt</code> plus the new column. Here we replace <code>SN.txt</code> with <code>SN2.txt</code> and then repeat in the next iteration of the loop, iteratively building the table.</span>
+<span data-code-lines="50" data-code-cell="annotated-cell-31" data-code-annotation="6">We redirected the previous line to <code>SN2.txt</code>, which now contains the previous iteration’s version of <code>SN.txt</code> plus the new column. Here we replace <code>SN.txt</code> with <code>SN2.txt</code> and then repeat in the next iteration of the loop, iteratively building the table.</span>
 </dd>
 <dt data-target-cell="annotated-cell-31" data-target-annotation="7">7</dt>
 <dd>
-<span data-code-annotation="7" data-code-cell="annotated-cell-31" data-code-lines="55">Here we add a header containing sample names to the table.</span>
+<span data-code-lines="55" data-code-cell="annotated-cell-31" data-code-annotation="7">Here we add a header containing sample names to the table.</span>
 </dd>
 </dl>
 <p>This is a bit clunky, but it works. We will also aggregate these stats using multiqc below, but it doesn’t get <em>all</em> the statistics for us, and we’re going to need a nice table like this for downstream analysis in <code>R</code>.</p>
 <p>Go ahead and run this with <code>sbatch 03_samtools_stats.sh</code>. Monitor its progress. Check that it completed without error. Make sure that you have the expected number of files in the results directory.</p>
 </section>
-<section id="qualimap" class="level3" data-number="13.4.2">
-<h3 data-number="13.4.2" class="anchored" data-anchor-id="qualimap"><span class="header-section-number">13.4.2</span> <code>qualimap</code></h3>
+<section id="qualimap" class="level3" data-number="15.4.2">
+<h3 data-number="15.4.2" class="anchored" data-anchor-id="qualimap"><span class="header-section-number">15.4.2</span> <code>qualimap</code></h3>
 <p>samtools gave us some basic summaries of the alignments, but it would also be helpful to get a high level overview of mapping with respect to our annotation. We have RNA-seq data, so most of our reads should map to genes, right? We’re going to use <code>qualimap</code> for this. It will tell us how many reads map to exons, introns, and intergenic regions. It will calculate 5’-3’ bias (where within transcripts reads tend to map) and strand bias (whether more reads map to the forward or reverse strand, but only if you specify a stranded library).</p>
 <p>We have been referring to our annotation file repeatedly, and you are probably wondering about it by now, but we are going to put off an explanation of annotation formats until the next chapter when we cover expression quantification.</p>
 <p>Our script is <code>scripts/03_align/04_qualimap.sh</code>. It looks like this:</p>
@@ -962,8 +993,8 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">--java-mem-size</span><span class="op">=</span>2G  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Most of this should look familiar. We are telling <code>qualimap</code> to operate in <code>rnaseq</code> mode. We provide a bam file and a GTF annotation file. It will output an HTML formatted report.</p>
 </section>
-<section id="multiqc" class="level3" data-number="13.4.3">
-<h3 data-number="13.4.3" class="anchored" data-anchor-id="multiqc"><span class="header-section-number">13.4.3</span> MultiQC</h3>
+<section id="multiqc" class="level3" data-number="15.4.3">
+<h3 data-number="15.4.3" class="anchored" data-anchor-id="multiqc"><span class="header-section-number">15.4.3</span> MultiQC</h3>
 <p>Finally, run our MultiQC script <code>scripts/03_align/05_multiqc.sh</code>.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=multiqc</span></span>
@@ -999,8 +1030,8 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <p>We could run this in one go with the qualimap and stats output in a single report, but here we’re going to produce separate reports.</p>
 </section>
 </section>
-<section id="results" class="level2" data-number="13.5">
-<h2 data-number="13.5" class="anchored" data-anchor-id="results"><span class="header-section-number">13.5</span> Results</h2>
+<section id="results" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="results"><span class="header-section-number">15.5</span> Results</h2>
 <p>We should note a few things about these data before moving on.</p>
 <ol type="1">
 <li>We have a single sample that essentially failed. It has a very small number of sequences and will need to ultimately be excluded from analysis. These days we shoot for about 20 million read pairs for RNA-seq analysis. This is an older data set that falls a little short of that, but our failed sample has only about 10,000 read pairs. It’s not uncommon for samples to fail or to be otherwise problematic. Study designs should have high enough replication that this doesn’t compromise the experiment.</li>
@@ -1248,12 +1279,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./04_3_retrieving_data.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Retrieving data</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Retrieving data</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./04_5_quantification.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

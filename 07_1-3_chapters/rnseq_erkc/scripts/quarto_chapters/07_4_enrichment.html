@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ISG 5311 - Genomic Data Analysis in Practice - 23&nbsp; Functional Interpretation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../">
+<link href="../../../../08_0_writing.html" rel="next">
+<link href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" rel="prev">
+<script src="../../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<link href="../../../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../07_0_statistical_analysis_2.html">Statistical Analysis II: Differential expression analysis</a></li><li class="breadcrumb-item"><a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../../../">ISG 5311 - Genomic Data Analysis in Practice</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../01_0_IntroToLinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Linux and Bash</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../01_1_setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Connected</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../01_2_gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with Linux</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../01_3_morelinux.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../02_0_HPCandSLURM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HPC and SLURM</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../02_1_scripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Scripts and putting it all together</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../02_2_hpc_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">SLURM: the job scheduler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../02_3_software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Storage and Software on HPC</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../02_4_bonus_ssh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Bonus: Making it easier to log in to the cluster</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../02_5_bonus_bashrc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bonus: Customizing your shell</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../03_0_sequencing_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequencing Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../03_1_seqdata_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">High-throughput sequencing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../03_2_platforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Sequencing platforms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../03_3_QC.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Sequence QC</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Measuring Gene Expression I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../04_1_rnaseq_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Overview of differential expression with RNA-seq</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../04_2_project_organization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Project Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../04_3_retrieving_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Retrieving data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../04_4_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Reference Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../04_5_quantification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Expression Quantification</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis I: R and RStudio</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../06_1_stats_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Getting to Know R and RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../06_2_baseRswirl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Base R with Swirl</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../06_3_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R and the Tidyverse</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Analysis II: Differential expression analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Overview</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Count Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../08_0_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../08_1_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../09_0_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../09_1_presentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#functional-annotation" id="toc-functional-annotation" class="nav-link active" data-scroll-target="#functional-annotation"><span class="header-section-number">23.1</span> Functional annotation</a>
+  <ul class="collapse">
+  <li><a href="#the-gene-ontology" id="toc-the-gene-ontology" class="nav-link" data-scroll-target="#the-gene-ontology"><span class="header-section-number">23.1.1</span> The Gene Ontology</a></li>
+  </ul></li>
+  <li><a href="#retrieving-functional-annotations" id="toc-retrieving-functional-annotations" class="nav-link" data-scroll-target="#retrieving-functional-annotations"><span class="header-section-number">23.2</span> Retrieving functional annotations</a>
+  <ul class="collapse">
+  <li><a href="#setting-up-a-biomart-dataset" id="toc-setting-up-a-biomart-dataset" class="nav-link" data-scroll-target="#setting-up-a-biomart-dataset"><span class="header-section-number">23.2.1</span> Setting up a biomaRt dataset</a></li>
+  <li><a href="#querying-the-biomart-dataset" id="toc-querying-the-biomart-dataset" class="nav-link" data-scroll-target="#querying-the-biomart-dataset"><span class="header-section-number">23.2.2</span> Querying the biomaRt dataset</a></li>
+  </ul></li>
+  <li><a href="#trolling-through-our-gene-list" id="toc-trolling-through-our-gene-list" class="nav-link" data-scroll-target="#trolling-through-our-gene-list"><span class="header-section-number">23.3</span> Trolling through our gene list</a></li>
+  <li><a href="#enrichment-analysis" id="toc-enrichment-analysis" class="nav-link" data-scroll-target="#enrichment-analysis"><span class="header-section-number">23.4</span> Enrichment analysis</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Objectives:</strong></td>
+</tr>
+<tr class="even">
+<td>Customize your shell</td>
+</tr>
+</tbody>
+</table>
+<p>We’ve conducted a differential expression analysis and gotten log2 fold changes and adjusted p-values for our genes. We’ve interpreted the results in the absence of any knowledge of what those genes are. This is a useful way to approach some types of studies, particularly when it’s not clear yet even in the broad sense how the study subjects respond to experimental factors. But we definitely would like to investigate in more detail, with the goal of understanding biological processes that are involved in the response we see.</p>
+<p>Continue building your script from the previous two chapters. This chapter assumes you’ve got the variables created previously in your environment. Restart your RStudio session without saving anything, though, and execute everything up until now. Sort out any errors before moving forward.</p>
+<section id="functional-annotation" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="functional-annotation"><span class="header-section-number">23.1</span> Functional annotation</h2>
+<p>To accomplish our goal, we need a <strong>functional annotation</strong>.</p>
+<p>We discussed this briefly before, but to reiterate: our GFF/GTF files are <em>structural</em> annotations. They tell us where gene features are, but not necessarily what the genes are let alone what they do. To gain that understanding, we need a <em>functional annotation</em>. Functional annotation is a generic term that can refer to any type of functional information. In this course we’ll focus on using <a href="https://geneontology.org">Gene Ontology</a> terms that have been applied to the genes in our structural annotation.</p>
+<section id="the-gene-ontology" class="level3" data-number="23.1.1">
+<h3 data-number="23.1.1" class="anchored" data-anchor-id="the-gene-ontology"><span class="header-section-number">23.1.1</span> The Gene Ontology</h3>
+<p>The Gene Ontology is a controlled vocabulary that can be used to describe gene features. The ontology has three term categories:</p>
+<ol type="1">
+<li>Cellular component</li>
+<li>Molecular function</li>
+<li>Biological process.</li>
+</ol>
+<p>All terms used to describe gene products fall in one of these three categories. GO terms within these categories are linked in network (a <a href="https://en.wikipedia.org/wiki/Directed_acyclic_graph"><em>directed acyclic graph</em></a>). Terms are assigned numeric levels, and the higher the number, the more specific the term. Parent terms have lower numeric levels, and are more generally applicable. For a concrete example, see the page for <a href="https://amigo.geneontology.org/amigo/term/GO:0005996">GO:0005996</a>, “monosaccharide metabolic process”. Click the tab for “Inferred Tree View”. This will show you the parent and child terms associated with this term. If you click the “Graph View” tab, and the “OLSVIS (interactive)”, you will be able to see the directed acyclic graph that unites this term with its parent and child terms.</p>
+<p>The GO consortium maintains these terms, and updates their relationships, but it does not <em>apply</em> them. How are terms applied to genes? Typically by research groups. For model systems like human, mouse and various <em>Drosophila</em> species, many terms will be applied based on experimental evidence that the term is relevant. Rigorous annotations like these can also include links to published research that supports the application of the term. For many non-model systems, terms are applied based on the evolutionary relationships or structural or sequence similarity of focal genes to annotated genes in model systems.</p>
+<p>The latter is the case for <em>Fundulus heteroclitus</em>. We got our structural annotation from ENSEMBL, which has also produced a functional annotation. We’re going to query the ENSEMBL database below to retrieve putative gene names and GO terms for our annotated gene features.</p>
+</section>
+</section>
+<section id="retrieving-functional-annotations" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="retrieving-functional-annotations"><span class="header-section-number">23.2</span> Retrieving functional annotations</h2>
+<p>Here we’re going to pull functional annotation information from <a href="https://useast.ensembl.org/index.html">ENSEMBL</a>. It’s a very easy way to get the information we need. If you were working on a model vertebrate, you could also use ENSEMBL, but there are other sources of packaged annotation information as well.</p>
+<p>To get the annotation information from ENSEMBL, we’re going to use the package <a href="https://bioconductor.org/packages/release/bioc/html/biomaRt.html"><code>bioMaRt</code></a>. This package is a Bioconductor package, so you’ll need to install it accordingly. <a href="https://link.springer.com/article/10.1186/1471-2164-10-22">BioMart</a>, distinct from the R package, is a data management system that allows querying of biological databases. A few large databases use it, including ENSEMBL. The R package allows us to query ENSEMBL directly from within R. Follow along below, but there is also a detailed vignette <a href="https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/accessing_ensembl.html">here</a>.</p>
+<section id="setting-up-a-biomart-dataset" class="level3" data-number="23.2.1">
+<h3 data-number="23.2.1" class="anchored" data-anchor-id="setting-up-a-biomart-dataset"><span class="header-section-number">23.2.1</span> Setting up a biomaRt dataset</h3>
+<p>The first thing we need to do is point to a version of the ensembl database we want to access. We’re working with v112. We can list the versions like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(biomaRt)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">listEnsemblArchives</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date"],"name":[2],"type":["chr"],"align":["left"]},{"label":["url"],"name":[3],"type":["chr"],"align":["left"]},{"label":["version"],"name":[4],"type":["chr"],"align":["left"]},{"label":["current_release"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"Ensembl GRCh37","2":"Feb 2014","3":"https://grch37.ensembl.org","4":"GRCh37","5":""},{"1":"Ensembl 112","2":"May 2024","3":"https://may2024.archive.ensembl.org","4":"112","5":"*"},{"1":"Ensembl 111","2":"Jan 2024","3":"https://jan2024.archive.ensembl.org","4":"111","5":""},{"1":"Ensembl 110","2":"Jul 2023","3":"https://jul2023.archive.ensembl.org","4":"110","5":""},{"1":"Ensembl 109","2":"Feb 2023","3":"https://feb2023.archive.ensembl.org","4":"109","5":""},{"1":"Ensembl 108","2":"Oct 2022","3":"https://oct2022.archive.ensembl.org","4":"108","5":""},{"1":"Ensembl 107","2":"Jul 2022","3":"https://jul2022.archive.ensembl.org","4":"107","5":""},{"1":"Ensembl 106","2":"Apr 2022","3":"https://apr2022.archive.ensembl.org","4":"106","5":""},{"1":"Ensembl 105","2":"Dec 2021","3":"https://dec2021.archive.ensembl.org","4":"105","5":""},{"1":"Ensembl 104","2":"May 2021","3":"https://may2021.archive.ensembl.org","4":"104","5":""},{"1":"Ensembl 103","2":"Feb 2021","3":"https://feb2021.archive.ensembl.org","4":"103","5":""},{"1":"Ensembl 102","2":"Nov 2020","3":"https://nov2020.archive.ensembl.org","4":"102","5":""},{"1":"Ensembl 101","2":"Aug 2020","3":"https://aug2020.archive.ensembl.org","4":"101","5":""},{"1":"Ensembl 100","2":"Apr 2020","3":"https://apr2020.archive.ensembl.org","4":"100","5":""},{"1":"Ensembl 99","2":"Jan 2020","3":"https://jan2020.archive.ensembl.org","4":"99","5":""},{"1":"Ensembl 98","2":"Sep 2019","3":"https://sep2019.archive.ensembl.org","4":"98","5":""},{"1":"Ensembl 97","2":"Jul 2019","3":"https://jul2019.archive.ensembl.org","4":"97","5":""},{"1":"Ensembl 80","2":"May 2015","3":"https://may2015.archive.ensembl.org","4":"80","5":""},{"1":"Ensembl 77","2":"Oct 2014","3":"https://oct2014.archive.ensembl.org","4":"77","5":""},{"1":"Ensembl 75","2":"Feb 2014","3":"https://feb2014.archive.ensembl.org","4":"75","5":""},{"1":"Ensembl 54","2":"May 2009","3":"https://may2009.archive.ensembl.org","4":"54","5":""}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>We can see the url for v112 is <code>https://may2024.archive.ensembl.org</code>. Each ENSEMBL archive actually contains several databases, or “marts”. We can list them like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ensemblhost <span class="ot">&lt;-</span> <span class="st">"https://may2024.archive.ensembl.org"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">listMarts</span>(<span class="at">host=</span>ensemblhost)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["biomart"],"name":[1],"type":["chr"],"align":["left"]},{"label":["version"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ENSEMBL_MART_ENSEMBL","2":"Ensembl Genes 112"},{"1":"ENSEMBL_MART_MOUSE","2":"Mouse strains 112"},{"1":"ENSEMBL_MART_SNP","2":"Ensembl Variation 112"},{"1":"ENSEMBL_MART_FUNCGEN","2":"Ensembl Regulation 112"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>We want the gene database, so we’re going to select it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># occasionally ensembl will have connectivity issues. we can try an alternative function:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", mirror = "useast")</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart=</span><span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host=</span>ensemblhost)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Within each database are datasets centered on each species. You can list them with <code>listDatasets(mart)</code>, but there are 214, so we won’t write them all out here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">listDatasets</span>(mart) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["dataset"],"name":[1],"type":["I<chr>"],"align":["right"]},{"label":["description"],"name":[2],"type":["I<chr>"],"align":["right"]},{"label":["version"],"name":[3],"type":["I<chr>"],"align":["right"]}],"data":[{"1":"abrachyrhynchus_gene_ensembl","2":"Pink-footed goose genes (ASM259213v1)","3":"ASM259213v1","_rn_":"1"},{"1":"acalliptera_gene_ensembl","2":"Eastern happy genes (fAstCal1.3)","3":"fAstCal1.3","_rn_":"2"},{"1":"acarolinensis_gene_ensembl","2":"Green anole genes (AnoCar2.0v2)","3":"AnoCar2.0v2","_rn_":"3"},{"1":"acchrysaetos_gene_ensembl","2":"Golden eagle genes (bAquChr1.2)","3":"bAquChr1.2","_rn_":"4"},{"1":"acitrinellus_gene_ensembl","2":"Midas cichlid genes (Midas_v5)","3":"Midas_v5","_rn_":"5"},{"1":"amelanoleuca_gene_ensembl","2":"Giant panda genes (ASM200744v2)","3":"ASM200744v2","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>We can look through them, or search the descriptions for our species:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchDatasets</span>(mart,<span class="at">pattern=</span><span class="st">"heteroclitus"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["dataset"],"name":[1],"type":["I<chr>"],"align":["right"]},{"label":["description"],"name":[2],"type":["I<chr>"],"align":["right"]},{"label":["version"],"name":[3],"type":["I<chr>"],"align":["right"]}],"data":[{"1":"fheteroclitus_gene_ensembl","2":"Mummichog genes (Fundulus_heteroclitus-3.0.2)","3":"Fundulus_heteroclitus-3.0.2","_rn_":"69"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Now we can create an object for our dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># store dataset name</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>killidata <span class="ot">&lt;-</span> <span class="fu">searchDatasets</span>(mart,<span class="at">pattern=</span><span class="st">"heteroclitus"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create dataset object</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>killi_mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart =</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host =</span> ensemblhost, <span class="at">dataset =</span> killidata)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># if above there were connectivity issues and you used the alternative function then:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># killi_mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = killidata, mirror = "useast")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="querying-the-biomart-dataset" class="level3" data-number="23.2.2">
+<h3 data-number="23.2.2" class="anchored" data-anchor-id="querying-the-biomart-dataset"><span class="header-section-number">23.2.2</span> Querying the biomaRt dataset</h3>
+<p>In BioMart’s terminology, we have three factors we need to consider when making a query:</p>
+<ol type="1">
+<li>filters</li>
+<li>attributes</li>
+<li>values</li>
+</ol>
+<p>According to the vignette, “filters and values define restrictions on the query”. You can think of a filter as a column in a table, like “ENSEMBL gene ID”. You can think of values as the values in the cells of the column. To retrieve data you can provide a filter and the values that it can take on. To extract data about genes, we will provide ENSEMBL gene IDs, but there are many other filters. To see them all, try <code>listFilters(killi_mart)</code>. You could extract all genes on a given set of chromosome/scaffold, all genes tagged with a list of GO terms, or even provide a list of genes from another species in the database and extract their orthologs.</p>
+<p>Attributes are similar to filters, except that these are the data we wish to retrieve. To see available attributes, try <code>listAttributes(killi_mart)</code>.</p>
+<p>We can search filters and attributes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchAttributes</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern =</span> <span class="st">"ensembl_gene_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["page"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"ensembl_gene_id","2":"Gene stable ID","3":"feature_page","_rn_":"1"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"feature_page","_rn_":"2"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"structure","_rn_":"137"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"structure","_rn_":"138"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"homologs","_rn_":"177"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"homologs","_rn_":"178"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"sequences","_rn_":"2803"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"sequences","_rn_":"2804"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchFilters</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern=</span><span class="st">"ensembl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ensembl_gene_id","2":"Gene stable ID(s) [e.g. ENSFHEG00000000002]","_rn_":"30"},{"1":"ensembl_gene_id_version","2":"Gene stable ID(s) with version [e.g. ENSFHEG00000000002.1]","_rn_":"31"},{"1":"ensembl_transcript_id","2":"Transcript stable ID(s) [e.g. ENSFHET00000000002]","_rn_":"32"},{"1":"ensembl_transcript_id_version","2":"Transcript stable ID(s) with version [e.g. ENSFHET00000000002.1]","_rn_":"33"},{"1":"ensembl_peptide_id","2":"Protein stable ID(s) [e.g. ENSFHEP00000000002]","_rn_":"34"},{"1":"ensembl_peptide_id_version","2":"Protein stable ID(s) with version [e.g. ENSFHEP00000000002.1]","_rn_":"35"},{"1":"ensembl_exon_id","2":"Exon ID(s) [e.g. ENSFHEE00000000002]","_rn_":"36"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>We are going to extract attributes: gene names, inferred transcript length (longest per gene) and GO terms. We’re going to use the ENSEMBL gene ID as the filter, and pull the values from one of our results objects.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene names and ts length</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"transcript_length"</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># pick only the longest transcript for each gene ID</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">group_by</span>(ann, ensembl_gene_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(.,<span class="at">description=</span><span class="fu">unique</span>(description),<span class="at">transcript_length=</span><span class="fu">max</span>(transcript_length)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># get GO term info</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each row is a single gene ID to GO ID mapping, so the table has many more rows than genes in the analysis</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>go_ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"go_id"</span>,<span class="st">"name_1006"</span>,<span class="st">"namespace_1003"</span>),</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>ann</code> object is now a table with three columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ignore rows with empty gene descriptions</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ann, description<span class="sc">!=</span><span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["transcript_length"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"ENSFHEG00000000007","2":"NADH dehydrogenase subunit 1 [Source:NCBI gene;Acc:7668434]","3":"975","_rn_":"1"},{"1":"ENSFHEG00000000011","2":"NADH dehydrogenase subunit 2 [Source:NCBI gene;Acc:7668422]","3":"1045","_rn_":"2"},{"1":"ENSFHEG00000000017","2":"cytochrome c oxidase subunit I [Source:NCBI gene;Acc:7668423]","3":"1542","_rn_":"3"},{"1":"ENSFHEG00000000020","2":"cytochrome c oxidase subunit II [Source:NCBI gene;Acc:7668424]","3":"691","_rn_":"4"},{"1":"ENSFHEG00000000022","2":"ATP synthase F0 subunit 8 [Source:NCBI gene;Acc:7668425]","3":"168","_rn_":"5"},{"1":"ENSFHEG00000000023","2":"ATP synthase F0 subunit 6 [Source:NCBI gene;Acc:7668426]","3":"684","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>The go_ann object:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(go_ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["go_id"],"name":[3],"type":["chr"],"align":["left"]},{"label":["name_1006"],"name":[4],"type":["chr"],"align":["left"]},{"label":["namespace_1003"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"ENSFHEG00000000002","2":"","3":"GO:0030533","4":"triplet codon-amino acid adaptor activity","5":"molecular_function","_rn_":"1"},{"1":"ENSFHEG00000000002","2":"","3":"GO:0006412","4":"translation","5":"biological_process","_rn_":"2"},{"1":"ENSFHEG00000000003","2":"","3":"","4":"","5":"","_rn_":"3"},{"1":"ENSFHEG00000000004","2":"","3":"GO:0030533","4":"triplet codon-amino acid adaptor activity","5":"molecular_function","_rn_":"4"},{"1":"ENSFHEG00000000004","2":"","3":"GO:0006412","4":"translation","5":"biological_process","_rn_":"5"},{"1":"ENSFHEG00000000005","2":"","3":"GO:0003735","4":"structural constituent of ribosome","5":"molecular_function","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Column 3 is the GO term, column 4 is the description of the term, column 5 is the type of term.</p>
+</section>
+</section>
+<section id="trolling-through-our-gene-list" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="trolling-through-our-gene-list"><span class="header-section-number">23.3</span> Trolling through our gene list</h2>
+<p>We’re going to get to more comprehensive approaches in a moment, but it can be very helpful to start with a DE analysis by simply looking at the ranked list of genes and looking through the literature and some databases to learn about them. Depending on your prior knowledge of your system, or the genes involved, this could prove helpful.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to DE results</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>kcdose_shrink_ann <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"ensembl_gene_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(., ann) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(ensembl_gene_id)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kcdose_shrink_ann, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["baseMean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["description"],"name":[7],"type":["chr"],"align":["left"]},{"label":["transcript_length"],"name":[8],"type":["int"],"align":["right"]}],"data":[{"1":"ENSFHEG00000010510","2":"2504.91429","3":"8.003643","4":"0.2543706","5":"1.325714e-218","6":"2.599461e-214","7":"cytochrome P450 1A1 [Source:NCBI gene;Acc:105930482]","8":"2708","_rn_":"1"},{"1":"ENSFHEG00000008855","2":"1267.13309","3":"6.323822","4":"0.2764744","5":"1.146296e-116","6":"1.123829e-112","7":"cytochrome P450, family 1, subfamily C, polypeptide 1 [Source:ZFIN;Acc:ZDB-GENE-050522-501]","8":"2763","_rn_":"2"},{"1":"ENSFHEG00000008848","2":"19.85558","3":"5.353391","4":"0.6254974","5":"1.987678e-18","6":"4.330488e-15","7":"cytochrome P450, family 1, subfamily C, polypeptide 2 [Source:ZFIN;Acc:ZDB-GENE-050705-1]","8":"2779","_rn_":"3"},{"1":"ENSFHEG00000002649","2":"115.45892","3":"4.949948","4":"0.3084651","5":"1.451381e-58","6":"5.691737e-55","7":"fibroblast growth factor 7 [Source:NCBI gene;Acc:105936368]","8":"2973","_rn_":"4"},{"1":"ENSFHEG00000021655","2":"792.49226","3":"4.517178","4":"0.2694031","5":"8.240991e-64","6":"4.039734e-60","7":"cytochrome P450 1B1 [Source:NCBI gene;Acc:105926177]","8":"4246","_rn_":"5"},{"1":"ENSFHEG00000011110","2":"1597.11234","3":"4.193588","4":"0.1942319","5":"2.545203e-104","6":"1.663545e-100","7":"cytochrome b5 [Source:NCBI gene;Acc:105917072]","8":"2588","_rn_":"6"},{"1":"ENSFHEG00000020789","2":"19.98550","3":"-3.115233","4":"1.7770506","5":"3.765727e-06","6":"1.070121e-03","7":"hepcidin antimicrobial peptide [Source:NCBI gene;Acc:105916803]","8":"858","_rn_":"7"},{"1":"ENSFHEG00000008836","2":"84.86309","3":"2.613928","4":"0.3888698","5":"1.651428e-14","6":"3.238120e-11","7":"GTP cyclohydrolase I feedback regulator [Source:NCBI gene;Acc:105916581]","8":"2100","_rn_":"8"},{"1":"ENSFHEG00000014747","2":"33.33021","3":"2.486423","4":"0.4117707","5":"1.377845e-12","6":"2.456072e-09","7":"forkhead box Q1a [Source:ZFIN;Acc:ZDB-GENE-070424-74]","8":"714","_rn_":"9"},{"1":"ENSFHEG00000011240","2":"216.79832","3":"2.463991","4":"0.2560286","5":"1.277712e-24","6":"3.579054e-21","7":"UDP glucuronosyltransferase family 1 member A1 [Source:NCBI gene;Acc:105919170]","8":"3370","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>If we look at the description column something immediately jumps out at us. Among our top upregulated genes are 4(!) cytochrome P450s. From the first <a href="https://pubmed.ncbi.nlm.nih.gov/28124606/">literature link on a google search</a>:</p>
+<pre><code>The cytochrome P450 (CYP) enzymes are membrane-bound hemoproteins that play a pivotal role in the detoxification of xenobiotics, cellular metabolism and homeostasis.</code></pre>
+<p>If we start looking up these top 10 differentially regulated genes we’ll see there is already quite a bit known about many of them (with the exception perhaps of hepcidin) with respect to toxicant exposure, and that they are all already known to be upregulated to aryl-hydrocarbon receptor signaling in response to various types nasty chemicals.</p>
+<p>We can look at the <a href="https://ctdbase.org">comparative toxicogenomics database</a>, which will allow us to search by chemical or gene for known connections. We can look at <a href="https://reactome.org">reactome</a>, a pathway database. Or we can just dig into the literature.</p>
+<p>So what we can already start to see here is that our pattern of strong expression response in AHR signaling pathway genes in KC, but not ER, suggests that the tolerance phenotype is linked to a desensitization of this pathway to toxicants.</p>
+<p>There is a broader way to approach this question though, and it will provide is a bit more comprehensive view of what’s going on here, rather than a focus on the first few genes (out of hundreds of differentially regulated genes).</p>
+</section>
+<section id="enrichment-analysis" class="level2" data-number="23.4">
+<h2 data-number="23.4" class="anchored" data-anchor-id="enrichment-analysis"><span class="header-section-number">23.4</span> Enrichment analysis</h2>
+<p>We didn’t just grab gene names above, we also pulled down GO terms. There are two mostly similar ways we can approach analyzing our GO terms.</p>
+<ol type="1">
+<li>Over-representation analysis.</li>
+<li>Gene-set enrichment analysis.</li>
+</ol>
+<p>In over-representation analysis we categorize genes as either differentially expressed or not, by setting an adjusted p-value and/or log2 fold change threshold (probably a shrunken log2 fold change). Then we ask if any GO terms are over- (or possibly under-) represented among the DE genes.</p>
+<p>In gene-set enrichment, we provide a continuous variable to rank the genes by (shrunken log2 fold changes) and ask if genes tagged with a given GO term are randomly distributed in this ranking. By not discretely categorizing genes as DE or not, gene-set enrichment can detect coordinated but small changes across many genes in a functional category.</p>
+<p>In many cases these will produce similar results.</p>
+<p>We’re going to use <code>clusterProfiler</code> to do this analysis. <code>clusterProfiler</code> is a bioconductor package, and you’ll need to install it accordingly. Unfortunately, the installation for this package can sometimes be a bit rough. If some dependencies fail to install, thus killing the entire installation, you can try installing them with <code>install.packages("packagename")</code>, and then trying clusterProfiler again. You may need to do this repeatedly with multiple dependencies. This isn’t all that common with R/bioconductor, but it does happen. Additionally, for some of the plots we make with clusterProfiler (and its dependencies), some dependencies <em>won’t</em> be installed automatically, and they will raise errors. As you come across them, install those packages. Try to work this out yourself if you can, but reach out for help if you reach an impasse.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../../08_0_writing.html" class="pagination-link">
+        <span class="nav-page-text">Writing Reports</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
