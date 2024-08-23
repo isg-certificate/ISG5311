@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.5.56">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISG 5311 - Genomic Data Analysis in Practice - 23&nbsp; Functional Interpretation</title>
+<title>23&nbsp; Functional Interpretation – ISG 5311 - Genomic Data Analysis in Practice</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -81,7 +81,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -90,12 +96,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-
 <link href="../../../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
 <script src="../../../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
@@ -108,13 +114,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../07_0_statistical_analysis_2.html">Statistical Analysis II: Differential expression analysis</a></li><li class="breadcrumb-item"><a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../07_0_statistical_analysis_2.html">Statistical Analysis II: Differential expression analysis</a></li><li class="breadcrumb-item"><a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -123,7 +129,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../../../../">ISG 5311 - Genomic Data Analysis in Practice</a> 
@@ -146,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../01_0_IntroToLinux.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Intro to Linux and Bash</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -181,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../02_0_HPCandSLURM.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">HPC and SLURM</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -222,7 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../03_0_sequencing_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sequencing Data</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -251,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../04_0_measuring_expression_1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Measuring Gene Expression I</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -292,7 +298,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../06_0_statistical_analysis_1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Statistical Analysis I: R and RStudio</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -321,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../07_0_statistical_analysis_2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Statistical Analysis II: Differential expression analysis</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -356,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../08_0_writing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Writing Reports</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -373,7 +379,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../../../09_0_presentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Presentations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -389,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -413,7 +419,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../07_0_statistical_analysis_2.html">Statistical Analysis II: Differential expression analysis</a></li><li class="breadcrumb-item"><a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></h1>
 </div>
@@ -428,9 +434,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
 
-<table class="table">
+
+<table class="caption-top table">
 <colgroup>
 <col style="width: 100%">
 </colgroup>
@@ -473,7 +481,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(biomaRt)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">listEnsemblArchives</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date"],"name":[2],"type":["chr"],"align":["left"]},{"label":["url"],"name":[3],"type":["chr"],"align":["left"]},{"label":["version"],"name":[4],"type":["chr"],"align":["left"]},{"label":["current_release"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"Ensembl GRCh37","2":"Feb 2014","3":"https://grch37.ensembl.org","4":"GRCh37","5":""},{"1":"Ensembl 112","2":"May 2024","3":"https://may2024.archive.ensembl.org","4":"112","5":"*"},{"1":"Ensembl 111","2":"Jan 2024","3":"https://jan2024.archive.ensembl.org","4":"111","5":""},{"1":"Ensembl 110","2":"Jul 2023","3":"https://jul2023.archive.ensembl.org","4":"110","5":""},{"1":"Ensembl 109","2":"Feb 2023","3":"https://feb2023.archive.ensembl.org","4":"109","5":""},{"1":"Ensembl 108","2":"Oct 2022","3":"https://oct2022.archive.ensembl.org","4":"108","5":""},{"1":"Ensembl 107","2":"Jul 2022","3":"https://jul2022.archive.ensembl.org","4":"107","5":""},{"1":"Ensembl 106","2":"Apr 2022","3":"https://apr2022.archive.ensembl.org","4":"106","5":""},{"1":"Ensembl 105","2":"Dec 2021","3":"https://dec2021.archive.ensembl.org","4":"105","5":""},{"1":"Ensembl 104","2":"May 2021","3":"https://may2021.archive.ensembl.org","4":"104","5":""},{"1":"Ensembl 103","2":"Feb 2021","3":"https://feb2021.archive.ensembl.org","4":"103","5":""},{"1":"Ensembl 102","2":"Nov 2020","3":"https://nov2020.archive.ensembl.org","4":"102","5":""},{"1":"Ensembl 101","2":"Aug 2020","3":"https://aug2020.archive.ensembl.org","4":"101","5":""},{"1":"Ensembl 100","2":"Apr 2020","3":"https://apr2020.archive.ensembl.org","4":"100","5":""},{"1":"Ensembl 99","2":"Jan 2020","3":"https://jan2020.archive.ensembl.org","4":"99","5":""},{"1":"Ensembl 98","2":"Sep 2019","3":"https://sep2019.archive.ensembl.org","4":"98","5":""},{"1":"Ensembl 97","2":"Jul 2019","3":"https://jul2019.archive.ensembl.org","4":"97","5":""},{"1":"Ensembl 80","2":"May 2015","3":"https://may2015.archive.ensembl.org","4":"80","5":""},{"1":"Ensembl 77","2":"Oct 2014","3":"https://oct2014.archive.ensembl.org","4":"77","5":""},{"1":"Ensembl 75","2":"Feb 2014","3":"https://feb2014.archive.ensembl.org","4":"75","5":""},{"1":"Ensembl 54","2":"May 2009","3":"https://may2009.archive.ensembl.org","4":"54","5":""}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -486,7 +493,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ensemblhost <span class="ot">&lt;-</span> <span class="st">"https://may2024.archive.ensembl.org"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">listMarts</span>(<span class="at">host=</span>ensemblhost)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":["biomart"],"name":[1],"type":["chr"],"align":["left"]},{"label":["version"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ENSEMBL_MART_ENSEMBL","2":"Ensembl Genes 112"},{"1":"ENSEMBL_MART_MOUSE","2":"Mouse strains 112"},{"1":"ENSEMBL_MART_SNP","2":"Ensembl Variation 112"},{"1":"ENSEMBL_MART_FUNCGEN","2":"Ensembl Regulation 112"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -506,7 +512,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">listDatasets</span>(mart) <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["dataset"],"name":[1],"type":["I<chr>"],"align":["right"]},{"label":["description"],"name":[2],"type":["I<chr>"],"align":["right"]},{"label":["version"],"name":[3],"type":["I<chr>"],"align":["right"]}],"data":[{"1":"abrachyrhynchus_gene_ensembl","2":"Pink-footed goose genes (ASM259213v1)","3":"ASM259213v1","_rn_":"1"},{"1":"acalliptera_gene_ensembl","2":"Eastern happy genes (fAstCal1.3)","3":"fAstCal1.3","_rn_":"2"},{"1":"acarolinensis_gene_ensembl","2":"Green anole genes (AnoCar2.0v2)","3":"AnoCar2.0v2","_rn_":"3"},{"1":"acchrysaetos_gene_ensembl","2":"Golden eagle genes (bAquChr1.2)","3":"bAquChr1.2","_rn_":"4"},{"1":"acitrinellus_gene_ensembl","2":"Midas cichlid genes (Midas_v5)","3":"Midas_v5","_rn_":"5"},{"1":"amelanoleuca_gene_ensembl","2":"Giant panda genes (ASM200744v2)","3":"ASM200744v2","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -518,7 +523,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchDatasets</span>(mart,<span class="at">pattern=</span><span class="st">"heteroclitus"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["dataset"],"name":[1],"type":["I<chr>"],"align":["right"]},{"label":["description"],"name":[2],"type":["I<chr>"],"align":["right"]},{"label":["version"],"name":[3],"type":["I<chr>"],"align":["right"]}],"data":[{"1":"fheteroclitus_gene_ensembl","2":"Mummichog genes (Fundulus_heteroclitus-3.0.2)","3":"Fundulus_heteroclitus-3.0.2","_rn_":"69"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -531,12 +535,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># store dataset name</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>killidata <span class="ot">&lt;-</span> <span class="fu">searchDatasets</span>(mart,<span class="at">pattern=</span><span class="st">"heteroclitus"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create dataset object</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>killi_mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart =</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host =</span> ensemblhost, <span class="at">dataset =</span> killidata)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># if above there were connectivity issues and you used the alternative function then:</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># killi_mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = killidata, mirror = "useast")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>killi_mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart =</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host =</span> ensemblhost, <span class="at">dataset =</span> killidata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Ensembl site unresponsive, trying uswest mirror</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># if above there were connectivity issues and you used the alternative function then:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># killi_mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = killidata, mirror = "useast")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="querying-the-biomart-dataset" class="level3" data-number="23.2.2">
@@ -551,18 +556,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Attributes are similar to filters, except that these are the data we wish to retrieve. To see available attributes, try <code>listAttributes(killi_mart)</code>.</p>
 <p>We can search filters and attributes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchAttributes</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern =</span> <span class="st">"ensembl_gene_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchAttributes</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern =</span> <span class="st">"ensembl_gene_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["page"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"ensembl_gene_id","2":"Gene stable ID","3":"feature_page","_rn_":"1"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"feature_page","_rn_":"2"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"structure","_rn_":"137"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"structure","_rn_":"138"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"homologs","_rn_":"177"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"homologs","_rn_":"178"},{"1":"ensembl_gene_id","2":"Gene stable ID","3":"sequences","_rn_":"2803"},{"1":"ensembl_gene_id_version","2":"Gene stable ID version","3":"sequences","_rn_":"2804"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchFilters</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern=</span><span class="st">"ensembl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchFilters</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern=</span><span class="st">"ensembl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ensembl_gene_id","2":"Gene stable ID(s) [e.g. ENSFHEG00000000002]","_rn_":"30"},{"1":"ensembl_gene_id_version","2":"Gene stable ID(s) with version [e.g. ENSFHEG00000000002.1]","_rn_":"31"},{"1":"ensembl_transcript_id","2":"Transcript stable ID(s) [e.g. ENSFHET00000000002]","_rn_":"32"},{"1":"ensembl_transcript_id_version","2":"Transcript stable ID(s) with version [e.g. ENSFHET00000000002.1]","_rn_":"33"},{"1":"ensembl_peptide_id","2":"Protein stable ID(s) [e.g. ENSFHEP00000000002]","_rn_":"34"},{"1":"ensembl_peptide_id_version","2":"Protein stable ID(s) with version [e.g. ENSFHEP00000000002.1]","_rn_":"35"},{"1":"ensembl_exon_id","2":"Exon ID(s) [e.g. ENSFHEE00000000002]","_rn_":"36"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -572,34 +575,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>We are going to extract attributes: gene names, inferred transcript length (longest per gene) and GO terms. We’re going to use the ENSEMBL gene ID as the filter, and pull the values from one of our results objects.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene names and ts length</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"transcript_length"</span>),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># pick only the longest transcript for each gene ID</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">group_by</span>(ann, ensembl_gene_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(.,<span class="at">description=</span><span class="fu">unique</span>(description),<span class="at">transcript_length=</span><span class="fu">max</span>(transcript_length)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># get GO term info</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each row is a single gene ID to GO ID mapping, so the table has many more rows than genes in the analysis</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>go_ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"go_id"</span>,<span class="st">"name_1006"</span>,<span class="st">"namespace_1003"</span>),</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene names and ts length</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"transcript_length"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># pick only the longest transcript for each gene ID</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">group_by</span>(ann, ensembl_gene_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(.,<span class="at">description=</span><span class="fu">unique</span>(description),<span class="at">transcript_length=</span><span class="fu">max</span>(transcript_length)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># get GO term info</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each row is a single gene ID to GO ID mapping, so the table has many more rows than genes in the analysis</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>go_ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"go_id"</span>,<span class="st">"name_1006"</span>,<span class="st">"namespace_1003"</span>),</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>ann</code> object is now a table with three columns:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ignore rows with empty gene descriptions</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ann, description<span class="sc">!=</span><span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ignore rows with empty gene descriptions</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ann, description<span class="sc">!=</span><span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["transcript_length"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"ENSFHEG00000000007","2":"NADH dehydrogenase subunit 1 [Source:NCBI gene;Acc:7668434]","3":"975","_rn_":"1"},{"1":"ENSFHEG00000000011","2":"NADH dehydrogenase subunit 2 [Source:NCBI gene;Acc:7668422]","3":"1045","_rn_":"2"},{"1":"ENSFHEG00000000017","2":"cytochrome c oxidase subunit I [Source:NCBI gene;Acc:7668423]","3":"1542","_rn_":"3"},{"1":"ENSFHEG00000000020","2":"cytochrome c oxidase subunit II [Source:NCBI gene;Acc:7668424]","3":"691","_rn_":"4"},{"1":"ENSFHEG00000000022","2":"ATP synthase F0 subunit 8 [Source:NCBI gene;Acc:7668425]","3":"168","_rn_":"5"},{"1":"ENSFHEG00000000023","2":"ATP synthase F0 subunit 6 [Source:NCBI gene;Acc:7668426]","3":"684","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -609,9 +611,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The go_ann object:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(go_ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(go_ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["go_id"],"name":[3],"type":["chr"],"align":["left"]},{"label":["name_1006"],"name":[4],"type":["chr"],"align":["left"]},{"label":["namespace_1003"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"ENSFHEG00000000002","2":"","3":"GO:0030533","4":"triplet codon-amino acid adaptor activity","5":"molecular_function","_rn_":"1"},{"1":"ENSFHEG00000000002","2":"","3":"GO:0006412","4":"translation","5":"biological_process","_rn_":"2"},{"1":"ENSFHEG00000000003","2":"","3":"","4":"","5":"","_rn_":"3"},{"1":"ENSFHEG00000000004","2":"","3":"GO:0030533","4":"triplet codon-amino acid adaptor activity","5":"molecular_function","_rn_":"4"},{"1":"ENSFHEG00000000004","2":"","3":"GO:0006412","4":"translation","5":"biological_process","_rn_":"5"},{"1":"ENSFHEG00000000005","2":"","3":"GO:0003735","4":"structural constituent of ribosome","5":"molecular_function","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -626,18 +627,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="23.3" class="anchored" data-anchor-id="trolling-through-our-gene-list"><span class="header-section-number">23.3</span> Trolling through our gene list</h2>
 <p>We’re going to get to more comprehensive approaches in a moment, but it can be very helpful to start with a DE analysis by simply looking at the ranked list of genes and looking through the literature and some databases to learn about them. Depending on your prior knowledge of your system, or the genes involved, this could prove helpful.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to DE results</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>kcdose_shrink_ann <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"ensembl_gene_id"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(., ann) <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to DE results</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>kcdose_shrink_ann <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"ensembl_gene_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(., ann) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(ensembl_gene_id)`</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kcdose_shrink_ann, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kcdose_shrink_ann, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ensembl_gene_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["baseMean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["description"],"name":[7],"type":["chr"],"align":["left"]},{"label":["transcript_length"],"name":[8],"type":["int"],"align":["right"]}],"data":[{"1":"ENSFHEG00000010510","2":"2504.91429","3":"8.003643","4":"0.2543706","5":"1.325714e-218","6":"2.599461e-214","7":"cytochrome P450 1A1 [Source:NCBI gene;Acc:105930482]","8":"2708","_rn_":"1"},{"1":"ENSFHEG00000008855","2":"1267.13309","3":"6.323822","4":"0.2764744","5":"1.146296e-116","6":"1.123829e-112","7":"cytochrome P450, family 1, subfamily C, polypeptide 1 [Source:ZFIN;Acc:ZDB-GENE-050522-501]","8":"2763","_rn_":"2"},{"1":"ENSFHEG00000008848","2":"19.85558","3":"5.353391","4":"0.6254974","5":"1.987678e-18","6":"4.330488e-15","7":"cytochrome P450, family 1, subfamily C, polypeptide 2 [Source:ZFIN;Acc:ZDB-GENE-050705-1]","8":"2779","_rn_":"3"},{"1":"ENSFHEG00000002649","2":"115.45892","3":"4.949948","4":"0.3084651","5":"1.451381e-58","6":"5.691737e-55","7":"fibroblast growth factor 7 [Source:NCBI gene;Acc:105936368]","8":"2973","_rn_":"4"},{"1":"ENSFHEG00000021655","2":"792.49226","3":"4.517178","4":"0.2694031","5":"8.240991e-64","6":"4.039734e-60","7":"cytochrome P450 1B1 [Source:NCBI gene;Acc:105926177]","8":"4246","_rn_":"5"},{"1":"ENSFHEG00000011110","2":"1597.11234","3":"4.193588","4":"0.1942319","5":"2.545203e-104","6":"1.663545e-100","7":"cytochrome b5 [Source:NCBI gene;Acc:105917072]","8":"2588","_rn_":"6"},{"1":"ENSFHEG00000020789","2":"19.98550","3":"-3.115233","4":"1.7770506","5":"3.765727e-06","6":"1.070121e-03","7":"hepcidin antimicrobial peptide [Source:NCBI gene;Acc:105916803]","8":"858","_rn_":"7"},{"1":"ENSFHEG00000008836","2":"84.86309","3":"2.613928","4":"0.3888698","5":"1.651428e-14","6":"3.238120e-11","7":"GTP cyclohydrolase I feedback regulator [Source:NCBI gene;Acc:105916581]","8":"2100","_rn_":"8"},{"1":"ENSFHEG00000014747","2":"33.33021","3":"2.486423","4":"0.4117707","5":"1.377845e-12","6":"2.456072e-09","7":"forkhead box Q1a [Source:ZFIN;Acc:ZDB-GENE-070424-74]","8":"714","_rn_":"9"},{"1":"ENSFHEG00000011240","2":"216.79832","3":"2.463991","4":"0.2560286","5":"1.277712e-24","6":"3.579054e-21","7":"UDP glucuronosyltransferase family 1 member A1 [Source:NCBI gene;Acc:105919170]","8":"3370","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -663,6 +663,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In gene-set enrichment, we provide a continuous variable to rank the genes by (shrunken log2 fold changes) and ask if genes tagged with a given GO term are randomly distributed in this ranking. By not discretely categorizing genes as DE or not, gene-set enrichment can detect coordinated but small changes across many genes in a functional category.</p>
 <p>In many cases these will produce similar results.</p>
 <p>We’re going to use <code>clusterProfiler</code> to do this analysis. <code>clusterProfiler</code> is a bioconductor package, and you’ll need to install it accordingly. Unfortunately, the installation for this package can sometimes be a bit rough. If some dependencies fail to install, thus killing the entire installation, you can try installing them with <code>install.packages("packagename")</code>, and then trying clusterProfiler again. You may need to do this repeatedly with multiple dependencies. This isn’t all that common with R/bioconductor, but it does happen. Additionally, for some of the plots we make with clusterProfiler (and its dependencies), some dependencies <em>won’t</em> be installed automatically, and they will raise errors. As you come across them, install those packages. Try to work this out yourself if you can, but reach out for help if you reach an impasse.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>genes <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>univ <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj),])</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>gonames <span class="ot">&lt;-</span> <span class="fu">unique</span>(go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>)]) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>kcdose_enrich <span class="ot">&lt;-</span> <span class="fu">enricher</span>(</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene=</span>genes,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">universe=</span>univ,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(kcdose_enrich)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>l2fcs <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(kcdose_shrink) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(padj)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(log2FoldChange)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>l2fcvec <span class="ot">&lt;-</span> l2fcs[,<span class="dv">1</span>]</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(l2fcvec) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(l2fcs)</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  l2fcvec <span class="ot">&lt;-</span> <span class="fu">sort</span>(l2fcvec, <span class="at">decreasing=</span><span class="cn">TRUE</span>)</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>kcdose_gsea <span class="ot">&lt;-</span> <span class="fu">GSEA</span>(</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">geneList=</span>l2fcvec,</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ridgeplot</span>(kcdose_gsea,<span class="at">label_format=</span><span class="dv">60</span>)</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_enrich)</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_gsea)</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="fu">emapplot</span>(<span class="fu">pairwise_termsim</span>(kcdose_enrich))</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cnetplot</span>(kcdose_enrich, <span class="at">showCategory=</span><span class="dv">10</span>, <span class="at">foldChange=</span>l2fcvec)</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="fu">gseaplot</span>(kcdose_enrich, <span class="at">by =</span> <span class="st">"all"</span>, <span class="at">title =</span> kcdose_enrich<span class="sc">$</span>Description[<span class="dv">1</span>], <span class="at">geneSetID =</span> <span class="dv">1</span>)</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(goseq)</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 0/1 vector for DE/not DE</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>de <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(kcdose<span class="sc">$</span>padj[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)] <span class="sc">&lt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(de) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose)[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a><span class="co"># length of each gene</span></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>len <span class="ot">&lt;-</span> ann[[<span class="dv">3</span>]][<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>pwf <span class="ot">&lt;-</span> <span class="fu">nullp</span>(<span class="at">DEgenes=</span>de,<span class="at">bias.data=</span>len)</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">goseq</span>(<span class="at">pwf=</span>pwf,<span class="at">gene2cat=</span>go_ann[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)])</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>  GO.wall,</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_overrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>over_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>),</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_underrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>under_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>)</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
@@ -703,18 +761,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -746,11 +793,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -760,8 +846,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -773,7 +868,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -817,6 +1035,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -842,6 +1061,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -903,17 +1148,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="pagination-link">
+      <a href="../../../../07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.html" class="pagination-link" aria-label="Differential Expression Analysis">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../../08_0_writing.html" class="pagination-link">
+      <a href="../../../../08_0_writing.html" class="pagination-link" aria-label="Writing Reports">
         <span class="nav-page-text">Writing Reports</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
