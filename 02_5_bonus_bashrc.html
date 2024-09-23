@@ -477,6 +477,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">PS1</span><span class="op">=</span><span class="st">"[ \u@\h ] : [ \W ] </span><span class="dt">\$</span><span class="st"> "</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you want to get crazy with emojis, all unicode characters are available.</p>
 <p>For more details on customizing your prompt, check this <a href="https://phoenixnap.com/kb/change-bash-prompt-linux">website</a></p>
+<p>NOTE: To test any of these modifications, simply paste them in at the prompt and hit enter. They will take effect immediately, but will not persist when you kill this shell.</p>
 </section>
 <section id="aliasing-common-commands" class="level3" data-number="8.0.2">
 <h3 data-number="8.0.2" class="anchored" data-anchor-id="aliasing-common-commands"><span class="header-section-number">8.0.2</span> Aliasing common commands</h3>
@@ -508,10 +509,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="bash_profile" class="level3" data-number="8.0.3">
 <h3 data-number="8.0.3" class="anchored" data-anchor-id="bash_profile"><span class="header-section-number">8.0.3</span> .bash_profile</h3>
-<p>The above edits to <code>.bashrc</code> will change the prompt on <strong>login shells</strong>, but <strong>not in interactive sessions or batch jobs</strong>, so we also need to add the following lines to <code>.bash_profile</code> (which you should create if you don’t have):</p>
+<p>The above edits to <code>.bashrc</code> will change the prompt in <strong>interactive sesssions</strong>, but <strong>not in login sessions or batch jobs</strong>, so we also need to add the following lines to <code>.bash_profile</code> (which you should create if you don’t have):</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="va">$HOME</span>/.bashrc <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        <span class="bu">source</span> <span class="va">$HOME</span>/.bashrc</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now, if you log out and log back in, you should see your changes take effect.</p>
 </section>
 <section id="your-local-machine" class="level3" data-number="8.0.4">
 <h3 data-number="8.0.4" class="anchored" data-anchor-id="your-local-machine"><span class="header-section-number">8.0.4</span> Your local machine</h3>

@@ -535,13 +535,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># store dataset name</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>killidata <span class="ot">&lt;-</span> <span class="fu">searchDatasets</span>(mart,<span class="at">pattern=</span><span class="st">"heteroclitus"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create dataset object</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>killi_mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart =</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host =</span> ensemblhost, <span class="at">dataset =</span> killidata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ensembl site unresponsive, trying uswest mirror</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># if above there were connectivity issues and you used the alternative function then:</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># killi_mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = killidata, mirror = "useast")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>killi_mart <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="at">biomart =</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, <span class="at">host =</span> ensemblhost, <span class="at">dataset =</span> killidata)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># if above there were connectivity issues and you used the alternative function then:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># select a mirror: 'www', 'uswest', 'useast', 'asia'</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># killi_mart &lt;- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = killidata, mirror = "useast")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="querying-the-biomart-dataset" class="level3" data-number="23.2.2">
@@ -556,7 +555,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Attributes are similar to filters, except that these are the data we wish to retrieve. To see available attributes, try <code>listAttributes(killi_mart)</code>.</p>
 <p>We can search filters and attributes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchAttributes</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern =</span> <span class="st">"ensembl_gene_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchAttributes</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern =</span> <span class="st">"ensembl_gene_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -564,7 +563,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchFilters</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern=</span><span class="st">"ensembl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">searchFilters</span>(<span class="at">mart =</span> killi_mart, <span class="at">pattern=</span><span class="st">"ensembl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -575,32 +574,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>We are going to extract attributes: gene names, inferred transcript length (longest per gene) and GO terms. We’re going to use the ENSEMBL gene ID as the filter, and pull the values from one of our results objects.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene names and ts length</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"transcript_length"</span>),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># pick only the longest transcript for each gene ID</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">group_by</span>(ann, ensembl_gene_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(.,<span class="at">description=</span><span class="fu">unique</span>(description),<span class="at">transcript_length=</span><span class="fu">max</span>(transcript_length)) <span class="sc">%&gt;%</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># get GO term info</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each row is a single gene ID to GO ID mapping, so the table has many more rows than genes in the analysis</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>go_ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"go_id"</span>,<span class="st">"name_1006"</span>,<span class="st">"namespace_1003"</span>),</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene names and ts length</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"transcript_length"</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># pick only the longest transcript for each gene ID</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> <span class="fu">group_by</span>(ann, ensembl_gene_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(.,<span class="at">description=</span><span class="fu">unique</span>(description),<span class="at">transcript_length=</span><span class="fu">max</span>(transcript_length)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># get GO term info</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each row is a single gene ID to GO ID mapping, so the table has many more rows than genes in the analysis</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>go_ann <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter=</span><span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">rownames</span>(kcdose),</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">attributes=</span><span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>,<span class="st">"description"</span>,<span class="st">"go_id"</span>,<span class="st">"name_1006"</span>,<span class="st">"namespace_1003"</span>),</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mart=</span>killi_mart</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>ann</code> object is now a table with three columns:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ignore rows with empty gene descriptions</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ann, description<span class="sc">!=</span><span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ignore rows with empty gene descriptions</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ann, description<span class="sc">!=</span><span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -611,7 +610,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The go_ann object:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(go_ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(go_ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -627,16 +626,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="23.3" class="anchored" data-anchor-id="trolling-through-our-gene-list"><span class="header-section-number">23.3</span> Trolling through our gene list</h2>
 <p>We’re going to get to more comprehensive approaches in a moment, but it can be very helpful to start with a DE analysis by simply looking at the ranked list of genes and looking through the literature and some databases to learn about them. Depending on your prior knowledge of your system, or the genes involved, this could prove helpful.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to DE results</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>kcdose_shrink_ann <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"ensembl_gene_id"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(., ann) <span class="sc">%&gt;%</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to DE results</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>kcdose_shrink_ann <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"ensembl_gene_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(., ann) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(ensembl_gene_id)`</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kcdose_shrink_ann, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kcdose_shrink_ann, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -663,64 +662,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In gene-set enrichment, we provide a continuous variable to rank the genes by (shrunken log2 fold changes) and ask if genes tagged with a given GO term are randomly distributed in this ranking. By not discretely categorizing genes as DE or not, gene-set enrichment can detect coordinated but small changes across many genes in a functional category.</p>
 <p>In many cases these will produce similar results.</p>
 <p>We’re going to use <code>clusterProfiler</code> to do this analysis. <code>clusterProfiler</code> is a bioconductor package, and you’ll need to install it accordingly. Unfortunately, the installation for this package can sometimes be a bit rough. If some dependencies fail to install, thus killing the entire installation, you can try installing them with <code>install.packages("packagename")</code>, and then trying clusterProfiler again. You may need to do this repeatedly with multiple dependencies. This isn’t all that common with R/bioconductor, but it does happen. Additionally, for some of the plots we make with clusterProfiler (and its dependencies), some dependencies <em>won’t</em> be installed automatically, and they will raise errors. As you come across them, install those packages. Try to work this out yourself if you can, but reach out for help if you reach an impasse.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>genes <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),])</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>univ <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj),])</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>gonames <span class="ot">&lt;-</span> <span class="fu">unique</span>(go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>)]) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>kcdose_enrich <span class="ot">&lt;-</span> <span class="fu">enricher</span>(</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene=</span>genes,</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">universe=</span>univ,</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(kcdose_enrich)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>l2fcs <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(kcdose_shrink) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(padj)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(log2FoldChange)</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>l2fcvec <span class="ot">&lt;-</span> l2fcs[,<span class="dv">1</span>]</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(l2fcvec) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(l2fcs)</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  l2fcvec <span class="ot">&lt;-</span> <span class="fu">sort</span>(l2fcvec, <span class="at">decreasing=</span><span class="cn">TRUE</span>)</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>kcdose_gsea <span class="ot">&lt;-</span> <span class="fu">GSEA</span>(</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">geneList=</span>l2fcvec,</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>) </span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ridgeplot</span>(kcdose_gsea,<span class="at">label_format=</span><span class="dv">60</span>)</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_enrich)</span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_gsea)</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="fu">emapplot</span>(<span class="fu">pairwise_termsim</span>(kcdose_enrich))</span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cnetplot</span>(kcdose_enrich, <span class="at">showCategory=</span><span class="dv">10</span>, <span class="at">foldChange=</span>l2fcvec)</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="fu">gseaplot</span>(kcdose_enrich, <span class="at">by =</span> <span class="st">"all"</span>, <span class="at">title =</span> kcdose_enrich<span class="sc">$</span>Description[<span class="dv">1</span>], <span class="at">geneSetID =</span> <span class="dv">1</span>)</span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(goseq)</span>
-<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 0/1 vector for DE/not DE</span></span>
-<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>de <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(kcdose<span class="sc">$</span>padj[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)] <span class="sc">&lt;</span> <span class="fl">0.1</span>)</span>
-<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(de) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose)[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
-<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a><span class="co"># length of each gene</span></span>
-<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>len <span class="ot">&lt;-</span> ann[[<span class="dv">3</span>]][<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
-<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>pwf <span class="ot">&lt;-</span> <span class="fu">nullp</span>(<span class="at">DEgenes=</span>de,<span class="at">bias.data=</span>len)</span>
-<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">goseq</span>(<span class="at">pwf=</span>pwf,<span class="at">gene2cat=</span>go_ann[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)])</span>
-<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
-<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>  GO.wall,</span>
-<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_overrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>over_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>),</span>
-<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_underrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>under_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>)</span>
-<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>genes <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),])</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>univ <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj),])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>gonames <span class="ot">&lt;-</span> <span class="fu">unique</span>(go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>)]) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>kcdose_enrich <span class="ot">&lt;-</span> <span class="fu">enricher</span>(</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene=</span>genes,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">universe=</span>univ,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(kcdose_enrich)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>l2fcs <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(kcdose_shrink) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(padj)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(log2FoldChange)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>l2fcvec <span class="ot">&lt;-</span> l2fcs[,<span class="dv">1</span>]</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(l2fcvec) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(l2fcs)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  l2fcvec <span class="ot">&lt;-</span> <span class="fu">sort</span>(l2fcvec, <span class="at">decreasing=</span><span class="cn">TRUE</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>kcdose_gsea <span class="ot">&lt;-</span> <span class="fu">GSEA</span>(</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">geneList=</span>l2fcvec,</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE=</span>go_ann[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>)],</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2NAME=</span>gonames</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ridgeplot</span>(kcdose_gsea,<span class="at">label_format=</span><span class="dv">60</span>)</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_enrich)</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="fu">upsetplot</span>(kcdose_gsea)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="fu">emapplot</span>(<span class="fu">pairwise_termsim</span>(kcdose_enrich))</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cnetplot</span>(kcdose_enrich, <span class="at">showCategory=</span><span class="dv">10</span>, <span class="at">foldChange=</span>l2fcvec)</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="fu">gseaplot</span>(kcdose_enrich, <span class="at">by =</span> <span class="st">"all"</span>, <span class="at">title =</span> kcdose_enrich<span class="sc">$</span>Description[<span class="dv">1</span>], <span class="at">geneSetID =</span> <span class="dv">1</span>)</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(goseq)</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 0/1 vector for DE/not DE</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>de <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(kcdose<span class="sc">$</span>padj[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)] <span class="sc">&lt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(de) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(kcdose)[<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a><span class="co"># length of each gene</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a>len <span class="ot">&lt;-</span> ann[[<span class="dv">3</span>]][<span class="sc">!</span><span class="fu">is.na</span>(kcdose<span class="sc">$</span>padj)]</span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>pwf <span class="ot">&lt;-</span> <span class="fu">nullp</span>(<span class="at">DEgenes=</span>de,<span class="at">bias.data=</span>len)</span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">goseq</span>(<span class="at">pwf=</span>pwf,<span class="at">gene2cat=</span>go_ann[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)])</span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a>GO.wall <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>  GO.wall,</span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_overrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>over_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>),</span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">padj_underrepresented=</span><span class="fu">p.adjust</span>(GO.wall<span class="sc">$</span>under_represented_pvalue, <span class="at">method=</span><span class="st">"BH"</span>)</span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>

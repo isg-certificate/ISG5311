@@ -457,10 +457,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>If you used the default names, and you type <code>ls</code> you should have the files:</p>
 <pre><code>id_rsa 
 id_rsa.pub </code></pre>
-<p><code>id_rsa.pub</code> is the public key and <code>id_rsa</code>, the private one. Now, use <code>scp</code> to upload the public key to Xanadu:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> username@transfer.cam.uchc.edu:~/.ssh/ id_rsa.pub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>id_rsa.pub</code> is the public key and <code>id_rsa</code>, the private one. Depending on your OS and shell, you may alternatively have produced files with different names, such as <code>id_ed25519</code> and <code>id_ed25519.pub</code>, <code>.pub</code> still indicates the public key. Now, use <code>scp</code> to upload the public key to Xanadu (you’ll have to make sure you <em>also</em> have a <code>.ssh</code> directory in your home on Xanadu):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> id_rsa.pub username@transfer.cam.uchc.edu:~/.ssh/ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you don’t have a <code>.ssh</code> directory on Xanadu, log in and create one, then try uploading again.</p>
-<p>Finally, to avoid having to enter the ssh key passphrase (if you created one), you should do:</p>
+<p>Now <strong>log in to Xanadu</strong> and, in the <code>.ssh</code> directory, create a file called <code>authorized_keys</code> and paste the contents of your public key there. You could do this in one go with <code>cat id_rsa.pub &gt;authorized_keys</code>.</p>
+<p>Finally, back on your local machine, to avoid having to enter the ssh key passphrase (if you created one), you should do:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-add</span> id_rsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>And enter your passphrase at the prompt if you created one.</p>
 <p>Now when you log in, you should not have to enter your password.</p>
