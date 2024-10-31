@@ -450,58 +450,144 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="bioconductor" class="level2" data-number="20.1">
 <h2 data-number="20.1" class="anchored" data-anchor-id="bioconductor"><span class="header-section-number">20.1</span> Bioconductor</h2>
+<p>You have previously installed packages from <a href="https://cran.r-project.org">CRAN</a> using <code>R</code>’s default package installer <code>install.packages()</code>. We’re going to use some packages in this analysis that are part of the <a href="https://bioconductor.org"><code>Bioconductor</code></a> project. Bioconductor is an open-source R-based bioinformatics software project. Bioconductor manages a large community of software developers that create and maintain packages, many of which build upon each other. Bioconductor packages must adhere to certain design standards, and are sometimes removed from new Bioconductor versions when they cease to be maintained.</p>
+<p>Bioconductor maintains a version-controlled repository of its packages (you can install old package versions and their dependencies if you need to) that is independent from CRAN, and requires you to use a separate installation routine. In the following chapters, we’ll use a few different packages from Bioconductor. For this chapter (a very quick DE analysis), we only need the package <code>DESeq2</code>. Bioconductor packages have splash pages with the command needed to install the package, documentation, and usually one or more “vignettes” demonstrating how the package can be used.</p>
+<p>For DESeq2, check out the <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html">splash page</a> and install the package. It may take a while to install it and all of its dependencies. The vignette for DESeq2 is uncommonly good, and covers a lot of the material for the next few chapters, sometimes in more detail (albeit without the killifish example dataset to make things concrete).</p>
 </section>
 <section id="a-quick-differential-expression-analysis" class="level2" data-number="20.2">
 <h2 data-number="20.2" class="anchored" data-anchor-id="a-quick-differential-expression-analysis"><span class="header-section-number">20.2</span> A quick differential expression analysis</h2>
 <p>To give you a sense of where we’re headed with this analysis, we’re going to do a <em>very</em> quick differential expression analysis from importing our count data, to identifying differentially expressed genes. Following that, we’ll walk through the analysis step by step, interrogating it in detail to help develop your R skills, understanding of the analysis, and ability to look out for problems.</p>
-<p>You can follow along with this analysis in RStudio. Clone our RNA-seq tutorial directory on your local machine.</p>
+<p>You should follow along with this analysis in RStudio. Download our RNA-seq tutorial git repository to your local computer. You can either clone it like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/isg-certificate/rnaseq.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Copy the count data you generated on Xanadu in the previous module to the same location in this local directory.</p>
-<p>Start a new RStudio project in the directory <code>scripts/05_R_analysis/</code>. The paths specified in the code chunks below are relative to that directory.</p>
-<p>Follow along.</p>
+<p>Or you can also download it as a zip file and decompress it using the “code” button on the <a href="https://github.com/isg-certificate/rnaseq/tree/main">repository page itself</a></p>
+<p>We’re suggesting you do this to keep the project organized in a consistent way and so that you can ultimately keep all the code for the entire analysis in one place. This may make some more sense next semester when we start using Git/GitHub formally. Once you have the data downloaded, create the analogous “results” directory, and copy the count directory and the samtools stats output to the same directories as on Xanadu.</p>
+<p>In the end, you should have a directory that looks like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> metadata</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── SraRunTable.txt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> README.md</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> results</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── 03_align</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp; └── samtools_stats</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SN.txt</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475446.stats</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475447.stats</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475448.stats</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475449.stats</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475450.stats</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475451.stats</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475452.stats</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475453.stats</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475454.stats</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475455.stats</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475456.stats</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475468.stats</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475469.stats</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475470.stats</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475471.stats</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475472.stats</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475473.stats</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475474.stats</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     ├── SRR12475475.stats</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> │&nbsp;&nbsp;     └── SRR12475476.stats</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── 04_counts</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── counts</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475446.counts</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475447.counts</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475448.counts</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475449.counts</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475450.counts</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475451.counts</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475452.counts</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475453.counts</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475454.counts</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475455.counts</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475456.counts</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475468.counts</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475469.counts</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475470.counts</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475471.counts</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475472.counts</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475473.counts</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475474.counts</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── SRR12475475.counts</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── SRR12475476.counts</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     └── multiqc</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── multiqc_data</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         │&nbsp;&nbsp; ├── multiqc_data.json</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         │&nbsp;&nbsp; ├── multiqc_general_stats.txt</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         │&nbsp;&nbsp; ├── multiqc_htseq.txt</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         │&nbsp;&nbsp; ├── multiqc.log</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         │&nbsp;&nbsp; └── multiqc_sources.txt</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         └── multiqc_report.html</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="ex">└──</span> scripts</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> 01_rawdata</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 01_downloadSRA.sh</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> └── 02_downloadGenome.sh</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> 02_QC</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 01_fastqc.sh</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 02_multiqc.sh</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 03_trimmomatic.sh</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 04_fastqc_trim.sh</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> └── 05_multiqc_trim.sh</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> 03_align</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 01_index.sh</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 02_align.sh</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 03_samtools_stats.sh</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 04_qualimap.sh</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> └── 05_multiqc.sh</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> 04_count</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> ├── 01_count.sh</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="ex">│&nbsp;&nbsp;</span> └── 02_multiqc.sh</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> 05_R_analysis</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        <span class="ex">├──</span> DE_analysis_htseq.R</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        <span class="ex">└──</span> super_quick_DE.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Start a new RStudio project in the directory <code>scripts/05_R_analysis/</code>. The paths specified in the code chunks below are relative to that directory. If you do this successfully, you should be able to run all the code chunks locally without having to edit anything.</p>
+<p>Alternatively, you can <em>not copy anything</em>, connect your computer to Xanadu’s file system, and start the RStudio project there. This has the benefit of keeping all your R code right there on Xanadu, and the downside of causing annoying problems with RStudio whenever your connection to Xanadu closes.</p>
+<p>A third alternative is to start RStudio server on Xanadu and ssh tunnel in. We’re not going to get into that here, but if you’re feeling ambitious you can find documentation on how to do that at the UConn CBC github documentation wiki.</p>
+<p>If all this seems confusing, there is a demo video in HuskyCT.</p>
 <section id="load-our-r-packages" class="level3" data-number="20.2.1">
 <h3 data-number="20.2.1" class="anchored" data-anchor-id="load-our-r-packages"><span class="header-section-number">20.2.1</span> Load our R packages</h3>
 <p>We’re just using two packages here. We’ll use more in the full analysis.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"DESeq2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"DESeq2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="read-in-the-data" class="level3" data-number="20.2.2">
 <h3 data-number="20.2.2" class="anchored" data-anchor-id="read-in-the-data"><span class="header-section-number">20.2.2</span> Read in the data</h3>
 <p>Get the metadata. It’s got tons of columns. We’re going to winnow it down. We’ll also recode the populations Elizabeth River (tolerant; T4 from the paper) and King’s Creek (sensitive; S4 from the paper) to <code>ER</code> and <code>KC</code> and the pcb dosage to <code>control</code> and <code>exposed</code>, rather than numerical values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../../metadata/SraRunTable.txt"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">population=</span><span class="fu">str_replace</span>(population, <span class="st">"Eliza.*"</span>, <span class="st">"ER"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change population names to be simpler</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">population=</span><span class="fu">str_replace</span>(population, <span class="st">"King.*"</span>, <span class="st">"KC"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change population names to be simpler</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pcb_dosage =</span> <span class="fu">case_when</span>(pcb_dosage <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"control"</span>, pcb_dosage <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"exposed"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change pcb dosage to control vs exposed</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(population <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ER"</span>,<span class="st">"KC"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Run, population, pcb_dosage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../../metadata/SraRunTable.txt"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">population=</span><span class="fu">str_replace</span>(population, <span class="st">"Eliza.*"</span>, <span class="st">"ER"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change population names to be simpler</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">population=</span><span class="fu">str_replace</span>(population, <span class="st">"King.*"</span>, <span class="st">"KC"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change population names to be simpler</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pcb_dosage =</span> <span class="fu">case_when</span>(pcb_dosage <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"control"</span>, pcb_dosage <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"exposed"</span>)) <span class="sc">%&gt;%</span> <span class="co"># change pcb dosage to control vs exposed</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(population <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ER"</span>,<span class="st">"KC"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Run, population, pcb_dosage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Get a list of count files. Specify the directory they reside in.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>directory <span class="ot">&lt;-</span> <span class="st">"../../results/04_counts/counts"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sampleFiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(directory, <span class="at">pattern =</span> <span class="st">".*counts$"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>directory <span class="ot">&lt;-</span> <span class="st">"../../results/04_counts/counts"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sampleFiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(directory, <span class="at">pattern =</span> <span class="st">".*counts$"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ensure that sampleFiles and metadata table are in the same order because we’re just going to paste them together into a table. Note that this is a vector operation, comparing each of the sample files (with the suffix <code>.counts</code> removed) to each of the rows in <code>meta</code>, one by one. <code>all()</code> tests if all the values in the vector are <code>TRUE</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>( <span class="fu">str_remove</span>(sampleFiles, <span class="st">".counts"</span>) <span class="sc">==</span> meta[,<span class="dv">1</span>] )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>( <span class="fu">str_remove</span>(sampleFiles, <span class="st">".counts"</span>) <span class="sc">==</span> meta[,<span class="dv">1</span>] )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
 </div>
 <p>Now create a data frame with sample names, file names and treatment information.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sampleName =</span> meta<span class="sc">$</span>Run,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fileName =</span> sampleFiles,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">population =</span> meta<span class="sc">$</span>population,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dose =</span> meta<span class="sc">$</span>pcb_dosage</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sampleName =</span> meta<span class="sc">$</span>Run,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fileName =</span> sampleFiles,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">population =</span> meta<span class="sc">$</span>population,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dose =</span> meta<span class="sc">$</span>pcb_dosage</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Write out <code>sampleTable</code> to check that it seems correct (in RStudio you can just inspect the object).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sampleTable</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sampleTable</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -512,11 +598,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Finally, to read the data in, we’ll use a function from DESeq2 that recognizes <code>htseq-count</code> input files. It will read them all in and create a DESeq2 data object. Note that here is a critical stage in our analysis: <code>design = ~ population*dose</code>. We are specifying our experimental design using columns from <code>sampleTable</code>. We’ll talk more about it later.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromHTSeqCount</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sampleTable =</span> sampleTable, </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">directory =</span> directory, </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> <span class="sc">~</span> population<span class="sc">*</span>dose</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromHTSeqCount</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sampleTable =</span> sampleTable, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">directory =</span> directory, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> <span class="sc">~</span> population<span class="sc">*</span>dose</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
 design formula are characters, converting to factors</code></pre>
@@ -528,7 +614,7 @@ design formula are characters, converting to factors</code></pre>
 <h3 data-number="20.2.3" class="anchored" data-anchor-id="do-the-statistical-analysis"><span class="header-section-number">20.2.3</span> Do the statistical analysis</h3>
 <p>This step is functionally very simple! DESeq2 wraps up many steps into a single function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(ddsHTSeq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(ddsHTSeq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>estimating size factors</code></pre>
 </div>
@@ -550,11 +636,11 @@ design formula are characters, converting to factors</code></pre>
 </div>
 <p>Extract significance tests for one of our comparisons of interest: control vs exposed within the population ER.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"dose"</span>,<span class="st">"exposed"</span>,<span class="st">"control"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"dose"</span>,<span class="st">"exposed"</span>,<span class="st">"control"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Get a quick summary of the results.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 out of 22728 with nonzero total read count
@@ -568,7 +654,7 @@ low counts [2]     : 0, 0%
 [2] see 'independentFiltering' argument of ?results</code></pre>
 </div>
 </div>
-<p>We’ll work through the data step-by-step in lots of detail to try to understand what’s happening here.</p>
+<p>If you remember the results from the paper, you probably won’t be surprised to see only 2 DE genes for PCB exposure in the ER population. We’ll work through the data step-by-step in lots of detail in coming chapters to try to understand what’s happening here.</p>
 </section>
 <section id="resources" class="level3" data-number="20.2.4">
 <h3 data-number="20.2.4" class="anchored" data-anchor-id="resources"><span class="header-section-number">20.2.4</span> Resources</h3>
