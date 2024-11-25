@@ -1,0 +1,10 @@
+---
+title: "Writing Reports"
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Use Quarto to write up your final project report  | 

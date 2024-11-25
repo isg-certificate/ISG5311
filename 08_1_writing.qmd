@@ -1,0 +1,29 @@
+---
+title: "Untitled"
+editor: source
+format: 
+   html:
+     df-print: kable
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Use Quarto to write up your final project report  | 
+
+
+Now we've walked through the entire differential expression workflow, and at this point in the semester you've mostly worked through your final project analyses. A key component of the final project is to write up a document explaining your dataset and your results. For this you're going to use Quarto. 
+
+[Quarto](https://quarto.org) is an open-source publishing system developed by [Posit](https://posit.co), the same company behind RStudio. It allows you to incorporate code and figures into a variety of types of documents, from manuscripts, to webpages, to presentations. This lab manual is written in Quarto. 
+
+To get started, you will first need to [install Quarto](https://quarto.org/docs/get-started/). 
+
+Once you've installed it, in HuskyCT there are links to a video on Quarto, and the documentation, which includes some tutorials. 
+
+To make things concrete, there is a [git repository](https://github.com/isg-certificate/simple_quarto_example) with a simple document demonstrating some features of Quarto. You should download that to your local machine, open an RStudio project inside the directory and click `render` (you should see a render button at the top of the script panel in RStudio). It will be rendered as an HTML file that you can open in a web browser. You can see how the code (in the `qmd` file) and the rendered HTML file link up. This should help you get started, along with the tutorial materials. Please feel free to ask about any issues you have in the 
+
+Because the lab manual was written in Quarto, ff there are any features you've seen that you're interested in understanding, you can always just look at the source code. See the chapter on [differential expression](https://github.com/isg-certificate/ISG5311/blob/quarto/07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.qmd), for example. It runs the actual differential expression analysis and renders the plots (the necessary data are committed to the git repository). 
+
+You are encouraged to make the Quarto document part of your codebase, and use the same RStudio project you used to analyze your data to write the document. You'll be able to point to the same data, and the same paths, and reuse much of your code to create the document. 
+
+In the future, you may wish to write your analyses as Quarto notebooks, but there are some downsides to doing that, particularly as the early stages of data analysis can be pretty messy and experimental, and perhaps not well suited to the document authoring format. 
