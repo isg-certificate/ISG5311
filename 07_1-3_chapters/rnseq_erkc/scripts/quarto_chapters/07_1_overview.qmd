@@ -1,0 +1,221 @@
+---
+title: "Overview"
+editor: source
+format: 
+   html:
+     df-print: paged
+---
+
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Customize your shell |
+
+## Bioconductor
+
+You have previously installed packages from [CRAN](https://cran.r-project.org) using `R`'s default package installer `install.packages()`. We're going to use some packages in this analysis that are part of the [`Bioconductor`](https://bioconductor.org) project. Bioconductor is an open-source R-based bioinformatics software project. Bioconductor manages a large community of software developers that create and maintain packages, many of which build upon each other. Bioconductor packages must adhere to certain design standards, and are sometimes removed from new Bioconductor versions when they cease to be maintained. 
+
+Bioconductor maintains a version-controlled repository of its packages (you can install old package versions and their dependencies if you need to) that is independent from CRAN, and requires you to use a separate installation routine. In the following chapters, we'll use a few different packages from Bioconductor. For this chapter (a very quick DE analysis), we only need the package `DESeq2`. Bioconductor packages have splash pages with the command needed to install the package, documentation, and usually one or more "vignettes" demonstrating how the package can be used. 
+
+For DESeq2, check out the [splash page](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and install the package. It may take a while to install it and all of its dependencies. The vignette for DESeq2 is uncommonly good, and covers a lot of the material for the next few chapters, sometimes in more detail (albeit without the killifish example dataset to make things concrete). 
+
+## A quick differential expression analysis
+
+To give you a sense of where we're headed with this analysis, we're going to do a *very* quick differential expression analysis from importing our count data, to identifying differentially expressed genes. Following that, we'll walk through the analysis step by step, interrogating it in detail to help develop your R skills, understanding of the analysis, and ability to look out for problems. 
+
+You should follow along with this analysis in RStudio. Download our RNA-seq tutorial git repository to your local computer. You can either clone it like this:
+
+```bash
+git clone https://github.com/isg-certificate/rnaseq.git
+```
+
+Or you can also download it as a zip file and decompress it using the "code" button on the [repository page itself](https://github.com/isg-certificate/rnaseq/tree/main)
+
+We're suggesting you do this to keep the project organized in a consistent way and so that you can ultimately keep all the code for the entire analysis in one place. This may make some more sense next semester when we start using Git/GitHub formally. Once you have the data downloaded, create the analogous "results" directory, and copy the count directory and the samtools stats output to the same directories as on Xanadu. 
+
+In the end, you should have a directory that looks like this:
+
+```bash
+├── metadata
+│   └── SraRunTable.txt
+├── README.md
+├── results
+│   ├── 03_align
+│   │   └── samtools_stats
+│   │       ├── SN.txt
+│   │       ├── SRR12475446.stats
+│   │       ├── SRR12475447.stats
+│   │       ├── SRR12475448.stats
+│   │       ├── SRR12475449.stats
+│   │       ├── SRR12475450.stats
+│   │       ├── SRR12475451.stats
+│   │       ├── SRR12475452.stats
+│   │       ├── SRR12475453.stats
+│   │       ├── SRR12475454.stats
+│   │       ├── SRR12475455.stats
+│   │       ├── SRR12475456.stats
+│   │       ├── SRR12475468.stats
+│   │       ├── SRR12475469.stats
+│   │       ├── SRR12475470.stats
+│   │       ├── SRR12475471.stats
+│   │       ├── SRR12475472.stats
+│   │       ├── SRR12475473.stats
+│   │       ├── SRR12475474.stats
+│   │       ├── SRR12475475.stats
+│   │       └── SRR12475476.stats
+│   └── 04_counts
+│       ├── counts
+│       │   ├── SRR12475446.counts
+│       │   ├── SRR12475447.counts
+│       │   ├── SRR12475448.counts
+│       │   ├── SRR12475449.counts
+│       │   ├── SRR12475450.counts
+│       │   ├── SRR12475451.counts
+│       │   ├── SRR12475452.counts
+│       │   ├── SRR12475453.counts
+│       │   ├── SRR12475454.counts
+│       │   ├── SRR12475455.counts
+│       │   ├── SRR12475456.counts
+│       │   ├── SRR12475468.counts
+│       │   ├── SRR12475469.counts
+│       │   ├── SRR12475470.counts
+│       │   ├── SRR12475471.counts
+│       │   ├── SRR12475472.counts
+│       │   ├── SRR12475473.counts
+│       │   ├── SRR12475474.counts
+│       │   ├── SRR12475475.counts
+│       │   └── SRR12475476.counts
+│       └── multiqc
+│           ├── multiqc_data
+│           │   ├── multiqc_data.json
+│           │   ├── multiqc_general_stats.txt
+│           │   ├── multiqc_htseq.txt
+│           │   ├── multiqc.log
+│           │   └── multiqc_sources.txt
+│           └── multiqc_report.html
+└── scripts
+    ├── 01_rawdata
+    │   ├── 01_downloadSRA.sh
+    │   └── 02_downloadGenome.sh
+    ├── 02_QC
+    │   ├── 01_fastqc.sh
+    │   ├── 02_multiqc.sh
+    │   ├── 03_trimmomatic.sh
+    │   ├── 04_fastqc_trim.sh
+    │   └── 05_multiqc_trim.sh
+    ├── 03_align
+    │   ├── 01_index.sh
+    │   ├── 02_align.sh
+    │   ├── 03_samtools_stats.sh
+    │   ├── 04_qualimap.sh
+    │   └── 05_multiqc.sh
+    ├── 04_count
+    │   ├── 01_count.sh
+    │   └── 02_multiqc.sh
+    └── 05_R_analysis
+        ├── DE_analysis_htseq.R
+        └── super_quick_DE.R
+
+```
+
+Start a new RStudio project in the directory `scripts/05_R_analysis/`. The paths specified in the code chunks below are relative to that directory. If you do this successfully, you should be able to run all the code chunks locally without having to edit anything. 
+
+Alternatively, you can *not copy anything*, connect your computer to Xanadu's file system, and start the RStudio project there. This has the benefit of keeping all your R code right there on Xanadu, and the downside of causing annoying problems with RStudio whenever your connection to Xanadu closes. 
+
+A third alternative is to start RStudio server on Xanadu and ssh tunnel in. We're not going to get into that here, but if you're feeling ambitious you can find documentation on how to do that at the UConn CBC github documentation wiki. 
+
+If all this seems confusing, there is a demo video in HuskyCT. 
+
+### Load our R packages
+
+We're just using two packages here. We'll use more in the full analysis. 
+
+```{r}
+#| warning: false
+library("tidyverse")
+library("DESeq2")
+```
+
+### Read in the data
+
+Get the metadata. It's got tons of columns. We're going to winnow it down. We'll also recode the populations Elizabeth River (tolerant; T4 from the paper) and King's Creek (sensitive; S4 from the paper) to `ER` and `KC` and the pcb dosage to `control` and `exposed`, rather than numerical values. 
+
+```{r}
+meta <- read.csv("../../metadata/SraRunTable.txt") %>%
+  mutate(population=str_replace(population, "Eliza.*", "ER")) %>% # change population names to be simpler
+  mutate(population=str_replace(population, "King.*", "KC")) %>% # change population names to be simpler
+  mutate(pcb_dosage = case_when(pcb_dosage == 0 ~ "control", pcb_dosage > 0 ~ "exposed")) %>% # change pcb dosage to control vs exposed
+  filter(population %in% c("ER","KC")) %>%
+  select(Run, population, pcb_dosage)
+```
+
+Get a list of count files. Specify the directory they reside in. 
+
+```{r}
+directory <- "../../results/04_counts/counts"
+sampleFiles <- list.files(directory, pattern = ".*counts$")
+```
+
+Ensure that sampleFiles and metadata table are in the same order because we're just going to paste them together into a table. Note that this is a vector operation, comparing each of the sample files (with the suffix `.counts` removed) to each of the rows in `meta`, one by one. `all()` tests if all the values in the vector are `TRUE`. 
+
+```{r}
+all( str_remove(sampleFiles, ".counts") == meta[,1] )
+```
+
+Now create a data frame with sample names, file names and treatment information. 
+```{r}
+sampleTable <- data.frame(
+  sampleName = meta$Run,
+  fileName = sampleFiles,
+  population = meta$population,
+  dose = meta$pcb_dosage
+)
+```
+
+Write out `sampleTable` to check that it seems correct (in RStudio you can just inspect the object). 
+
+```{r}
+sampleTable
+```
+
+Finally, to read the data in, we'll use a function from DESeq2 that recognizes `htseq-count` input files. It will read them all in and create a DESeq2 data object. Note that here is a critical stage in our analysis: `design = ~ population*dose`. We are specifying our experimental design using columns from `sampleTable`. We'll talk more about it later.
+
+```{r}
+ddsHTSeq <- DESeqDataSetFromHTSeqCount(
+  sampleTable = sampleTable, 
+  directory = directory, 
+  design = ~ population*dose
+)
+```
+
+Note that DESeq2 produces a warning. Our treatment levels are coded as character vectors, but DESeq2 wants them to be factors, so it converts them. 
+
+### Do the statistical analysis
+
+This step is functionally very simple! DESeq2 wraps up many steps into a single function. 
+
+```{r}
+dds <- DESeq(ddsHTSeq)
+```
+
+Extract significance tests for one of our comparisons of interest: control vs exposed within the population ER. 
+
+```{r}
+res <- results(dds, contrast=c("dose","exposed","control"))
+```
+
+Get a quick summary of the results. 
+
+```{r}
+summary(res)
+```
+
+If you remember the results from the paper, you probably won't be surprised to see only 2 DE genes for PCB exposure in the ER population. We'll work through the data step-by-step in lots of detail in coming chapters to try to understand what's happening here. 
+
+### Resources
+
+Much of what we'll cover here has been well covered in other places as well. Check out:
+
+- This [workflow](http://master.bioconductor.org/packages/release/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html)
+- The [DESeq2 vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
+- The extensive documentation for [clusterProfiler](https://yulab-smu.top/biomedical-knowledge-mining-book/index.html)
