@@ -1,0 +1,260 @@
+---
+title: "Sequence QC"
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Perform standard quality control analyses on sequence data | 
+
+## Quality control of sequence data
+
+In this section we're going to work on doing some standard quality checks for sequencing data. There are three basic topics to cover here:
+
+1. Collecting basic summaries
+2. Trimming
+3. Contamination detection
+
+The only one that is absolutely required across all data types and experiments is the collection of basic summaries. Your sequencing center may be lovely and your lab scientists ultra-competent, but you can't just trust that you've got the data you expect, you have to actually look at it. There is no worse feeling than troubleshooting a pipeline step-by-step backward from the final products, only to discover if you had just taken a few minutes to scrutinize the data before you got started, the last many hours (days? weeks?) of your work would not have been wasted. Once you look at summary data, you can decide whether you can proceed, or if further action is required. 
+
+### Collecting basic summaries
+
+#### Illumina data
+
+We typically use `fastqc` to characterize Illumina data. It's been around a long time, and it does a fine job of covering summaries we want to look at for most applications. It flags statistics when they are worrisome, but this is less useful, because these flags are tuned to apply to whole genome sequencing data (WGS), so if you have a sequencing library that has different characteristics (e.g. RNA-seq), fastqc will often flag it as problematic though it may not be. 
+
+Paired-end sequence is typically delivered in two separate files, which we analyze separately with fastqc. 
+
+The usage for fastqc is very simple:
+
+```bash
+module load fastqc/0.11.7
+
+fastqc -o output_dir input_dir/mysequences.fastq.gz
+```
+
+You can glob the command like this and it will churn through all the files matching the glob pattern:
+
+```bash
+fastqc -o output_dir input_dir/*.fastq.gz
+```
+
+The main output from fastqc is an HTML file which is viewed in a web browser. You can also aggregate many of these HTML files into a single report using multiqc (see below). 
+
+For an explanation of fastqc output, please watch [this video](https://www.youtube.com/watch?v=bz93ReOv87Y) created by the developers, look at their example reports [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and read the brief descriptions of the analysis modules [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/). 
+
+
+#### Oxford Nanopore Technologies data
+
+ONT data straight from the sequencer is a bit more complex than Illumina data. The raw signal data is often delivered alongside fastq files (or sometimes BAM alignment files - more on that later). Furthermore, the data are often chunked up into many smaller files that you may need to concatenate together for further analysis. 
+
+The signal data is delivered in fast5 (deprecated) or pod5 format. You will need the signal data if you want to re-basecall, or do modified basecalling (i.e identify methylated bases). We won't cover that this semester. 
+
+When basecalling is complete, a file, usually named `sequencing_summary.txt` is produced. This file can be used to quickly generate summaries of the quality and length distribution of the reads. This information can be generated directly from the reads themselves, but it's slower. While there can't be much length variation in Illumina data (even if you quality trim it, every read is going to be <= 300bp), for Nanopore data the length distribution can be very wide and highly variable among runs and so it's a key variable for understanding your data. 
+
+Worth noting is that after basecalling a `report.html` file is also generated. This is worth looking at. 
+
+If you download Nanopore sequence data from a public archive, the raw signal data, sequencing_summary.txt, and report.html are unlikely to have been archived alongside the basecalls. 
+
+For Nanopore data, we typically use either [pycoQC](https://github.com/a-slide/pycoQC) or [NanoPlot](https://github.com/wdecoster/NanoPlot) to summarize. 
+
+To run NanoPlot on fastq data (`-t 4` for 4 cpus):
+
+```bash
+module load NanoPlot/1.41.6
+
+NanoPlot --fastq input_dir/mysample.fastq.gz -o output_dir -p mysample -t 4 
+```
+
+Or on `sequencing_summary.txt`:
+
+```bash
+NanoPlot --summary input_dir/sequencing_summary.txt -o output_dir -p mysample -t 4 
+```
+
+pycoQC can only accept the summary file like this:
+
+```bash
+module load pycoQC/2.5.2
+
+pycoQC -f sequencing_summary.txt -o pycoQC_output.html
+```
+
+Both NanoPlot and pycoQC produce HTML files as their primary outputs (but also some useful text summaries). Both of these programs can produce additional summaries if you provide an alignment file (we have not covered alignment yet!). 
+
+For NanoPlot, please read through the author's [gallery of example plots](https://gigabaseorgigabyte.wordpress.com/2017/06/01/example-gallery-of-nanoplot/). There is not a ton of documentation for pycoQC's output, so you'll have to puzzle it out yourself. It's fairly self-explanatory. 
+
+::: {.callout-note}
+ONT's technologies have been changing more rapidly than other major platforms over the last several years. On both the instrument side (nanopores, chemistry) and the processing side (basecalling from raw signal) there have been substantial improvements in recent years. Because of this it is very important to keep track of the instrument, nanopore version, kit, basecalling software version, and the basecalling model selected in the software when dealing with nanopore data. Some downstream applications will want this information, as the implied error profiles can be different. Unfortunately it is not always provided by researchers who upload data to public repositories. 
+:::
+
+#### PacBio
+
+PacBio HiFi data is nice and simple. It's not paired-end, and since we don't usually look at the "subreads" that make up the HiFi consensus sequences, we are usually only concerned with a single fastq file. 
+
+To summarize, you can use PacBio's proprietary smrtlink software and feed it an XML formatted file produced by the sequencer. Like the helper files from ONT, though, these are not typically available in public databases, so we recommend just using NanoPlot on the fastq file, as above. 
+
+### Trimming
+
+Trimming is something we typically do only with Illumina data. There are three aspects to it:
+
+1. Removing adapter contamination ("read-through" contamination is the most common type by far). 
+2. Trimming low quality ends from sequences. 
+3. Removing sequences that have been trimmed too short to be useful in steps 1 and 2. 
+
+As you will note in fastqc outputs, it is not uncommon to get adapter read-through in Illumina data. It's good to remove this. In many applications a small amount can be tolerated, however. Reference mapping programs mostly do "local" rather than "global" alignment these days, so they are capable of leaving some bases at the end of as sequence unmapped if they don't seem to fit. 
+
+To trim adapter contamination, software needs to know what adapters to look for. For some software you will need to provide a fasta file with the specific adapters used in your study. Other software comes pre-loaded with common adapter sequences and you only need to provide them if you're using something unusual. 
+
+Sequence qualities often decline towards the 3' ends of sequence fragments in Illumina data. The longer the read, the worse the decline. For most common applications of Illumina data, we don't need to be extremely stringent with the quality trimming. The Phred-scaled base qualities capture the uncertainty in the base calls reasonably well and are used by many downstream applications. For this reason, unless we have a specific need to tightly control potential base calling errors, we just try to trim out the worst bits. 
+
+Finally, if after trimming adapters and low quality sequence, we wind up with very short sequences (perhaps < 50bp), we typically remove them. This often leaves "orphaned" mate sequences that are long enough and high enough quality to be retained, which are directed to a separate file. Since there usually not that many of these, we often ignore them downstream as they introduce more complexity in handling data for not much benefit.
+
+Here we'll use [`Trimmomatic`](http://www.usadellab.org/cms/?page=trimmomatic), a venerable and widely used piece of software. One downside of using it is that it requires that you know what adapter sequences were used to generate the library and provide them. When that information is not available (sometimes published data do not state it) FastQC usually infers it for you (when there is detectable adapter contamination that is). Also, Trimmomatic comes packaged with fasta files for the most common adapters, so this is not really a large barrier. 
+
+There are many other similar useful tools for trimming, such as [`fastp`](https://github.com/OpenGene/fastp), [`sickle`](https://github.com/najoshi/sickle) and [`cutadapt`](https://cutadapt.readthedocs.io/en/stable/). 
+
+For bioinformatics workflows, we do not typically modify our raw data files in any way (rather, we set permissions to read-only). This means that some steps, like trimming, more or less double the size of our data during the course of analysis. Once you're fairly certain you're done with intermediate analysis products like trimmed reads, it's a good idea to go back and remove them to save storage space. 
+
+To run `Trimmomatic`:
+
+```bash
+module load Trimmomatic/0.39
+
+ADAPTERS=/isg/shared/apps/Trimmomatic/0.39/adapters/NexteraPE-PE.fa
+
+java -jar $Trimmomatic PE -threads 4 \
+        indir/mysample_R1.fastq.gz \
+        indir/mysample_R2.fastq.gz \
+        trimdir/mysample_trimmed_R1.fastq.gz trimdir/mysample_trimmed_orphans_R1.fastq.gz \
+        trimdir/mysample_trimmed_R2.fastq.gz trimdir/mysample_trimmed_orphans_R2.fastq.gz \
+        ILLUMINACLIP:"${ADAPTERS}":2:30:10 \
+        SLIDINGWINDOW:4:25 MINLEN:45
+```
+
+A couple of notes:
+- `\` at the end of each line tells the bash interpreter to ignore the line break so that all 7 lines above are treated as a single continuous line. This simply allows more clarity with long command lines. 
+- `java -jar program.jar <options>` is a common way to run programs written in Java. In the module system we usually have the module create an environment variable upon loading that contains the path to the jarfile. Try loading Trimmomatic and doing `echo $Trimmomatic` now. You can see how it is set by doing `module display Trimmomatic/0.39` and looking at the `setenv` line. 
+- `ILLUMINACLIP` provides the parameters needed to search for adapters. Read through the [documentation](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf) to understand it better. 
+- `SLIDINGWINDOW` gives parameters for sliding window quality trimming (if any 4 bases drop below a mean Q of 25, the rest of the read is trimmed)
+- `MINLEN` should be self-explanatory. 
+
+We may do other quality filtering for ONT and PacBio data, depending on application, but that is typically length and/or mean quality filtering, which can be easily accomplished using `seqkit`, which we demonstrated previously, or taxonomy-based filtering which we will cover in the next section. For more in depth filtering of long reads by quality and length you can also try [`filtlong`](https://github.com/rrwick/Filtlong), but we won't cover it here. 
+
+### Detecting mixtures and contamination
+
+Sometimes our sequence data is a mixture of DNA or RNA from different organisms. This may be a result of biology. That is, for some organisms, tissues, or data types, we may be unable to completely separate our focal organism's DNA or RNA from one or more other organisms. In this case, non-target DNA is usually derived from a taxonomically distant organism. 
+
+Mixtures may also be a result of inadvertent contamination in the field or laboratory. Depending on the context, mixtures may be of distant or closely related organisms. 
+
+When we are concerned this may be the case, there are QC steps we can take. When it is detected, what we decide to do depends on our downstream application. We may want to remove non-target reads at this stage, or we may want to retain them and manage their influence on our analysis later. 
+
+In this section we'll talk about how to use metagenomic classification software to try to identify the extent of mixing of more distantly related species (note that software such as [`CalculateContamination`](https://gatk.broadinstitute.org/hc/en-us/articles/360036433632-CalculateContamination) exists for the cross-contamination case). 
+
+Metagenomic classification essentially takes "query" sequences of interest and maps them to a database of "target" sequences. When matches are found, they are reported. In the software we use, both detailed match information for each sequence (which can be quite a large file) and summary information about the taxonomic distribution of matches is produced. The key element in all classification analyses is the database. A match can only be identified if it is present in the database. There are publicly available standard databases for the software we recommend, but users can also build their own composed of potential contaminants. 
+
+For Illumina short-read data we recommend using [`kraken2`](https://ccb.jhu.edu/software/kraken2/). Databases can be obtained [here](https://benlangmead.github.io/aws-indexes/), but the standard database is already available on the Xanadu cluster here: `/isg/shared/databases/kraken2/Standard`. This database contains bacterial, viral, archaeal and human sequences.  
+
+```bash
+module load kraken/2.1.2 
+
+kraken2 -db /isg/shared/databases/kraken2/Standard \
+        --paired indir/mysample_R1.fq.gz indir/mysample_R2.fq.gz \
+        --use-names \
+        --threads 16 \
+        --output outdir/kraken_general.out \
+        --unclassified-out outdir/unclassified#.fastq \
+        --classified-out outdir/classified#.fastq      \
+        --report outdir/kraken_report.txt \
+        --use-mpa-style
+```
+
+In this case the output file format `unclassified#.fastq` will cause kraken to produce R1 and R2 fastq files without having to specify them both by name. `kraken_general.out` will give the classification status of ALL reads (or read pairs in this case). `kraken_report.txt` will give a taxonomic summary. 
+
+We recommend [centrifuge](https://ccb.jhu.edu/software/centrifuge/manual.shtml#obtaining-centrifuge) for long reads from PacBio and ONT. You can run it like this:
+
+Outputs are
+
+```bash
+module load centrifuge/1.0.4
+
+centrifuge -q \
+        -x /isg/shared/databases/centrifuge/b+a+v+h/p_compressed+h+v \
+        --report-file outdir/report.tsv \
+        --quiet \
+        --min-hitlen 50 \
+        -U indir/mysequences.fastq.gz >outdir/centrifuge_results.txt
+```
+
+Note that it uses a different database format, but is still composed of the same sequence set. It is available at the link above, but also on Xanadu at the path given in the example command. This will run with unpaired reads (`-U`) and require database hits to be at least 50bp. 
+
+The stdout captured by `outdir/centrifuge_results.txt` will give the classification of every read. `outdir/report.tsv` will give the taxonomic summary. 
+
+
+## MultiQC
+
+[`MultiQC`](https://multiqc.info) is a fantastic tool for aggregating quality reports across samples and pieces of software. It can read in reports from most things we'll use and digest them into a readable format. This is particularly useful when you have many samples. You can imagine that checking fastqc html files individually for 20 or 30 (or 800) samples can range from tedious to virtually impossible. MultiQC gives you a quick overview of everything that can key you into problems when they exist. 
+
+MultiQC has very simple usage:\
+
+```bash
+module load MultiQC/1.15
+
+multiqc -f -o multiqc_out input_dir
+```
+`-o` specifies an output directory. `-f` means "force-overwrite" if the directory already exists and contains results (handy when re-running or testing scripts). MultiQC will search `input_dir` and subdirectories for summary files it recognizes. 
+
+## Exercises:
+
+In the directory `/core/cbc/gdafiles/ISG5311/data/sequence_examples/` we have 6 sequencing data from our three focal platforms. You will run various QC steps on each. 
+
+In the `Illumina` subdirectory, we have three datasets:
+
+1. Paired-end WGS data for a fish, *Fundulus grandis* (`BU18FLFB002`).
+2. Paired-end RAD-seq data for an ash tree in the genus *Fraxinus* (`Plate1_pool1`). 
+3. Paired-end RNA-seq data for a deciduous conifer *Larix laricina* (`K31`). 
+
+Important note about the RAD-seq data: R1s begin with a variable length sample barcode sequence (5-8 bases, 16 samples in the pool) followed by 6 bases of the SbfI restriction enzyme recognition site. R2s begin with a 10 base unique molecular identifier ("UMI"; the first 5 bases are completely random) followed by 3 bases of the MseI restriction enzyme recognition site. 
+
+In the `pacbio` subdirectory, we have only one dataset. 
+
+1. `SRR15654800`, whole genome HiFi data from a caddisfly. 
+
+In the `ONT` subdirectory we have two datasets (information about basecalling is provided in the README.md file):
+
+1. A fastq file (`SRR28295757`). This is newer ONT duplex data from a human sample, HG002. A sample widely used in benchmarking studies for sequencing technologies. 
+2. We also have a nanopore `sequencing_summary.txt` file from a fish, again *Fundulus grandis*. These data are older and will have a much higher error rate. 
+
+Analysis to be done:
+
+1. **FastQC** - On all fastq files. 
+2. **NanoPlot** fastq mode - On ONT human data (`SRR28295757`) and on PacBio caddisfly data (`SRR15654800`). 
+3. **NanoPlot** sequence summary mode - On *Fundulus grandis* (`sequence_summary.txt`)
+4. **pycoQC** - On *Fundulus grandis* (`sequence_summary.txt`)
+5. **Trimmomatic** - On only one Illumina dataset: *Fundulus grandis* (`BU18FLFB002`). 
+    - Run `FastQC` again on the trimmed sequences. 
+6. **Kraken2** - On only *Larix laricina* (`K31`). 
+7. **Centrifuge** - On ONT human data (`SRR28295757`). 
+8. **MultiQC** - On the directory containing your results for the Illumina data only. This should have fastqc reports for both before and after trimming. Running it for *all* the data will result in some wonky figures because the ONT and PacBio data are so different in length.  
+
+This is a lot of analysis! The idea is to help you see some of the differences among different types of datasets and how they turn up in standard quality control measures. Put each analysis in a separate script. Use the scripts to organize your output into a single results directory with a subdirectory for data from each platform. 
+
+These are real datasets, and running these programs will take more than a few minutes, some will take several hours. You will need to submit this work via SLURM and monitor the jobs to ensure they complete without error. You should give yourself plenty of time to do this. For all programs, `module load` them and run `<program> --help` to look at the usage and basic options. 
+
+Some pointers:
+
+- Kraken2 needs to load the entire database into memory to run, so you will need a large enough memory request (plus a few gigabytes extra) for that. Check the size of the directory containing the database to figure this out. 
+- For the ONT data in fastqc you will need to change add the flag `--memory 2000`. This is the amount of memory in megabytes. The default is 512Mb, but the very long reads require more. 
+- remember to check the stderr and stdout files produced by SLURM for potentially useful summaries. 
+- This is going to require many scripts (or many lines in a single script). Think about how you're going to keep scripts, log files and outputs organized for these diverse programs. This may feel like a struggle. I have deliberately not provided a lot of guidance here. We'll cover project organization in the next module. 
+
+Questions:
+
+1. Which of the Illumina datasets has the highest adapter contamination?
+2. Which of the Illumina datasets has the highest duplication rate?
+3. Which of the 3 long-read datasets (2 x ONT, 1 x pacbio) has the longest median read length?
+4. For every 10,000 sequenced bases, you would expect ___ errors in the older killifish ONT data, ___ errors in the newer human ONT duplex data, and ___ errors in the pacbio caddisfly data. This is calculated by multiplying the mean probability (from NanoPlot, *not* fastqc) by 10,000. 
+5. How many fragments of the Larix dataset were classified as bacteria? 
+6. What percentage of bases were removed from the killifish Illumina data by Trimmomatic?
+7. Which of the Illumina data sets has the worst (untrimmed) median quality score at the 3' end of the sequence (use fastqc or multiqc output)
+8. The R2 sequences for the RAD-seq data `Plate1_pool1` begin with a *unique molecular identifier*, or *UMI*. This is a random nucleotide sequence that can be used to determine when two sequences are clones of the same original biological molecule (for a pair of sequences, if the UMIs are the same, and the sequences are the same for high quality bases, then the sequences derive from the same molecule). Judging from the fastqc output, how many fully random bases (we usually term these *4-fold degenerate* bases) does the UMI sequence start with? 

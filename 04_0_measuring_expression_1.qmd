@@ -1,0 +1,22 @@
+---
+title: "Measuring Gene Expression I"
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Identify the main steps in a differential expression workflow |
+| Learn about the example dataset |
+| Organize a computational project |
+| Retrieve data from public databases |
+| Distinguish between types of parallel analysis |
+| Run tasks in parallel with GNU Parallel |
+| Run tasks in parallel with SLURM arrays |
+| Perform initial QC |
+| Align data against a reference genome | 
+| Perform alignment QC | 
+| Manipulate alignments in SAM/BAM format |
+| Manipulate annotation files in GTF/GFF3 format |
+| Quantify gene expression using reference alignments and a genome annotation | 

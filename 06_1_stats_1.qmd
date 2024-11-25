@@ -1,0 +1,380 @@
+---
+title: "Getting to Know R and RStudio"
+editor: source
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Install and use R and RStudio  | 
+| Use the fundamental features of the R language | 
+
+## What is R, and why are we using it? 
+
+[`R`](https://www.r-project.org) is "a free software environment for statistical computing and graphics". It is a full-fledged programming language (though a high level one). Many software packages have been built in R, and it is typically relatively easy to install and use them. R is very widely used across a variety of academic and industry settings, primarily for statistics and data science applications. 
+
+Using `R` and software packages developed for it, you will learn to 
+
+1. Read, filter, and otherwise manipulate data. 
+2. Do (some pretty specific) statistical analysis. 
+3. Make a variety of visualizations of data and analysis results. 
+
+The first two are things you've already learned to do a bit of using bash and programs compiled for Linux, so why also learn to do them in R? In short, the tools developed for doing these things in R allow far more flexible and nuanced analysis, and the integration of the ability to make plots makes R a very powerful environment for efficiently learning from data. 
+
+If R has a weakness, it's that it is largely oriented    around the idea that datasets will be entirely loaded into memory (though there are exceptions). This means that in practice we don't typically work with large raw sequence datasets in R, but do initial analysis using highly specific tools (assemblers, aligners, quantification software etc) and then bring the much smaller processed results into R for further analysis and visualization. Our count files are a great example of this. We have ~87G of raw data in our 75 sample transcriptomic dataset, but the count data we'll ultimately analyze in R is only 40M. 
+
+The language most commonly compared to R is [Python](https://www.python.org). Use cases overlap substantially, though python also has some wider, non-data oriented applications, and similar software packages have been developed for many applications in both languages. We are going to focus on R in this course. It's not necessarily better (you can find endless internet debates about the merits of various languages if you're into that sort of thing), but it will certainly be easier to get started with, and you have to start somewhere. It's not uncommon for people in this field to learn more than one language, though certainly not everyone does. 
+
+## Installing R and RStudio
+
+There are four main ways you can interact with `R`. 
+
+1. Interactively, by launching the interpreter that is distributed with it. 
+2. Interactively, by running it in a terminal window. 
+3. Interactively, in an integrated development environment (IDE). 
+4. Non-interactively, by handing it a script or a set of commands, much like you would a bash script. 
+
+In this course, you will likely run R in all of these ways at one time or another, but we recommend that you generally run R on your local machine in an IDE, so you'll need to install it there. 
+
+The IDE we recommend, and that most folks use for R is [`RStudio`](https://posit.co/products/open-source/rstudio/). RStudio provides facilities to edit and execute code, view plots and data, and manage your environment. 
+
+R is available on Xanadu, and it is simple to run using methods 2 and 4 above. On Xanadu, however, R will not be able to display plots for you as it will on your local machine. It is possible to run RStudio on Xanadu, but it's a bit of a pain to start up (instructions [here](https://github.com/CBC-UCONN/FAQ/wiki/How-to-run-R-studio-off-the-Xanadu-cluster%3F)). If you find that your local machine is too resource-constrained and you're having a hard time running RStudio there, this might be a better alternative. Talk to us if you think this is a problem for you. 
+
+**Install R and RStudio on your local machine now**, following [these directions](https://posit.co/download/rstudio-desktop/). 
+
+## R paradigms
+
+Something that makes R a bit complex is that there are two major paradigms for manipulating and visualizing data. 
+
+- **base R**: R is distributed with *base* functions and data structures for reading, writing, manipulating data, doing statistics, and plotting. It's good to have a grasp of how these work. 
+- [**`tidyverse`**](https://www.tidyverse.org): The tidyverse is a set of software packages, or extensions, for R that implement a fundamentally different way of doing things. Tidyverse tools are incredibly powerful, and for many tasks have become the default way of approaching data in R. 
+
+We are going to introduce you to both approaches in this course, and we'll use a mixture when analyzing data. Many well-established R packages do not output results in "tidy"-friendly format, and so sometimes it is quicker and easier to manage them in base than make them tidy. This probably makes little sense to you now, but it will become clear soon. 
+
+
+## How we're going to introduce you to R
+
+Because R is so popular, there are numerous resources for learning it. For the coming sections of the lab manual, we will mostly send you off to work through some existing resources published elsewhere. 
+
+The way this will work is as follows:
+
+1. Watch a video introducing you to RStudio
+2. Work through a *very* brief introduction to the R language (much of this will be repeated in more depth in the next steps). 
+3. Work through a more in depth introduction to **base R** using [swirl](https://swirlstats.com/students.html). 
+4. Work through parts of [R for Data Science, 2nd edition](https://r4ds.hadley.nz). 
+
+## An incredibly brief introduction to `R`
+
+This will be a very quick introduction to *base* R features. 
+
+Open `RStudio` on your local machine, and follow along here. The code we go over can also be found in an R script [here](/really_basic_R_code.R)
+
+Like bash, when you write code, you can denote comment lines with `#` that will be ignored by the R interpreter. 
+
+```r
+# use comment lines like this to mark up your code. 
+```
+
+R differs from bash in very dramatic ways. In bash, nearly everything is a *file*. Programs are files, they read input from files, and write output to files. The standard input, standard output, and standard error, even when not redirected to a file stored on a hard disk, are still essentially files. 
+
+### Objects and expressions
+
+In R, everything is an **object**. When you write R code, you compose objects into **expressions** that are evaluated by R. The product of an expression will be an object, though typically it will not be stored for later use unless you assign it to an object with a name. 
+
+Let's look at a very simple expression. We'll assign the number `5` to the object `a` using the **assignment operator** `<-`
+
+```{r}
+a <- 5
+```
+
+You can see the contents of many objects by simply typing their names in the R console:
+
+```{r}
+a
+```
+
+You can write mathematical expressions:
+
+```{r}
+5 + 5
+```
+
+And assign the results of those expressions to an object:
+
+```{r}
+a <- 5 + 5
+```
+
+`+` is a special type of object called an **operator**. 
+
+You can update objects:
+
+```{r}
+a <- a + 5
+a
+```
+
+### Kinds of objects
+
+There are many types of object in R. Objects used to store data are often referred to as **data structures**. 
+
+The most basic data structure is a **vector**. You can create them with the function `c()` (more on functions in a moment), which concatenates its arguments into a vector:
+
+```{r}
+a <- c(1,2,3,4,5)
+a
+```
+
+`a` is a **numeric** vector. We can also create **character** vectors:
+
+```{r}
+b <- c("bear","dog","fox","cat","rat")
+b
+```
+
+We can access subsets of vectors with `[]` notation, grabbing (or excluding) elements or ranges of elements:
+
+```{r}
+a[2]
+b[2:4]
+b[-3]
+```
+
+Another common data structure is a **list**. You can create them with the function `list()`:
+
+```{r}
+g <- list(x=a,y=b)
+g
+```
+
+In this case we've named the two elements of the list `x` and `y`. 
+
+We can access ranges of list elements as with vectors, but if we want to extract *just* the contents of a single list element, we need to use *double* square brackets notation: `[[]]`, or `$` notation:
+
+```{r}
+g[1] # returns a list with 1 element! the others return vectors. 
+g[[1]]
+g[["x"]]
+g$x
+```
+
+We also have **matrices** (also called **arrays**):
+
+```{r}
+d <- matrix(nrow=5,ncol=2,data=1:10)
+d
+```
+
+This matrix is 2-dimensional, so we provide two indexes, `[row, column]`, to access parts of it:
+
+```{r}
+d[1,]
+d[,1]
+d[1,2]
+```
+
+If we leave one index blank, it will return all elements of that dimension. 
+
+Possibly the most important data structure in R is the **data frame**:
+
+```{r}
+e <- data.frame(x=a,y=b)
+e
+```
+
+Data frames are superficially a bit like matrices. Matrices, however, require data in all elements to be *the same type* (e.g. all character or all numeric). Each column of a data frame can have a different type. 
+
+You can access subsets of data frames in diverse ways: with 2-d bracket notation as with matrices, or you can subset columns with the same types of notations you would with lists (a data frame is a special type of list). 
+
+We've seen the basic R data structures, and hinted that there are different fundamental types of data. There are more than we've seen though. There is:
+
+1. numeric data (e.g. 1,2,3,4...)
+2. character data (e.g. "bear", "dog", "fox"...)
+3. logical data (TRUE / FALSE)
+4. factor or categorical data, which looks like character data on inspection, but has defined levels (e.g. every instance of "fox" in a factor vector is recognized as belonging to one category)
+
+A critical type of object we have seen but not discussed yet, is the **function**. Functions are objects that contain code. You can use them to manipulate other objects. 
+
+A very basic function is `is()`, which we can use to ask about the type, or **class** to which an object belongs:
+
+```{r}
+is(a)
+is(d)
+is(e)
+is(is)
+```
+
+There are often several classes assigned to an object, the first few classes will give you a good idea of what you're dealing with. 
+
+You can see the contents of many functions by simply typing the function name in the console without `()`, though at this point please do not feel obligated to try to understand the code printed below!
+
+```{r}
+is
+```
+
+Some functions have their code partially obscured, or are actually written in a lower level programming language (such as C, for speed). See a discussion [here](https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function)
+
+You can create your own functions with `function(arguments){code}`, and assign them to objects like this:
+
+```{r}
+x10 <- function(x){
+  z <- x * 10
+  return(z)
+}
+
+x10(10)
+```
+
+Writing a function for an action that you do repeatedly can help tidy up code and make it easier to understand. 
+
+### Vector arithmetic
+
+R can do **vector** operations:
+
+```{r}
+a <- 1:5
+a + a
+a^2
+a + 100
+```
+
+If you try to combine vectors that are not multiples of one another, you'll get a warning, but R will recycle values to make it work:
+
+```{r}
+a <- 1:5
+b <- 1:4
+a + b
+```
+
+If you see this warning, it's almost certain you've done something you didn't intend to and you should figure out what's gone wrong. 
+
+### Logical data
+
+Logical data are special. We can create a logical vector with a logical expression:
+
+```{r}
+a <- 1:20
+l <- a > 5
+l
+```
+
+Logical data can be subjected to numerical operations (TRUE = 1; FALSE = 0):
+
+```{r}
+l[1:10] + 1
+sum(l)
+```
+
+
+### Index vectors
+
+We can use vectors to subset objects. 
+
+```{r}
+d <- matrix(nrow=5,ncol=2,data=1:10)
+l <- d[,1] > 3
+d[l,]
+```
+
+You can also use numeric vectors, or character vectors if the rows or columns have names. 
+### Loops, `apply()`, and if/else
+
+We're not going to cover these in this very brief introduction, but you will see them later!
+
+### Getting Documentation
+
+Base R functions and most R packages come with documentation. This is usually helpful, but can be hard to parse when you're just getting started. You can access it by:
+
+```r
+?sum
+```
+
+In RStudio it will open in the **Help** tab in the lower right panel. If you're in a terminal window, you can exit the help by pressing `q`. 
+
+To get documentation for operators, you need to use backticks:
+
+```r
+?`+`
+```
+
+### Analysis and plotting
+
+We'll do a very simple analysis here to demonstrate some basic functions for modeling and plotting. 
+
+First simulate some data. `rnorm()` draws random deviates from a normal distribution. 
+```{r}
+x <- rnorm(n=300,mean=10,sd=10)
+y <- x * 5 + rnorm(n=300,mean=25,sd=10)
+z <- data.frame(x,y)
+```
+
+Make histograms and a scatter plot:
+
+```{r}
+hist(z$x)
+hist(z$y)
+plot(z$x,z$y)
+```
+
+Fit a linear model:
+
+```{r}
+model <- lm(y ~ x, z)
+```
+
+Summarize the results:
+
+```{r}
+summary(model)
+```
+
+Add a trendline to our scatter plot:
+
+```{r}
+plot(z$x,z$y)
+abline(model,col="red")
+```
+
+### Pipes
+
+A feature that has been added to base R (versions > 4.0), but which used to be specific to the tidyverse paradigm is the **pipe**. The base R pipe operator is `|>`. It works just like the Linux pipe, passing the output of one function to the next as input, so it should feel very familiar:
+
+```{r}
+lm(y ~ x, z) |> summary()
+```
+
+For many years, a different pipe operator was the only one available: `%>%` It was part of the package `magrittr`, and then later the `tidyverse` set of packages. You will probably still see it around a lot and there are [some differences](https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/). 
+
+### Installing packages
+
+A huge amount of R's functionality comes from **packages** or **extensions** developed by 3rd parties. There are a several places you can get them from, but the biggest by far is the repository [`**CRAN**`](https://cran.r-project.org). To install packages from CRAN you can do `install.packages("package_name")`
+
+Try to install the tidyverse (actually several packages): 
+
+```r
+install.packages("tidyverse")
+```
+
+Once an R package is installed, it will be available in any R session by typing `library("package_name")`. There may be messages printed when loading R packages, e.g.:
+
+```{r}
+library(tidyverse)
+```
+
+We will also use several packages from [**`Bioconductor`**](https://bioconductor.org). Bioconductor has it's own installation routine:
+
+We'll talk more about Bioconductor later, but for now, know that each package has it's own splash page with installation instructions. Try to install [**`DESeq2`**](https://bioconductor.org/packages/release/bioc/html/DESeq2.html). Bioconductor packages typically have many dependencies which will also be installed. 
+
+## Organizing R Projects
+
+We'll have more to say about this later, but for now, a few tips on R and RStudio. 
+
+1. **Create new RStudio projects for each new project.** When you opened RStudio for the first time, it created a project for you. Perhaps you specifically chose a project directory, perhaps you used whatever it suggested. In the future, when you actually do data analysis, you should be mindful about your R environment. Using one R environment to do all your analysis is a recipe for disaster. 
+2. As a general rule, **don't save objects in your R environment/workspace.** Instead, **write scripts and save your code**. When you quit R or RStudio to go work on something else, or to switch to another R/RStudio project, just let all that junk in your workspace go. If you need it, the code to create it should be written into a script that you can run from top to bottom to recreate it *without manual intervention*. When you come back to the project, execute the code again to regenerate the objects. If you do this, it will ensure that you are doing analysis that at least *you* can reproduce. You will turn up errors and inconsistencies you didn't know were there. In fact, we recommend periodically closing and restarting R and re-running your code just to ensure things are working the way you expect. The very last thing you want is to have some object named `DEFinalResults` and not really know how you arrived at those results. 
+
+## R Resources
+
+R for data science, 2nd edition
+Advanced R 2nd edition
+R in a nutshell
+YaRrr! The Pirate's Guide to R

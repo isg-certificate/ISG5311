@@ -1,0 +1,51 @@
+---
+title: "Overview of differential expression with RNA-seq"
+editor: source
+---
+
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Identify the main steps in a differential expression workflow |
+| Learn about the example dataset |
+
+## A model workflow
+
+Beginning with this section of the course we're going to walk through the steps of a model workflow: **differential expression with RNA-seq**. This is a common application of high-throughput sequencing data, and will introduce a number of concepts and techniques applicable across diverse workflows. 
+
+## Workflow steps
+
+A differential expression analysis has these basic steps:
+
+1. Retrieve and QC data.
+2. Quantify gene (or transcript) expression.
+3. Test for differences in expression among treatment groups.
+4. Interpret differential expression results via ranking, gene set enrichment, and/or pathway analysis.
+
+Steps 1 and 2 are typically done using Linux tools on the HPC. Steps 3 and 4 will require us to introduce a new language, [`R`](https://www.r-project.org).  Specialized software has been written for differential expression analysis in R, but R is very widely used in statistical analysis, data cleaning, and generating visualizations. 
+
+## Focal data
+
+We're going to walk through the workflow using a real dataset from [this paper](https://www.science.org/doi/10.1126/science.aah4993):
+
+>Reid, Noah M., et al. "The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish." Science 354.6317 (2016): 1305-1308.
+
+The Atlantic killifish (also known as the mummichog, *Fundulus heteroclitus*) is an abundant inhabitant of estuaries along the Atlantic coast of North America. Some of these estuaries were intensely polluted by heavy industry in the middle of the 20th century. Pollutants are diverse, but include highly toxic polychlorinated biphenyls (PCBs), polycyclic aromatic hydrocarbons (PAHs) and dioxins. These pollutants cause adverse effects in nearly all vertebrates, but exposure is particularly damaging during early development. 
+
+In several distinct heavily polluted estuaries, killifish persist. These fish show extremely high resistance to these pollutants compared to fish from nearby sites with minimal pollution. The resistance is heritable across many generations in fish bred in the lab, indicating it has a genetic basis. 
+
+The authors of this study wanted to determine the genomic basis of adaptation to toxic pollution in these fish, and learn whether it differed among populations at different polluted sites. They collected population genomic and gene expression data from 4 pairs of populations (one sensitive, one tolerant) to address this question. The population genomic data were generated from wild-caught fish. The expression data were the result of an experiment conducted with lab-bred fish from each population. See the paper for details, but in brief: embryos were exposed to either a DMSO control, or PCB-126. RNA from whole embryos was extracted to measure gene expression, with 4-6 replicates per treatment group. 
+
+The authors measured gene expression with RNA-seq. RNA-seq will be covered in more detail in ISG5301, but briefly: RNA-seq is a catchall term that refers to RNA that has been extracted from a tissue or organism, reverse-transcribed into cDNA, and then fragmented and sequenced on the Illumina platform. We frequently use RNA-seq to quantify transcript or gene expression. To do this we make the assumption that the number of fragments of a given transcript or gene found in our sequencing library is roughly proportional to the frequency of that transcript in the cell population we extracted the RNA from. 
+
+There are *lots* of caveats here, which we will cover in due time. At any rate, our goal in the first half of this workflow is to generate counts of RNA fragments attributable to a given gene or transcript to use as a measurement of expression. 
+
+The RNA-seq data is what we'll use here. In the chapters that follow, we'll use data from the Elizabeth River/King's Creek pair of populations, and exercises will require you to expand the analysis to include more populations. 
+
+## Excercises
+
+Read the paper linked above and answer the following questions:
+
+
+

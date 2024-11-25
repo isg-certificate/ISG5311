@@ -5,28 +5,462 @@ title: "Data Storage and Software on HPC"
 |                                                                       |
 |-----------------------------------------------------------------------|
 | **Learning Objectives:**                                              |
-|  |
-|  | 
+| Distinguish types of data storage available on Xanadu |
+| Compile simple software from source |
+| Install software in an isolated environment using `conda` | 
+| Run software inside a Singularity container | 
 
-We have two more important topics to cover before we move on to actually starting to analyze some real data. 
+We have two more important topics to cover before we move on to actually starting to analyze some real data. How we manage data storage and software on Xanadu. 
 
 
 ## Data storage and access
 
-home
+This is a complicated topic, and it's hard to generalize in a way that will apply across organizations, or between HPC and cloud platforms. In general with big 'omic data sets, data storage can grow expensive and unwieldy over time. At many (perhaps most?) organizations, data storage for multi-user systems is regularly in flux, as technologies, cost, and the preferences of users and system administrators evolve. Storage systems may come very close to full before funding and approval come through for expansion, or addition of a new system. Cost models may shift, necessitating changes in user behavior or system policies. These issues can crop up rapidly, even in well run organizations with good communication. Because of this it will pay dividends for users to keep their data organized-to know exactly what they have and where-so they can respond nimbly to requests by system administrators or principal investigators. 
 
-scratch
+What does keeping data organized mean? First we'll talk about storage on Xanadu, then we'll talk about organization. In this section, "data" will refer to both raw data and the products of analysis, which can both be quite large in many cases. The term "large" is quite vague, but here we'll refer to data on the scale of 10s of gigabytes to 1-2 terabytes, the kind of data that would be likely to challenge a typical consumer-grade computer's storage. This is the range that most typical 'omic experiments fall in. There are certainly cases where researchers wish to analyze data from tens or hundreds of experiments, or massive datasets produced by large consortia (e.g. containing genome sequencing data from hundreds of thousands of individuals), but that sort of analysis requires specialized strategies and won't be covered in this course. 
 
-tmp
+### Types of storage on Xanadu
 
-/isg/shared
+Storage space falls into four main categories on Xanadu:
+
+1. Space allocated to specific users/groups. 
+2. Shared temporary space. 
+3. Shared storage of active raw data and other resources
+4. Archival space
+
+We'll talk about each in turn. 
+
+#### User/group-allocated space
+
+`/home/FCAM/<username>`: All new users on receive a home directory with 1-2TB of storage. This is located in `/home/FCAM/<username>` on file system `cfs09`. You can see this size of this file system and how much space remains by `df -h`. This storage can **only** be accessed by the user. On Xanadu, attempts to open home directory permissions to share files with other users are a security risk and will be met with a stern lecture from a system administrator. 
+
+`/labs`: Principal investigators or collaborative research groups can also be assigned a space on file system `cfs09` in the directory `/labs`. These directories typically start at 5-10TB and can be expanded if necessary. Each of these directories is assigned to a Linux user group and accessible to that group. Typically this will be members of the PI's lab, or everyone in a collaborative research project. 
+
+`cfs09` is a network-attached file system. Anything on it will be accessible from any node on the cluster. 
+
+#### Shared temporary space
+
+Many analyses have large short-term storage needs. Sometimes raw data are duplicated 3-4 times during successive processing steps (it's best to avoid doing this where possible though!) but the duplicates can be quickly deleted when the analysis completes. In those cases it doesn't make sense to permanently increase storage allocations to users to accommodate the temporary data. Instead we have shared spaces. 
+
+`/scratch`: This directory is on the NFS `cfs08` is the primary shared temporary storage location. Again, with `df -h` you can see how large it is and how much space is available. Any user can create any directory, or series of directories, and store anything they want there. You should definitely use `/scratch` for temporary data storage, but you should never keep anything there you can't afford to lose. Files that haven't been used for 90 days are subject to deletion. That may seem like a lot, but it's really not. Whole chunks of a final project for this course could disappear within a semester if they were stored there. 
+
+`/tmp`: This is another shared temporary storage location. `/tmp` is a place lots of software is configured to try to write temporary files to by default. On Xanadu `/tmp` is **local** to nodes. This means whatever is stored there during an analysis is **only** available to that node. `/tmp` is also small on Xanadu and can fill up quickly. Software my quietly try to write there and fail with the error `No space left on device`. If you think this is the problem, you can often either tell the software to use a different directory with a command-line option, or set the environment variable `TMPDIR` and export it like this:
+
+```bash
+export TMPDIR="/scratch/$USER"
+mkdir -p $TMPDIR # in case it doesn't already exist
+```
+
+#### Other shared storage
+
+`/isg/shared`: This location is where we keep globally installed software packages and commonly used databases. Users have read access to all of it, but for the most part do not have write access. This is on `cfs09`. 
+
+`/seqdata`: This directory houses raw data only. Mainly that produced by UConn's sequencing core. It's on the NFS `cfs15`. Only core staff have write access. 
+
+#### Archival space
+
+`/archive`: This space is meant for cold storage of raw data and/or finished analyses. Users and groups can offload finished projects or raw data that is no longer needed for active analyses here to free up space for on-going work. It is not meant to be read from or written to with high frequency. 
+
+### How to manage your data:
+
+We will return to this again when we talk about project organization, but we have some general principles:
+
+1. Keep your raw data separate from analysis outputs. Set the raw data permissions to read-only. 
+2. Keep your home directory organized. Each project deserves its own directory. You might consider a single directory to house all raw datasets. 
+2. Storage is limited. Be mindful to structure analyses to minimize the creation of large intermediate products (e.g. using pipes where possible), and delete them when they are no longer useful. 
+3. Periodically assess how much storage you're using (`du -sh *` in your home directory is a good start). 
+4. If your home directory is filling up, consider directing intermediate analysis products to `/scratch`. Though be sure that code and final analysis results are not kept there. 
+5. Keep data compressed where possible. Nearly all raw genomic data and many other types of genomic files can be read and written in gzip compressed format. 
+
 
 ## Software
 
-compiling
+Software is another complicated topic in bioinformatics. There is an ever-increasing variety of 'omic data types and experiments, and software for dealing with them proliferates at an even greater rate. This software is often developed by researchers or statisticians, rather than professional software developers. These folks often do software development as an ancillary part of their role (or on an entirely voluntary basis), and their capacity for polishing a program to perfection, or providing user-support may be limited. Because of this, norms of good software development are not always heeded. This can result in idiosyncratic software that can be difficult to install, confusing to run, and prone to cryptic error messages. 
 
-the module system
+Even in the best case scenario, however, where important software is written and maintained with the support of expert software engineers who are paid for their efforts, the ecosystem of scientific software is becoming incredibly complex, with new software being built in a modular way out of pre-existing pieces. This often leads to a complex web of dependencies that can be challenging to resolve. 
 
-conda
+In this course we are aiming to teach you some fundamental ways for obtaining and using diverse pieces of software. The strategies we suggest will probably get you to a point where you can access 95-99% of what you need pretty smoothly. The reality, unfortunately, is that last 1-5% can be a hugely frustrating time vacuum, and you will need to get used to going through a process of trying to install something yourself, hitting a wall, and seeking help. 
 
-containers
+Below, we'll cover some types of software you might use, how to run them, and some strategies for software installation. 
+
+### Software types
+
+Broadly speaking, when doing analysis we work with two types of software: software with command-line interfaces (CLI), and software with graphical user interfaces (GUI). 
+
+Almost all powerful computational analysis is built around software with a CLI. This is because you need to be able to script an analysis and hand it off to be processed by a job scheduler on an HPC or in the cloud. There are, however, cases where a GUI is extremely helpful. These are things like integrated development environments (RStudio, VSCode) or software for data exploration (Integrated Genomics Viewer, a.k.a. IGV, which we'll cover later). 
+
+If a piece of software has a GUI, it has usually been professionally developed. Installing it on your local machine will probably be pretty smooth. Getting it to run on the cluster, or access data stored on the cluster, however, is where things get sticky. We talked about this a bit earlier, when we covered connecting VS Code to Xanadu, and mounting the Xanadu file system locally, but we will cover this more later. 
+
+CLI software ranges widely in quality and complexity, and managing it is what we'll cover below. 
+
+### Running software
+
+To review: we have been running CLI software all through this course so far (`grep`, `sed`, `awk`, etc). When we invoke these pieces of software by name, BASH searches directories in our `PATH` variable to see if they exist. Software does not *have* to be in your path to run it though, you can also simply invoke it by name (with a path pointing to it). For example, type this on the command-line:
+
+```bash
+/isg/shared/apps/samtools/1.16.1/bin/samtools
+```
+
+This should print the usage for the program `samtools`. If you wanted to be able to just type `samtool` to execute the program, you could append the directory to your path like this:
+
+```bash
+export PATH="$PATH":/isg/shared/apps/samtools/1.16.1/bin/
+```
+
+Or if you didn't want to add anything to your `PATH`, you could create a variable and invoke it that way:
+
+```bash
+SAMTOOLS=/isg/shared/apps/samtools/1.16.1/bin/samtools
+
+$SAMTOOLS
+```
+
+::: {.callout-note}
+Running a piece of software with no options, or with `-h` or `--help` will in most cases print helpful information about how to run the software (the "usage"). Even when you're familiar with software, it will probably be difficult to remember the exact flags you need, or how to invoke them for. Checking the usage can be much quicker than referring to the documentation. 
+:::
+
+
+### The module system
+
+`samtools` is installed for all users of Xanadu. If you have a look at the enveloping directory `/isg/shared/apps/`, you will see more than 700 software packages that have been installed on Xanadu. Within a given software directory, there are subdirectories named by after the software version number, so in reality there are many more than 700 packages. We keep older software versions around so that when users build up their analyses, they don't get the rug pulled out from under them if a piece of software changes its option flags or default behaviors when it is updated (this happen regularly). 
+
+While having software on your PATH is super convenient, you can imagine that adding each software/version directory (plus any subdirectories containing essential accessory utilities) to the PATH variable would be extremely cumbersome, not to mention that having `samtools/1.16.1/bin/samtools` and `/samtools/1.9/bin/samtools` means that simply invoking `samtools` is ambiguous. 
+
+For this reason, we use a `module` system. The module system allows users to **load** specific software versions they want to use in an analysis. At its simplest, the module system simply adds the software to your PATH variable. If any other environment variables need to be configured, the module system will set those up too. 
+
+Try loading `samtools` version 1.16.1 like this:
+
+```bash
+module load samtools/1.16.1
+```
+
+Then type `samtools`. You should get the usage. Type `echo $PATH` and you should see that the path to the samtools executable file should eb added to your `PATH` variable. 
+
+You can unload the module with 
+
+```bash
+module unload samtools/1.16.1
+```
+
+Or to get rid of all modules:
+
+```bash
+module purge
+```
+
+To see what changes a module makes to your environment you can do:
+
+```bash
+module display samtools/1.16.1
+```
+
+Or look directly at the module file:
+
+```bash
+cat /isg/shared/modulefiles/samtools/1.16.1
+```
+
+To see a more complex module, look at this old version of the transcriptome assembly software Trinity:
+
+```bash
+module display trinity/2.8.5
+```
+
+In this module, many other software dependencies are also `module load`-ed. 
+
+You can list all available modules with:
+
+```bash
+module avail
+```
+
+You can add any bit of text to narrow the search like this:
+
+```bash
+module avail sam
+```
+
+You can load as many modules as you like simultaneously, but be aware that some may have conflicting dependencies or environmental variables, and this may cause problems. 
+
+Note that while you *can* invoke modules without version numbers like this:
+
+```bash
+module load samtools
+```
+
+you *should not*. This version of the module system sorts the module versions alphanumerically and loads the last one. In reality, version "1.16.1" is *higher* than "1.9", but "1.9" will sort last and thus be loaded. If you do `ls -l /isg/shared/apps/samtools/` you'll note that version 1.9 was installed in *2019*. This document is being written in *2024*. Also, if `samtools/1.91` ever was installed, any script loading samtools without a version number would suddenly and silently switch samtools versions. Lastly, if you use modules in your scripts, writing the version number will help you be explicit and keep track of which versions you want to run. 
+
+For Xanadu, you can request that new software modules be globally installed by filling out a form [here](bioinformatics.uconn.edu). 
+
+### Compiling software
+
+While you can request that software be installed for you on Xanadu (and other clusters as well), there may be a long queue, or you may not even be sure you're going to use the software yet and so installing a module would be premature. In those cases you can try installing it yourself. For some programs, you may be able to download a **binary** executable file that will work on most or all Linux distributions. In such cases, you only have to do something like this (for the variant caller [freebayes](https://github.com/freebayes/freebayes/releases)):
+
+```bash
+wget https://github.com/freebayes/freebayes/releases/download/v1.3.6/freebayes-1.3.6-linux-amd64-static.gz
+gunzip freebayes-1.3.6-linux-amd64-static.gz
+chmod ugo+x freebayes-1.3.6-linux-amd64-static.gz
+
+./freebayes-1.3.6-linux-amd64-static --help
+```
+
+In many cases an executable will not distributed, but the developer will provide instructions for compiling the software from the source code, creating the executable. Compilation simply means to convert the human-readable code as written by the developer into machine-code. Programming languages requiring compilation are typically faster than those where the human-readable code is interpreted on the fly. 
+
+Let's look at the case of the demographic history estimation software [`PSMC`](https://github.com/lh3/psmc). The software is on `github`, a site for hosting version-controlled software repositories (we'll get into lots of detail on this next semester). 
+
+We can get the source code, which is written in the language `C`, by [visiting the github repository](https://github.com/lh3/psmc) clicking on the green `code` button and copying the URL, then on Xanadu:
+
+```bash
+git clone https://github.com/lh3/psmc
+```
+
+Then we have, per the readme, about the simplest instructions you can have:
+
+```
+To compile the binaries, you may run
+
+    make; (cd utils; make)
+```
+
+So we do:
+
+```bash
+cd psmc
+make
+cd utils
+make
+```
+
+We may see some warnings, but if compilation was successful we should have an executable `psmc` in the base directory, and a few more in the `utils` directory. We can do `./psmc` to see the usage. 
+
+So what did we do here? `make` is a piece of software for automating things, mostly used for compilation, but also sometimes in data analysis (the concept has been expanded into a python-based workflow language `snakemake`). The author of this software provided a file `Makefile`, containing instructions for the compilation of `psmc`. When we ran `make`, it automatically looked for `Makefile` and followed the instructions. 
+
+Compiling software can get more complicated than this sometimes. If you look at `Makefile` you'll see the variable `CC=gcc`. `gcc` is a compiler for `C`. The version installed on Xanadu is *very old*. Some software will require a more recent version (which you can `module load`). Other software will require different build tools (such as `CMake`). Many pieces of software will require dependencies to be installed already, and expect to find them in a specific place. 
+
+The takeaway here is that if you look at a code repository and it contains some relatively straightforward instructions for compilation, it's probably worth a shot. Even without any real understanding of computer science, you can often get things working with a minimum of frustration or tinkering. 
+
+### Conda
+
+Some pieces of software will not be so simple, however. They may require particular dependencies that are not already installed. These dependencies may conflict with other existing dependencies. Webs of dependencies can be incredibly complex, and require very specific software versions. In these cases, manual installation can become a demoralizing grind, and even when successful, these types of installations can be easily broken inadvertently by a software update. 
+
+For cases like these, we use the very popular package manager `conda`. `conda` has a two main features. First, it manages the creation of mostly isolated software environments into which you can install one or more pieces of software and their dependencies. This prevents conflicts with existing software installed on the system. If we think back to the `trinity` module we inspected above, all those specific pieces of software required by that version of trinity could be installed inside the conda environment. 
+
+The second main feature of conda is its dependency solving algorithm. There are multiple repositories, including [anaconda](https://anaconda.org/anaconda/repo), [conda-forge](https://conda-forge.org), and [bioconda](https://bioconda.github.io) that house "recipes" for software installations. These recipes list required software versions. If you ask conda to install one of these recipes in an environment, it will figure out the web of dependencies that are required to make it work on your system, collect them, and install them. This works remarkably well in many cases. 
+
+`conda` manages packages at the user level, so each user creates their own conda environments (though these can be shared). Xanadu doesn't have "global" conda environments as we do with modules. 
+
+#### Installing miniconda
+
+To use `conda`, we're going to install a version of it called `miniconda` in your home directory. The instructions are [here](https://docs.anaconda.com/free/miniconda/miniconda-install/), but we'll also reproduce them below:
+
+Download and run the installer. 
+
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+Follow the prompts and let it install in your home directory and automatically initialize conda in your shell. 
+
+Then, to stop conda from opening a base environment automatically:
+
+```bash
+source .bashrc
+conda config --set auto_activate_base false
+```
+
+Let's also configure some of those repositories we discussed above:
+
+```bash
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+```
+
+And finally, to install a faster dependency solver than the conda default:
+
+```bash
+conda install -n base conda-libmamba-solver
+conda config --set solver libmamba
+```
+
+Now exit your bash session / log out of Xanadu and log back in. 
+
+Ok, so what have we done here? We've created a few files and directories. To see them type `ls -la`. Files beginning with `.` are hidden by default. The `-a` flag in `ls` shows them. 
+
+```
+-rw-r--r--  1 usr domain users  577 May  1 15:25 .bashrc
+drwxr-xr-x  2 usr domain users  512 May  1 15:19 .conda
+-rw-r--r--  1 usr domain users   26 May  1 15:27 .condarc
+drwxr-xr-x 19 usr domain users  10K May  1 15:19 miniconda3
+```
+
+The directory `miniconda3` will contain all the environments we create. `.conda` and `.condarc` are a conda cache directory and a configuration file respectively. We don't need to edit `.condarc` by hand, we just use the command `conda config` (as we did above). `.bashrc` is a bash configuration file. If you `cat` that out, you'll see the conda initialization code This sets up some environment variables and puts `conda` in your `PATH` variable. Every time you log in `.bashrc` is `source`-ed by the shell. Any changes you wish to be made to your shell environment can be specified here. We'll revisit the `.bashrc` file again in the future. 
+
+When you submit scripts via SLURM, you start a non-interactive shell and `.bashrc` is not `source`-ed. For now, you will have to add `source ~/.bashrc` to any scripts you want to use a conda environment in. 
+
+#### Using miniconda
+
+Ok, so we've installed it, now how do we actually use conda? Let's install a newer version of [`samtools`](https://anaconda.org/bioconda/samtools) than the one we discussed above. If you check the link above in the Files tab you'll get a sense of which versions are available. The syntax is pretty flexible, but let's be as explicit as possible about the steps:
+
+First create a new environment:
+```bash
+conda create -n samtools-1.20
+```
+
+Then activate the environment:
+```bash
+conda activate samtools-1.20
+```
+
+You should see your prompt change, indicating the environment is active. Then install samtools:
+```bash
+conda install samtools=1.20
+```
+
+You can also create an environment and install software in one step:
+
+```bash
+conda create -n samtools-1.20 samtools=1.20
+```
+
+If the environment is active, you should be able to type `samtools` and get the usage. Type:
+
+```bash
+which samtools
+```
+
+And you should get something like `~/miniconda3/envs/samtools-1.20/bin/samtools`. And in your `PATH` variable you should see something like `/home/FCAM/<username>/miniconda3/envs/samtools-1.20/bin`. 
+
+You can deactivate the environment with:
+
+```bash
+conda deactivate
+```
+
+And now your PATH variable should be returned to its previous state and `which samtools` should give you an error, or point to the module we loaded previously (if you are somehow still in the same session). If you activate a conda environment while another is already activated, it will first be deactivated. 
+
+A few more basic conda commands:
+
+To list your environments (when you have a lot you won't remember them all!):
+
+```bash
+conda env list
+```
+
+To remove one
+
+```bash
+conda env remove -n <NAME>
+```
+
+To create a `.yml` file defining the environment:
+
+```bash
+conda export -n samtools-1.20 >samtools_env.yml
+```
+
+If you give that file to someone else, they can recreate your environment with:
+
+```bash
+conda env create -f >samtools_env.yml
+```
+
+For more, the [conda user guide](https://conda.io/projects/conda/en/latest/user-guide/index.html) has very clear and accessible documentation. 
+
+### Software containers
+
+For our last topic in this section, we're going to introduce **software containers**. We have discussed strategies for installing and using software of increasing complexity (complexity not necessarily of the applications of the software, but of its structure). In extreme cases, package managers installing in isolated environments sometimes still can't quite get you where you want to be. This may be because there are fundamental features of the operating system you're working on that make installing software challenging, or perhaps those features cause slight inconsistencies in the outputs of software across systems, or maybe available conda recipes seem broken (this does happen sometimes). Package managers may also be a challenge when you are running a pipeline that requires dozens of pieces of software in particular versions to be installed. In these cases, you may want to try using a containerized approach. 
+
+A software container is very nearly a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine). They differ from VMs in that they still use the core operating system kernel, instead of completely emulating it. This means they are "lightweight" and carry a much lower performance burden than VMs. Because they virtualize the operating system and user interface though, they provide a greater level of isolation and consistency among systems than an environment managed by conda. 
+
+I've framed this in terms of easing the burden of software installation, but containers have the added advantage of improving reproducibility and portability of analyses. This development has been critical for the development and distribution of complex software pipelines like those in the [nf-core repository](https://nf-co.re). It is very nearly a requirement that those pipelines be run using container systems. 
+
+In this section we're going to discuss *using existing software containers*. In the next semester we will cover building them. 
+
+There are two main pieces of containerization software: [`Docker`](https://www.docker.com) and [`Singularity`](https://docs.sylabs.io/guides/3.5/user-guide/introduction.html). They both have generally similar features and performance. Docker, however, requires **root access** to run containers. Root access is access to the most basic functions of a computer system, and it cannot be granted to users on HPC systems, as it represents a massive security risk and an operational vulnerability (a well meaning but inexperienced user doing something wrong as the root user could take down the whole cluster). Because cloud services use virtualized machines, they can offer users root access, so Docker is popular in that context. Singularity, however, does not require that level of access to run a container, making it much more compatible with HPC systems. Fortunately, software containers built using Docker can be converted to Singularity (though not vice versa), so being limited to using Singularity on an HPC is not a huge burden. 
+
+
+
+#### Obtaining a singularity container
+
+Let's explore what it practically means to use Singularity. Let's start an interactive session (you should *not* use singularity on login nodes):
+
+```bash
+srun -p general --qos=general -c 2 --mem=20G --pty bash
+```
+
+And then load a singularity module:
+
+```bash
+module load singularity/vcell-3.10.0
+```
+
+Now we'll use the command `singularity pull` to retrieve a container for a very commonly used QC program for high throughput sequence data `fastqc`:
+
+```bash
+singularity pull https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0
+```
+
+If this was successful, you should see a new file `fastqc:0.12.1--hdfd78af_0` in your current working directory. 
+
+#### Using a singularity container
+
+There are two main ways we can use the container. 
+
+1. We can start up a shell and use it interactively.
+2. We can pass singularity a command along with the container and it will execute it inside the container. 
+
+A container is *almost* a self-contained computer. To be useful, however, it needs to access the local file system. On Xanadu, by default, some local system paths will be made available inside it. It will bind your home directory, `/labs`, and `/isg/shared` among others. However, local directories like `/usr/bin` which contain lots of commonly used programs, will be masked by the directory with the same name *inside* the container. 
+
+To see how this works, let's check a few things on the local system first. Type
+
+```bash
+fastqc --help
+```
+
+You should get a `command not found` error. 
+
+Type: 
+
+```bash
+cat /etc/os-release 
+```
+
+You should see that Xanadu is running the `CentOS` Linux distribution. 
+
+Lastly type:
+
+```bash
+ls /usr/bin
+```
+
+You should see a *very* long list of programs. 
+
+Now let's try our first method of using the container: starting up a shell (it will usually be BASH):
+
+```bash
+singularity shell fastqc:0.12.1--hdfd78af_0
+```
+
+Your prompt should change to `Singularity>`. 
+
+Try each of the above commands again. You should see that `fastqc` is now in your PATH and prints its usage. You will also notice that the linux distribution inside the container is `Debian`, and that a different, much shorter list of programs is found in `/usr/bin`. If you type `which fastqc` you'll see that's where it's been installed. 
+
+If you `ls` your home directory, you'll see that your home is available inside the container. 
+
+Type `exit` to exit the container. 
+
+The second way we can use the container is by passing a command with `singularity exec`. To keep it simple, we'll do `fastqc --help`:
+
+```bash
+singularity exec fastqc:0.12.1--hdfd78af_0 fastqc --help
+```
+
+It should print the usage. Keep in the back of your mind that things can get a little bit wonky when quoting and shell variables are necessary when passing a command to a container. 
+
+
+## Exercises
+
+See Blackboard Ultra for this section's exercises. 

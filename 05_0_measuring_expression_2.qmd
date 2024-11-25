@@ -1,0 +1,13 @@
+---
+title: "Measuring Gene Expression II"
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Generate a reference transcriptome with StringTie |
+| Generate a reference transcriptome de novo with Trinity |
+| Annotate a reference transcriptome | 
+| Quantify gene expression using a transcriptome reference | 

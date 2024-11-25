@@ -1,0 +1,127 @@
+---
+title: "Project Organization"
+---
+
+|                                                                        |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**             |                                      
+| Organize a computational project |
+
+Before we can get started, we need to cover a really basic topic: project organization. Lots of people will have preferences about how to do this, but mainly they will boil down to a few key points:
+
+1. Stay organized. 
+2. Document everything. 
+3. Use file names that are easy to parse with code. 
+
+## Stay organized
+
+This is a very vague directive. In part this is because projects are diverse and have diverse needs. We are, however, going to recommend (more like require) that you follow some very specific guidelines in this course regarding organization. 
+
+First, each project should have **its own directory**. Computational projects, especially when you're working with new data or a new workflow can grow organically, so deciding when something is a *new* project requiring its own space, or just an extension of the current project is somewhat subjective. What you definitely *should not* do, is start writing random bits of code and downloading data willy nilly into your home directory. You *should not* take delivery on a dataset and start your analysis in the shiny new raw data directory. 
+
+Even if you are "just trying something out, just for a few minutes, it definitely won't turn into some big involved thing", create a new directory. 
+
+In general, your projects for this course should be organized like this:
+
+```
+myProject/
+├── data
+├── README.md
+├── results
+└── scripts
+
+3 directories, 1 file
+```
+
+You can initialize a new project very simply like this:
+
+```bash
+mkdir -p myProject/{scripts,results,data}
+touch myProject/README.md
+```
+
+You may eventually create other directories. Maybe you want to install specific pieces of software in a project directory called `bin`. Maybe you are generating figures and you want them to have their own `figures` directory. Maybe you are writing out detailed descriptions of your methods and you would like to keep them in `docs`. That's fine. The key here is that your *data* goes in `data`, your *code* goes in `scripts` and your *results* go in `results`. We'll cover how to make this happen as we move forward. 
+
+An organizational structure like this, or some version of it, will make your life easier in so many ways. It will be easy for you to move between projects (you are likely to have several projects active at any given time), to pick up projects that you have left idle for some weeks (or possibly months), and for collaborators to look in on your work if you need help or feedback at this granular level. You won't have to remember where you put everything for every given project, or just exactly how far along it was when you put it down, you'll have a logical layout that quickly explains itself. 
+
+Within these basic directories, you can use subdirectories to keep things organized. The most optimal arrangement of subdirectories can be hard to predict in advance, but if you start with one layer of subdirectories in each main directory, then breaking things up or reorganizing them without breaking relative paths is not hard. Using adequately descriptive names, and possibly even numbering the directories to indicate what order the steps were run in is extremely helpful. 
+
+For the scripts directory, we could start with something like:
+
+```bash
+mkdir -p myProject/scripts/01_getdata myProject/scripts/02_qc
+```
+
+To the greatest extent possible, you want to have everything you need to do the project inside this directory. The more things outside the project directory you point to, the more opportunities there are for scripts to break when things are moved or deleted. 
+
+### Where and how to keep data
+
+Contrary to the last section, for large sequencing datasets that you've generated, it's probably not a good idea to keep the data inside a specific project directory. You may want to use the data for multiple projects, and copying it is a waste of storage space. On the other hand, it's very useful to design self-contained project directories. A solution to this is to keep raw data in one place (and change permissions to read-only), and then **symlink** the data to one or more other places. When you symlink a file from one directory to another, you're creating a marker in the target directory that acts as if it's a file (or directory), but is actually just a pointer to the original. We'll cover how to do this in the next chapter.  
+
+## Document everything
+
+There are many levels of documentation, but the most basic is **the code itself**. Write scripts for **literally every piece of your project**. Do you need to move a file? Put it in a script. Create a directory? Put it in a script. You don't need separate scripts for all of this. We'll see more as we move along, but for each step in your analysis, you can do things like begin the script by creating the directory in which the outputs will be stored. If you record every command required to recreate your results in a script, you will never find yourself wondering "how the heck did I create this intermediate file, anyway?", let alone worrying about whether you created it correctly, because you can go back and check the code. This is absolutely essential to have confidence in your work. 
+
+You are almost certainly going to produce wrong or problematic results at some point, it's an occupational hazard in bioinformatics. You never want to be in a position where you're wrong and you don't have the documentation to figure out how it happened. 
+
+The next layer of documentation is **code comments**. You may have all your code written down in nice, clean scripts, but sometimes interpreting that code without running it can be challenging (both for your collaborators and future you). At key moments in your scripts, you should add comment lines to explain what the code is doing in plain language. 
+
+A final layer of documentation is to create one or more README files that explain clearly what the project is trying to accomplish, what the steps are and where to find code and results. It may also contain notes about various abandoned pieces of software, parameter combinations, etc that may explain the final form of the analysis. 
+
+### Documenting data
+
+The preceding recommendations do not just apply to your code, but data as well. When you download data from a any kind of public repository, you want to keep a record of exactly what you downloaded. Ideally, the primary place you do this is in a script maintained inside your project. In a previous chapter we used NCBI's `datasets` software to download genomes and annotation files. We used an **accession number** to get the data. This is a stable identifier that refers to a specific, unchanging item in an NCBI database. For an NCBI-housed genome, this is what you want to track. NCBI provides accession numbers for many other pieces of data it houses, as do many other public databases. 
+
+### Documenting software
+
+Software in bioinformatics changes, in some fields quite rapidly. It's important to keep track of which software versions you're using for a given task, and ideally, to set your code up so that software versions will not change without your knowledge when re-running code. It may seem like updating software to the latest version is always good, but sometimes flags or default behavior can change. This can cause outright errors, which can be frustrating, but at least you know about them, or it can quietly alter your results, a much worse state of affairs. 
+
+Some tips:
+
+- If you're using the module system, always specify the software module. 
+- If you've installed your own software, put the version number in the readme. 
+- If you're using a conda environment, export the environment yml file and keep it somewhere in your project directory. 
+- If you're using a public software container, be explicit about the version you're pulling, and use a script to pull it. 
+
+## File naming
+
+This may seem like a silly topic, but it's worth covering briefly. If you're a user of GUI operating systems, you may be accustomed to naming things using arbitrary character strings, sometimes including whitespace, e.g.: `my resume - 2023.docx`. You may have multiple versions of files with descriptive, but inconsistently formatted names. In the same directory you may also have `my resume - April 2021.docx` and/or `CV - 2020 FINAL VERSION.docx`, `CV - 2020 DRAFT.docx`. 
+
+Names like this can be problematic in command-line environments. To start with, while whitespace is technically allowed in file names on Linux systems, whitespace is also the delimiter for elements on the command line. So if you tried to copy that first resume into the directory `resumes/` like this:
+
+```bash
+cp head my resume - 2023.docx resumes/
+```
+
+You would get 
+
+```
+cp: my: No such file or directory
+cp: resume: No such file or directory
+cp: -: No such file or directory
+cp: 2023.docx: No such file or directory
+```
+
+You would actually have to use slashes to *escape* the spaces, or quote the entire string:
+
+```bash
+# like this
+cp my\ resume\ -\ 2023.docx resumes/
+# or this
+cp "my resume - 2023.docx" resumes/
+```
+
+A further problem, which maybe doesn't matter too much for a bunch of resume versions, but becomes an issue with data files in particular, is that these files don't have a consistent naming convention. It would be hard to programmatically manage them. It's useful to think of file names (particularly when there will be many similar files) as being almost like rows in a table, with pieces of the names being columns. 
+
+It's better to aim for something more like this:
+
+```
+2020_01_CV_draft.docx
+2020_02_CV_final.docx
+2021_04_resume_final.docx
+2023_06_resume_final.docx
+```
+
+In this case the dates are coded consistently and in a way that the usual lexicographic sorting in `ls` will sort them by date. There are 5 pieces of information in each name (year, month, document type, status, file suffix) each separated by a `_`. If you wanted to manage these files using code, it would be straightforward: loop over each file, extract information from the name, and taking some action based on that information. 
+
+So, to summarize: name files with numbers, letters, underscores and dashes, and try to stick with a consistent naming convention. 

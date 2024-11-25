@@ -22,8 +22,8 @@ editor: source
 
 **Resources:**
 
-- <https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html>
-- <https://tldp.org/LDP/abs/html/index.html>
-- <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645>
-- <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207>
-- <https://github.com/onceupon/Bash-Oneliner>
+- [BASH reference manual](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html)
+- [Advanced BASH scripting guide](https://tldp.org/LDP/abs/html/index.html)
+- [Brandies, P. A., & Hogg, C. J. (2021). Ten simple rules for getting started with command-line bioinformatics. PLoS Computational Biology, 17(2), e1008645.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008645)
+- [Alnasir, J. J. (2021). Fifteen quick tips for success with HPC, ie, responsibly BASHing that Linux cluster. PLOS Computational Biology, 17(8), e1009207.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009207)
+- [BASH one-liners](https://github.com/onceupon/Bash-Oneliner)

@@ -1,0 +1,26 @@
+---
+title: "R and the Tidyverse"
+editor: source
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Use **Tidyverse** R packages to do interactive data manipulation and plotting | 
+
+In the previous section you worked through a `swirl` course that introduced you to some of the features of *base R*. In this section we're going to have you work through part of the book [R for Data Science (2nd edition)](https://r4ds.hadley.nz). 
+
+This book will introduce you to R through the window of a set of R packages known as the [tidyverse](https://www.tidyverse.org). These packages implement a fundamentally different approach for manipulating and visualizing data. The tidyverse approach has many strengths, and it employs a thoughtful and consistent approach to data analysis that irons out a few of the quirks of R and has rightfully become very popular. `R for Data Science` will explain not just the features of the tidyverse, but also explain some of the motivation and philosophy behind it. 
+
+You should work through the introductory sections and the section `Whole Game` (Chapters 1-8). Be sure to do the exercises, and if you have questions about them, please reach out. 
+
+A couple brief tips:
+
+1. Some chapters will expect you to install packages you won't already have. 
+2. Pay special attention to Chapters 4 and 6. They offer practical advice about habits of writing code and managing R projects that will save you time and pain. 
+
+For future reference, see these tidyverse [cheat sheets](https://posit.co/resources/cheatsheets/):
+
+1. [data tidying](https://rstudio.github.io/cheatsheets/tidyr.pdf)
+2. [data transformation](https://rstudio.github.io/cheatsheets/data-transformation.pdf)
+3. [visualization](https://rstudio.github.io/cheatsheets/data-visualization.pdf)

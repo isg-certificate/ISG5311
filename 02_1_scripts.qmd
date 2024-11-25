@@ -309,7 +309,7 @@ A straightforward way to use Sublime to write scripts is to write code locally, 
 
 ### Integrated development environments. 
 
-IDEs are dedicated code editors with *lots* more features. [Visual Studio Code](https://code.visualstudio.com) is another program we recommend you download and install locally. It also has syntax highlighting, but you'll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. 
+IDEs are dedicated code editors with *lots* more features. [Visual Studio Code](https://code.visualstudio.com) is another program we recommend you download and install locally. It also has syntax highlighting, but you'll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. Xanadu's operating system is a bit old (it will soon be replaced by a new cluster, Mantis), so you will need to install an older version of VS Code, `1.85`, which is available [here](https://code.visualstudio.com/updates/v1_85). 
 
 ### Conveniently accessing files. 
 
@@ -323,7 +323,7 @@ Please don't use language-specific code extensions (python, R, etc) to run code 
 
 2. You can mount the Xanadu file system on your local computer. You can get your operating system to "see" Xanadu's filesystem, and access files as if they were local. You can then edit them using Sublime, VS Code, or anything else. To do this, you **must** be connected to the CAM VPN ([instructions](https://health.uconn.edu/high-performance-computing/tutorials/cam-vpn/)).  
 - From a mac, you can select from your top dropdown menu `Go:Connect to Server` and enter ` smb://cfs09.cam.uchc.edu/home/FCAM/<username>`. When prompted, enter your CAM credentials (not your netID/password).  
-- From Windows, you can map a network filesystem using [these directions](https://support.microsoft.com/en-us/windows/map-a-network-drive-in-windows-29ce55d1-34e3-a7e2-4801-131475f9557d) and the address formatted like this: `\\cfs09.cam.uchc.edu\home\FCAM\<username>`
+- From Windows, you can map a network filesystem using [these directions](https://health.uconn.edu/high-performance-computing/tutorials/mapping-a-network-resource/) and the address formatted like this: `\\cfs09.cam.uchc.edu\home\FCAM\<username>`
 
 ::: {.callout-warning}
 You should only use dedicated software for editing code (or CLI editors on Xanadu). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try `cat -A myscript.sh`. If `myscript.sh` contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them. 
@@ -481,3 +481,5 @@ When a command is evaluated, bash produces an **exit code** and stores it in the
 "There is some controversy" is often the case with bash scripting. BASH is a wonky language, and it takes *years* to truly become an expert in it. When learning to do data analysis, we need to do our best, be vigilant about errors, and be open to learning new ways of doing things when we discover problems with our established habits. Pages like [this](https://mywiki.wooledge.org/BashPitfalls) are great for intermediate bash users to consider, but we can't wait to analyze our data until we've assimilated all these best practices. 
 
 ## Exercises
+
+See Blackboard Ultra for this section's exercises. 

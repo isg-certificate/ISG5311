@@ -1,0 +1,14 @@
+---
+title: "Statistical Analysis II: Differential expression analysis"
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Quality control expression data.  | 
+| Create exploratory visualizations of expression data. |
+| Test hypotheses about response of gene expression to treatments. |
+| Diagnose potential problems with expression data. |
+| Conduct gene set enrichment analysis. |

@@ -1,0 +1,14 @@
+---
+title: "Sequencing Data"
+editor: source
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Explain common sequence data formats FASTA and FASTQ  | 
+| Manipulate sequence data in FASTA and FASTQ format |
+| Distinguish between data produced by the three major sequencing platforms |
+| Perform standard quality control analyses on sequence data |

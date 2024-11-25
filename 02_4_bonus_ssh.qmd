@@ -1,0 +1,114 @@
+---
+title: "Bonus: Making it easier to log in to the cluster"
+---
+
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Make logging in to Xanadu easier |
+
+So far logging in to Xanadu has required significant typing: `ssh username@xanadu-submit-ext.cam.uchc.edu` followed by your password. But we can make this easier in a few ways! First, we can create **ssh keys** that will authenticate you, so you won't have to enter a password. Second, we can edit a configuration file to create a shortcut (or several shortcuts) to Xanadu login nodes. 
+
+## SSH keys
+
+We at the CBC are certainly not experts in cryptography, so we won't try to explain the details. In simple form, an ssh key is a means of verifying your identity that does not require a password. It consists of a pair of files, a **public** key, and a **private** key. You place the public key on a remote server, and keep the private key on your local machine. When you try to log in to the remote server, it essentially asks your machine a question that can only be answered by the private key. It's extremely important that you keep your private key *private* and secure, as in some ways it serves as a password. The public key is less sensitive. 
+
+So how do we create and use SSH keys? Linux-based systems come with software for creating and managing SSH keys. 
+
+For this, we'll start in a local terminal window (i.e. one that is *not* logged in to Xanadu). Go to the hidden directory `.ssh` that should be found in your home directory. 
+
+```bash
+cd ~/.ssh
+```
+
+If you don't have this directory, create it with `mkdir ~/.ssh`, and then `cd` into it. Any files in the Linux file system that begin with `.` are hidden by default from directory listings. You can see them with `ls -a`. 
+
+Now, to create an ssh key pair type:
+
+```
+ssh-keygen -b 2048
+```
+
+First will ask you to name the file, but you don't have to. It will use the default name in parentheses. 
+
+Then it will ask you to create a passphrase. You don't have to do this, but it will make the key more secure. If you don't, anyone who gets your key pair will be able to log in to Xanadu.
+
+If you used the default names, and you type `ls` you should have the files:
+
+```
+id_rsa 
+id_rsa.pub 
+```
+
+`id_rsa.pub` is the public key and `id_rsa`, the private one. Depending on your OS and shell, you may alternatively have produced files with different names, such as `id_ed25519` and `id_ed25519.pub`, `.pub` still indicates the public key. Now, use `scp` to upload the public key to Xanadu (you'll have to make sure you *also* have a `.ssh` directory in your home on Xanadu):
+
+```bash
+scp id_rsa.pub username@transfer.cam.uchc.edu:~/.ssh/ 
+```
+
+If you don't have a `.ssh` directory on Xanadu, log in and create one, then try uploading again. 
+
+Now **log in to Xanadu** and, in the `.ssh` directory, create a file called `authorized_keys` and paste the contents of your public key there. You could do this in one go with 
+
+```bash
+cat id_rsa.pub >authorized_keys
+```
+
+Finally, back on your local machine, to avoid having to enter the ssh key passphrase (if you created one), you should do:
+
+```bash
+ssh-add id_rsa
+```
+And enter your passphrase at the prompt if you created one. 
+
+Now when you log in, you should not have to enter your password. 
+
+### The SSH config
+
+The second thing we can do to ease connecting to Xanadu is to modify our ssh configuration file, simply called `config`. 
+
+This file, if it already exists will also be in the `.ssh` hidden directory. Go there now. If the file does not exist, create it with
+
+```bash
+touch config
+```
+
+I'm going to suggest using `nano` to edit this file for now, but you can use any editor you like. 
+
+```bash
+nano config
+```
+
+Then enter:
+
+```
+Host xanadu
+Hostname xanadu-submit-ext.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa
+```
+
+Remember to subsitute `username` for your own username, and if you renamed the ssh keys, change the name here as well. 
+
+`xanadu` will be the name of the shortcut, you can change this if you want. You could cut it down to just `x` if you want to absolutely minimize typing. 
+
+Now you should be able to log in with `ssh xanadu`. 
+
+You can set one of these up for the transfer node as well:
+
+```
+Host transfer
+Hostname transfer.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa
+```
+
+Or if you want to have shortcuts for specific login nodes (numbers 1-5):
+
+```
+Host hpc1
+Hostname hpc-ext-1.cam.uchc.edu
+User username
+IdentityFile ~/.ssh/id_rsa
+```
+

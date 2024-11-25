@@ -1,0 +1,13 @@
+---
+title: "Statistical Analysis I: R and RStudio"
+---
+
+# Learning Objectives
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Install and use R and RStudio  | 
+| Use the fundamental features of the R language | 
+| Use base R to do basic interactive data manipulation and plotting |
+| Use Tidyverse R packages to do interactive data manipulation and plotting |

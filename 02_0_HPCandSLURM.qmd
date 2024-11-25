@@ -21,5 +21,9 @@ editor: source
 | Monitor the progress of work on SLURM |
 | Evaluate the results of work submitted to SLURM |
 | Start an interactive session on a compute node | 
+| Distinguish types of data storage available on Xanadu |
+| Compile simple software from source |
+| Install software in an isolated environment using `conda` | 
+| Run software inside a Singularity container | 
 
 **Resources:**

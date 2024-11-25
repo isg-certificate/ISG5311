@@ -1,0 +1,149 @@
+---
+title: "Bonus: Customizing your shell"
+---
+
+|                                                                       |
+|-----------------------------------------------------------------------|
+| **Learning Objectives:**                                              |
+| Customize your shell |
+
+There are a number of ways you can customize your shell to make working at the command line easier. These involve editing two hidden files that reside in your home directory: `.bashrc` and `.bash_profile`
+
+If you went through the chapter on software installation and installed conda, you will already have `.bashrc`, but you may not have `.bash_profile`. 
+
+Log in to Xanadu and check to see if either exist with `ls -a` to list all files (including hidden ones) in your home directory. If you don't have them, create them with:
+
+```bash
+touch .bashrc .bash_profile
+```
+
+If you've installed conda, you will already have this mess in your `.bashrc` (it initializes conda on login):
+
+```bash
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/FCAM/nreid/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/FCAM/nreid/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/FCAM/nreid/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/FCAM/nreid/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+```
+
+**Don't touch this**. You can add any of the things we discuss above that section. 
+
+### Customizing your prompt
+
+Probably at the moment when you log in your prompt looks like this:
+
+```bash
+-bash-4.2$
+```
+But you can change this. My prompt looks like this (but with some color and bolding added):
+
+```bash
+[ username@hostname ] ~ [ current working directory ] $
+```
+
+Or specifically on login:
+
+```bash
+[ nreid@hpc-ext-1 ] : [ ~ ] $
+```
+
+I like this because it tells me which node I'm on (login node 1) and which directory I'm working in (my home directory). If I have a few terminal windows open, it helps keep me oriented. 
+
+To create a custom prompt, you simply need to set an environment variable called `PS1`. This variable is read by the shell as the prompt configuration. To get the prompt above, add the following line to `.bashrc`:
+
+```bash
+PS1="\[\033[01;32m\][ \u@\h ]\[\033[37m\] : \[\033[01;36m\][ \W ] \[\033[01;37m\]\$\[\033[00m\] "
+```
+
+If you want to get rid of the color and bolding:
+
+```bash
+PS1="[ \u@\h ] : [ \W ] \$ "
+```
+
+If you want to get crazy with emojis, all unicode characters are available. 
+
+For more details on customizing your prompt, check this [website](https://phoenixnap.com/kb/change-bash-prompt-linux)
+
+NOTE: To test any of these modifications, simply paste them in at the prompt and hit enter. They will take effect immediately, but will not persist when you kill this shell. 
+
+### Aliasing common commands
+
+There may be commands you find yourself typing out many, many times. You can create aliases for these commands to ease the typing burden. 
+
+The syntax is:
+
+```bash
+alias shortcommand='longcommand --option1 --option2 --option3'
+```
+
+I use a few. This gives the long directory listing with file sizes in human readable format:
+
+```bash
+alias ll='ls -lh'
+```
+
+This does the same thing, but sorts by modification time and prints the first N lines (you must supply N):
+
+```bash
+alias lth='ls -lth | head -n'
+```
+
+Used like `lth 20`. 
+
+I use these for navigation:
+
+```bash
+
+alias ..='cd ..'
+alias ...='cd ../../'
+alias ....='cd ../../../'
+```
+
+I alias a few directories like this:
+
+```bash
+alias ebp="cd /core/projects/EBP/CBC/"
+```
+
+And I have a few slurm commands aliased:
+
+
+```bash
+# for more detailed node status info:
+alias sf='sinfo --format="%10P %6t %15O %15C %15F %10m %10e %15n %30E %10u"'
+# to do squeue, but print *only* my jobs:
+alias sqm="squeue -u ${USER} -o \"%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R\" -S i"
+```
+
+Two cautions about aliases:
+
+1. They won't be present on other machines or accounts. If you get used to them and they aren't there, it can be an irritation. 
+2. Don't use them in code that other people might need to run. They won't have your peculiar aliases. 
+
+
+### .bash_profile
+
+The above edits to `.bashrc` will change the prompt in **interactive sesssions**, but **not in login sessions or batch jobs**, so we also need to add the following lines to `.bash_profile` (which you should create if you don't have):
+
+```bash
+if [ -f $HOME/.bashrc ]; then
+        source $HOME/.bashrc
+fi
+```
+
+Now, if you log out and log back in, you should see your changes take effect. 
+
+### Your local machine
+
+You can make all these changes on your local machine as well (though some of them will only make sense on the cluster). 

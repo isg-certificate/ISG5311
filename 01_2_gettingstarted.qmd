@@ -685,51 +685,6 @@ For example, if you ask ChatGPT for code to calculate the variance from a sample
 
 ## Exercises
 
-### Practical exercise: 
-
-1. Using the commands we covered above, start a fake project directory. It should have exactly this structure:
-
-```
-
-└── fakeProject
-    ├── data
-    │   ├── Sample1.R1.fq.gz
-    │   ├── Sample1.R2.fq.gz
-    │   ├── Sample2.R1.fq.gz
-    │   ├── Sample2.R2.fq.gz
-    │   ├── Sample3.R1.fq.gz
-    │   ├── Sample3.R2.fq.gz
-    │   ├── Sample4.R1.fq.gz
-    │   ├── Sample4.R2.fq.gz
-    │   ├── Sample5.R1.fq.gz
-    │   └── Sample5.R2.fq.gz
-    ├── genome
-    │   └── mygenome.fa
-    ├── results
-    │   └── alignments
-    │       ├── Sample1.bam
-    │       ├── Sample1.bam.bai
-    │       ├── Sample2.bam
-    │       ├── Sample2.bam.bai
-    │       ├── Sample3.bam
-    │       ├── Sample3.bam.bai
-    │       ├── Sample4.bam
-    │       ├── Sample4.bam.bai
-    │       ├── Sample5.bam
-    │       └── Sample5.bam.bai
-    └── scripts
-        └── alignment.sh
-
-6 directories, 22 files
-```
-
-Names ending in `.bam`, `.bam.bai` or `.fq.gz` are files (these are suffixes corresponding to common data formats, but for now create empty files with these names). Remember, you can use shell expansions, `touch` and `mkdir`. To do this quickly. If you mess up, you should know how to remove it all and start over. 
-
-2. Create a directory named after your username here `/core/cbc/ISG5311/2024` (but use the current year if it is no longer 2024!) and move or copy this directory there. 
-
-3. Assume you want other users in your user group, but no other users on the cluster to have access to your **data**, but nothing else. Change the permissions accordingly. 
-
-
-### Quiz: See Blackboard Ultra for this section's quiz. 
+See Blackboard Ultra for this section's exercises. 
 
 

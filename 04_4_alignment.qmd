@@ -1,0 +1,679 @@
+---
+title: "Reference Alignment"
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Align data against a reference genome | 
+| Perform alignment QC | 
+| Manipulate alignments in SAM/BAM format |
+
+
+Now that we've got our genome, our annotation, and we've downloaded our sequence data and QC'ed it, we're ready to begin the process of quantifying gene expression. Remember that the measurement we are making is **a count of fragments of RNA derived from a given gene**. In this chapter we will quantify gene expression by mapping our RNA fragments against a reference genome. We'll use the annotation of the reference genome to determine which fragments originated from which genes. We'll cover each of the steps needed for this analysis, and talk about the relevant file formats in depth. 
+
+## Indexing the reference genome
+
+The process of alignment to a reference genome requires identifying possible mapping locations for each read pair, scoring them, and then choosing the one with the best score (or possibly randomly selecting from among ties). 
+
+It goes without saying that even small genomes are pretty large (at least among eurkaryotes), so the process of finding initial candidate matches would be quite time-consuming if you had to check every location in the genome for every read. To get around this, all commonly used reference alignment software creates an **index**. Indexes function much like they do in large texts: interesting topics (in this case short genomic subsequences) and their page numbers (genomic locations) are stored. When you want to find locations of interest, you find them quickly through the index, rather than scanning through the entire text. 
+
+Variations on the genome index and the way it is searched have been a main target for innovation among different read aligners, so each one will require you to create a particular index. 
+
+When aligning RNA-seq data to a reference genome, we have a particular challenge: most (but typically not all) reads have been derived from mature mRNAs with introns spliced out. That means the aligner needs to be able to identify when reads (or read pairs) span splice junctions and accurately align across them. When aligning RNA-seq data, we typically use **spliced aligners** designed to deal with this issue. 
+
+Here we are going to use [`HISAT2`](http://daehwankimlab.github.io/hisat2/). Creating an index with hisat2 is pretty simple. We'll use script `scripts/03_align/01_index.sh`. It looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=hisat2_index
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 16
+#SBATCH --mem=10G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+hostname
+date
+
+#################################################################
+# Index the Genome
+#################################################################
+
+# load software
+module load hisat2/2.2.1
+
+# input/output directories
+OUTDIR=../../genome/hisat2_index
+mkdir -p $OUTDIR
+
+GENOME=../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa
+
+hisat2-build -p 16 $GENOME $OUTDIR/Fhet
+```
+
+We should be getting pretty familiar with the general organization of our scripts now, so go ahead and run this with `sbatch 01_index.sh`. When it completes, it should have created an index, which is actually a series of files, with the path/prefix `$OUTDIR/Fhet`. When aligning reads, you'll specify that path/prefix, not the reference genome itself. We don't need to be concerned with what's in these index files, as we will never need to parse or modify them. 
+
+## Aligning to the reference
+
+Now we have our index ready to go, we're ready to align reads to the reference genome (again using `HISAT2`). Producing a usable alignment file requires a few steps:
+
+1. Alignment. Read pairs are passed to the aligner, and alignments information produced. Reads come out in the order they went in, but as a single file this time (more on the format below). 
+2. Position-sorting. For the alignment file to be useful, reads need to be sorted by their mapping position in the genome. This allows us to index the file and quickly access all the reads from a given genomic region. 
+3. Compressing. Alignment records contain all the same information as a fastq file PLUS the alignment information, so we want to keep these files compressed (more on the format below, we don't use gzip for this one). 
+4. Indexing. Just like with the genome, we index the alignment files for rapid access to data from particular genomic regions. 
+
+You can do steps 1-3 one by one, producing intermediate alignment files each time, but this will cause your data to balloon and require you to clean up intermediate files. We're going to take care of it in a pipe. 
+
+Our script is another array script: `scripts/03_align/02_align.sh`. It looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=align
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 3              #<1>
+#SBATCH --mem=15G         #<1>
+#SBATCH --partition=xeon
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%A_%a.out
+#SBATCH -e %x_%A_%a.err
+#SBATCH --array=[1-20]%10
+
+hostname
+date
+
+#################################################################
+# Align reads to genome
+#################################################################
+module load hisat2/2.2.1
+module load samtools/1.16.1
+
+INDIR=../../results/02_qc/trimmed_fastq
+OUTDIR=../../results/03_align/alignments
+mkdir -p ${OUTDIR}
+
+# this is an array job. 
+	# one task will be spawned for each sample
+	# for each task, we specify the sample as below
+	# use the task ID to pull a single line, containing a single accession number from the accession list
+	# then construct the file names in the call to hisat2 as below
+
+INDEX=../../genome/hisat2_index/Fhet                                    #<2>
+
+ACCLIST=../../metadata/accessionlist.txt
+
+SAMPLE=$(sed -n ${SLURM_ARRAY_TASK_ID}p ${ACCLIST})
+
+# run hisat2
+hisat2 \                                                                #<3>
+	-p 4 \
+	-x ${INDEX} \
+	-1 ${INDIR}/${SAMPLE}_trim_1.fastq.gz \
+	-2 ${INDIR}/${SAMPLE}_trim_2.fastq.gz | \
+samtools sort -@ 1 -T ${OUTDIR}/${SAMPLE} - >${OUTDIR}/${SAMPLE}.bam    #<4>
+
+# index bam files
+samtools index ${OUTDIR}/${SAMPLE}.bam                                  #<5>
+```
+1. The amount of memory required for aligners depends on the size of the genome being analyzed. The *F. heteroclitus* genome is about 1GB, and our index takes about 1.5G of disk space. We requested 15G of memory above, but probably could have gotten by with more like 5G. We request 3 cpus (2 for the aligner and 1 for the sorter). The aligner could probably go faster with a few more, but this doesn't take too long as it is. 
+2. Note that we provide only the path and prefix to our index files. 
+3. Our alignment command, broken up across a few lines with `\`. It's fairly straightforward. It writes to the standard out. We capture it with a pipe and send it to be sorted and compressed. 
+4. Here we are using `samtools sort` to sort the file. `-@ 1` means use a single CPU. `-T ${OUTDIR}/${SAMPLE}` is specifying the location and prefix of any temporary files (sorting can create many, many temporary alignment files and then merge them). `-` tells samtools to read from the standard input (the pipe). And finally we write to a file with the suffix `.bam`, which is the compressed alignment format, written by default. 
+5. For the last step, we create the index file with `samtools index`. This will produce a file with the suffix `.bam.bai` in the same directory as the bam. 
+
+Submit this script with `sbatch 02_align.sh` and monitor it. Ensure that all alignments complete successfully, and that you wind up with 20 `.bam` files and 20 `.bam.bai` files in the output directory. Check the `.err` file. hisat2 produces a helpful (but annoying to parse) summary of the alignment rate. Not all aligners do this. An example:
+
+```
+13732517 reads; of these:
+  13732517 (100.00%) were paired; of these:
+    4263933 (31.05%) aligned concordantly 0 times
+    9249450 (67.35%) aligned concordantly exactly 1 time
+    219134 (1.60%) aligned concordantly >1 times
+    ----
+    4263933 pairs aligned concordantly 0 times; of these:
+      445817 (10.46%) aligned discordantly 1 time
+    ----
+    3818116 pairs aligned 0 times concordantly or discordantly; of these:
+      7636232 mates make up the pairs; of these:
+        4634197 (60.69%) aligned 0 times
+        2823388 (36.97%) aligned exactly 1 time
+        178647 (2.34%) aligned >1 times
+83.13% overall alignment rate
+```
+
+Ideally, reads will map exactly one time. When reads map zero times, there isn't a good match in the reference genome. If they map more than once, a very similar sequence occurs multiple times in the reference. 
+
+Concordant alignment means the pairs of sequences have an orientation and distance between them consistent with expectations. The expected orientation is for pairs to be on opposite strands, (they were generated from opposite ends of a single fragment of DNA) and "inward" facing. The expected distance is often calculated from the library itself (the fragment size distribution is library specific), but generally read pairs ought not be mapped to separate contigs or chromosomes. When any of these expectations are violated, pairs are marked as discordantly mapping. 
+
+Ideally we would see a concordant alignment rate higher than 67%, but this genome is an older assembly. It is highly fragmented and probably missing some sequences. That would contribute to cases where reads map discordantly (across contigs, particularly) or one or both reads in a pair fails to map. An overall alignment rate of 83% is not stellar, but not terrible either. For a good library on a highly contiguous and complete genome the overall mapping percentage could be expected to be in the high 80s to 90s.  
+
+## SAM/BAM format
+
+Now we have our alignments in `.bam` files. `BAM` stands for **binary alignment/map** It is (barring some minor differences) the compressed, binary version of `SAM`, or **sequence alignment/map** format. Even though we always store our files in BAM, we are going to cover `SAM` format here in some detail, as it is the plain-text, human-readable format, and as you will see, it is trivial to convert between them as necessary. 
+
+You can find the official specification with lots of detail and definitions [here](https://samtools.github.io/hts-specs/SAMv1.pdf). We're going to go over the basics here. As with many formats in bioinformatics, 
+
+### The header
+
+`SAM` files begin with a **header**. All header lines start with `@` and a tag indicating the contents. The first line gives the SAM version and the sort order, e.g.:
+
+```
+@HD	VN:1.0	SO:coordinate
+```
+
+Next comes a sequence dictionary (`@SQ`), which lists the names and lengths of sequences in the reference genome:
+
+```
+@SQ	SN:KN805525.1	LN:6356336
+@SQ	SN:KN805526.1	LN:6250690
+@SQ	SN:KN811289.1	LN:6115441
+...
+```
+
+There may be some others for some types of alignment, but the last lines in our files contain program calls (`@PG`) used to produce the file:
+
+```
+@PG	ID:hisat2	PN:hisat2	VN:2.2.1	CL:"/isg/shared/apps/hisat2/2.2.1/hisat2-align-s --wrapper basic-0 -p 2 -x ../../genome/hisat2_index/Fhet --read-lengths 101,100,98,99,97,96,95,86,93,92,91,59,87,63,55,90,75,68,85,83,78,77,76,74,73,70,65,94,89,88,82,81,67,66,52,45,79,64,50,80,72,71,69,54,51,84,61,56,53,48,47,60,57,46,62,58,49 -1 /tmp/1614887.inpipe1 -2 /tmp/1614887.inpipe2"
+@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.16.1	CL:samtools sort -@ 1 -T ../../results/03_align/alignments/SRR12475447 -
+```
+
+Note that the hisat2 call is different from our actual command line. The `hisat2` program we used is a wrapper script that called a separate program to do the alignments. 
+
+### The alignments
+
+After the header comes alignment data in tabular format. The tabular data has 11 mandatory columns, though many aligners add more custom columns after. The mandatory columns are:
+
+| Column Number | Column Name | Description                                                                 |
+| --------------|--------------|-----------------------------------------------------------------------------|
+| 1             | QNAME        | Query template name. Unique identifier for each read or read pair.          |
+| 2             | FLAG         | Bitwise FLAG. Describes properties of the read, such as paired, mapped, etc.|
+| 3             | RNAME        | Reference sequence name.  |
+| 4             | POS          | 1-based leftmost mapping position. |
+| 5             | MAPQ         | Mapping quality. A Phred-scaled quality score.           |
+| 6             | CIGAR        | CIGAR string. Base-level alignment of the read to the reference. |
+| 7             | RNEXT        | Reference sequence the mate is mapped to.                                   |
+| 8             | PNEXT        | Position of the mate/next read. 1-based, leftmost.                                         |
+| 9             | TLEN         | Template length. Length of fragment inferred from mapped read pair         |
+| 10            | SEQ          | Nucleotide sequence.                                              |
+| 11            | QUAL         | Base qualities. ASCII-encoded base quality scores for the read sequence.      |
+
+A few example alignments:
+
+```
+SRR12475447.2760	163	KN805525.1	223713	60	13M2350N88M	=	226185	223	GCTCAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAACGTTCTCTAGCGTGAACTTCTCCGCTCTCCTCTGTCTCTCCTGAAACATGCGAGAGCCTCGA	BBBFFFFFFFFFFIIIIIIIIIIIIIIIFIIIFIIIIIIIIIIIIIIIIIFIIIIIIIIIIIIFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFB	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:101	YS:i:-11	YT:Z:CP	XS:A:-	NH:i:1
+SRR12475447.2735	147	KN805525.1	223716	60	10M2350N43M	=	221834	-1935	CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC	700B<7B<7BB<FFFBBBF7700B'FB7F<0007B'7<<<FFFBBBB<B<<0B	AS:i:-2	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:35A17	YS:i:-7	YT:Z:CP	XS:A:-	NH:i:1
+SRR12475447.2726	83	KN805525.1	223729	60	101M	=	223510	-335	GGAAACACACTGATTATGGTCCCTGTGCATTTTATCCAACCCTCAAATGACAACGCACGGACAGTTTTATGCTTTAGCTGTAACAGTGATACTAGTCTTCC	BBBBBBBBFBBBBBFFFFBBBBFFFBFFFFFFFFFBBB<IIIFIIIIFFFFFFIIIFFBIFFIIIIIFFFFIIIIIIIIIIFIIIIIIFFFFFFFFFFBBB	AS:i:-5	ZS:i:-7	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:94T6	YS:i:-15	YT:Z:CP	NH:i:1
+SRR12475447.2727	83	KN805525.1	223743	60	101M	=	223469	-375	TATGGTCCCTGTGCATTTTATCCAACCCTCAAATGACAACGCACGGACAGTTTTATGCTTTAGCTGTAACAGTGATACTAGTCTTCCCCTGACGACAGCTG	<070BBB0BB<<77<<B<BB<77<0<BFFFBBB<<<FB<BBFBB<BIFFFFBFFFF<BBBBFBBFIIFBFIFB<FFBFF<BBFFBBFBBBFFFFFFFB<<B	AS:i:-5	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:80T20	YS:i:-15	YT:Z:CP	NH:i:1
+```
+
+Some of the columns are straightforward, but others bear some explanation. 
+
+`FLAG` contains a fair bit of information encoded in a single integer. We have four different values of FLAG in the above example: 164,147 and 83 (x2). The easiest way to understand what these flags mean is to visit [Decoding SAM flags](https://broadinstitute.github.io/picard/explain-flags.html). If you go there and enter `147`, you'll see boxes checked for "read paired", "read mapped in proper pair", "read reverse strand", and "second in pair". This indicates this read is R2, mapped in a proper pair and on the reverse strand. You can infer that its mate will be on the forward strand. `163` only differs in that the *mate* is on the reverse strand. `83` indicates the read is properly paired, on the reverse strand and *first* in the pair. You can filter on these flags, or any combination of them, as we will see below. 
+
+`MAPQ` contains a Phred-scaled probability that the read mapping is in error. This is a function of whether or not there are other locations in the genome with competitive alignment scores. If there are multiple equally plausible mapping locations, this number will be 0. The lowest probability of error hisat2 will assign is 60 (or 10^-6^). Unmapped reads will have `*`. 
+
+`CIGAR` gives the base-level alignment of the read to the reference. It's formatted as <number><letter>, where "number" is a number of bases and "letter" is indicates if the bases are aligned 1-1 to the reference, or something else is going on (an insertion, deletion, splice, or unaligned bases). The specification gives all the details, but in our examples `101M` indicates 101 bases of this read are aligned to the genome. They don't have to have identical nucleotides, just be aligned one-to-one. `10M2350N43M` indicates 10 bases are aligned (`10M`), followed by a 2,350 "skipped bases" (`2350N`) then 43 more mapped bases (`43M`). The skipped bases are how hisat2 indicates a splice junction. 
+
+`TLEN` gives the template length implied by genomic span of the mapped reads (the spec says "observed template length", but I don't like this term because it does not incorporate insertions/deletions, some of which may occur in the gap between reads when they don't overlap). This number is positive for the left-most mapping fragment and negative for the rightmost mapping fragment. 
+
+Files that are taken straight from the aligner, or deliberately sorted by query name will have mate pairs on adjacent lines. This is not true of coordinate-sorted reads, for which mates may be quite some distance away in the file. 
+
+A pair of reads will look like this:
+
+```
+SRR12475447.2735	99	KN805525.1	221834	60	101M	=	223716	1935	GGGTCATCTTTGTAAGGAGAGAGCCTCTCATAAAGTCTCTCTCATAGCTCATTAGATTCAGGACTGTAGCCGAGTCCCCATCCTCTTGGTGCTCTGTTGAA	<BBFFFFFFFFF<BBBFF<BB<BFFFFBFFF'<<BFFFFBBFFFFBFFFIIIIBF<B<BBBFB7<BBB<FFFBFB<<BBB<BBBBB'7<<B<BBBBBBBBB	AS:i:-7	XN:i:0	XM:i:2	XO:i:0	XG:i:0	NM:i:2	MD:Z:69T16C14	YS:i:-2	YT:Z:CP	NH:i:1
+SRR12475447.2735	147	KN805525.1	223716	60	10M2350N43M	=	221834	-1935	CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC	700B<7B<7BB<FFFBBBF7700B'FB7F<0007B'7<<<FFFBBBB<B<<0B	AS:i:-2	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:35A17	YS:i:-7	YT:Z:CP	XS:A:-	NH:i:1
+```
+
+Note the opposite-signed and very long TLEN. Presumably the length is due to the gap between the reads spanning an exon (in addition to the splice in one of the reads). Most sequenced fragments from Illumina will actually be between 200-600bp. 
+
+### Manipulating alignments
+
+To manipulate SAM/BAM files we typically use [`samtools`](http://www.htslib.org), a large toolkit with functions for viewing, editing and summarizing. We're going to cover a few key modules here, but you should skim the documentation afterward to get a sense of what else you can do with it. Log in to Xanadu and start an interactive session now. Load samtools:
+
+```bash
+module load samtools/1.16.1
+```
+
+Type `samtools` to see all available submodules. To see the usage and options for any one of them, try, e.g. `samtools view --help`. 
+
+#### `samtools view`
+
+The most basic function in samtools is `view`. We can use it to convert between SAM and BAM format. In practice this the tool we frequently use to spot-check alignments, or to quickly summarize data from a genomic region. Go to the alignments directory you have created, `results/03_align/alignments`, and let's try some things out. 
+
+The following will simply print the first 10 alignments in the file in SAM format (remember, BAM is not human readable):
+
+```bash
+samtools view SRR12475447.bam | head
+```
+
+We can print *only* the header with:
+
+```bash
+samtools view -H SRR12475447.bam
+```
+
+A shockingly common problem people run into is aligning their sequences to one reference genome and then downloading an annotation for a different version of the genome. You might want to spot check your gff/gtf file against the sequence dictionary in the BAM header. If the sequence names are accession numbers (vs names like `chr1`) then this issue will jump right out. 
+
+We can print the header AND the SAM records (thus converting BAM to SAM) with the following, but don't execute it, or it will try to print the *entire* SAM file to the standard out:
+
+```bash
+samtools view -h SRR12475447.bam
+```
+
+You can convert SAM to bam with:
+
+```bash
+samtools view -S -b myfile.sam >myfile.bam
+```
+
+We can extract specific genomic regions by supplying a region in the format `CHR:START-STOP`. This is a 1-based closed interval, meaning START and STOP are included in the interval (remember from a previous chapter that BED format is 0-based and half-open!). To print all alignments from the region `KN811289.1:1050000-1100000` try:
+
+```bash
+samtools view SRR12475447.bam KN811289.1:1050000-1100000
+```
+
+Count the number of alignments by piping to `wc -l`. 
+
+What is the distribution of mapping quality scores here?
+
+```bash
+samtools view SRR12475447.bam KN811289.1:1050000-1100000 | cut -f 5 | sort -g | uniq -c
+```
+
+```
+    496 0
+      3 1
+   7956 60
+```
+
+Most reads have the highest mapping quality. We can filter out reads with low mapping quality below `Q` with `-q Q` if we wish:
+
+```bash
+samtools view -q 30 SRR12475447.bam KN811289.1:1050000-1100000 
+```
+
+What SAM flags are present?
+
+```bash
+samtools view -q 30 SRR12475447.bam KN811289.1:1050000-1100000 | cut -f 2 | sort | uniq -c | sort -g
+```
+
+You can check the [Explain SAM Flags](https://broadinstitute.github.io/picard/explain-flags.html) website to see what some of these flags are, or you can plug them in to `samtools flags` e.g.:
+
+```bash
+samtools flags 83
+```
+
+You can also get an overall summary of the flag information with `samtools flagstats`. You can run it on the whole file, or just pipe in our subset or reads like this (remember to pass `-h` to include the header):
+
+```bash
+samtools view -h -q 30 SRR12475447.bam KN811289.1:1050000-1100000 | samtools flagstats -
+```
+
+Running it with no arguments will explain what the abbreviations mean. You'll see that the four most common flags refer to read pairs mapping to opposite strands that are properly paired. The next most common ones are all reads with unmapped mates. 
+
+We can filter on SAM flags with these options:
+
+```
+  -f, --require-flags FLAG   ...have all of the FLAGs present
+  -F, --excl[ude]-flags FLAG ...have none of the FLAGs present
+```
+
+Let's include only reads that are properly paired:
+
+```bash
+samtools view -f 2 -q 30 SRR12475447.bam KN811289.1:1050000-1100000
+```
+
+Let's summarize the template lengths:
+
+```bash
+samtools view -f 2 -q 30 SRR12475447.bam KN811289.1:1050000-1100000 | cut -f 9 | sort -g | uniq -c
+```
+
+That's not super helpful. As you would expect with randomly sheared sequence, there are many, many different values. 
+
+Splices should be pretty consistent though. Maybe we can extract all the splices HISAT2 created and look at their distributions? They're encoded in the CIGAR string. 
+
+```bash
+samtools view -f 2 -q 30 SRR12475447.bam KN811289.1:1050000-1100000 |
+cut -f 6 |
+grep -oP "[0-9]+(?=N)" |
+sort | uniq -c | sort -g 
+```
+
+Splices in the CIGAR string are encoded as a number of bases in the reference genome followed by the letter N. In this example, `20M5329N81M`, `5329N` represents a read that is aligned in two pieces 5,329 bases apart. This is probably an intron, though read mappers are not perfect. So to extract that pattern from CIGAR, we use the following options in grep: `-o` extracts the regex match. `-P` uses "perl-style" regular expressions.  The "perl-style" regular expressions are required in grep to use the "positive lookbehind" `(?=N)`, which means the match string must be followed by an `N`, but `N` is not included in the match. So the regex `"[0-9]+(?=N)"` matches one or more numbers followed by an `N`. In total, our "one-liner" (broken up across multiple lines here!) extracts splice lengths from each CIGAR, counts them up and sorts them by frequency. 
+
+We have a number of splices supported by many reads, so in the 50kb region we are looking at, there are probably one ore more genes with reasonably high expression levels. 
+
+#### Other modules in `samtools`
+
+To get an overall summary of your alignment, there are two tools: `samtools stats` and `samtools flagstats`. We saw `flagstats` above. `stats` provides lots of useful summaries, and we'll cover it in more detail below. 
+
+We used `samtools sort` above to position sort our BAM files. 
+
+We saw an `faidx` command as part of `seqkit`, and it does the same thing here: creates a simple fasta index and allows you to extract sequence from it. Usually used on reference genomes. 
+
+`samtools depth` can also occasionally be useful to extract per base sequence depths:
+
+```bash
+samtools view -h -f 2 -q 30 SRR12475447.bam KN811289.1:1050000-1100000 |
+samtools depth - |
+head
+```
+
+Let's look at the distribution of depths in the region we've been looking at:
+
+```bash
+samtools depth -a -r KN811289.1:1050000-1100000 SRR12475447.bam |
+cut -f 3 |
+sort -g |
+uniq -c
+```
+
+This is still a tough summary to look at, let's use awk to discretize the distribution into bins of 10:
+
+```bash
+samtools depth -a -r KN811289.1:1050000-1100000 SRR12475447.bam |
+cut -f 3 |
+awk '{n=int($1/10) * 10}{print n}' |
+sort -g |
+uniq -c
+```
+
+As you would expect, out of the 50,001 sites in this window, 41,538 have < 10x coverage (29,124 have exactly 0). 
+
+
+### Visualizing alignments
+
+To visualize alignments, samtools has a function called `tview`, but it's a pretty miserable experience in general. We usually use a GUI program [`IGV`](https://igv.org), which we will demonstrate here. 
+
+You'll need to run IGV **locally**, not on Xanadu, so first download it from the link above. 
+
+To view data hosted on Xanadu, you'll need to either download what you want to view (not ideal), or connect your computer's file system to Xanadu's (see Chapter 4.4.4 for instructions on that). Remember, to connect to Xanadu this way you'll need to be connected to the CAM VPN. 
+
+If you download the data, you'll want to have:
+
+1. One or more BAM files and their `.bai` indexes
+2. The reference genome your BAMs are aligned to. 
+3. A GTF annotation file
+
+Open IGV and begin loading the files. 
+
+First the genome select the menu `Genomes` and `Load genome from file`. If you've connected to Xanadu, you'll navigate to cfs09, then `home/FCAM/username/...` to get to your RNAseq tutorial directory and the `genome` subdirectory. Load the `.fa` reference genome file. 
+
+Next select `File` and `Load from file` and load the `gtf` annotation file you downloaded. If IGV complains that this file needs to be indexed and/or sorted, it will tell you the menu options in IGV to accomplish this. Do that, then load the sorted, indexed GTF file. ENSEMBL really should sort these.
+
+Finally, select `File` and `Load from file` and load a bam file. We'll go with `SRR12475447.bam` because that' what we've been using (definitely don't select `...446.bam`, as it has almost no reads). 
+
+After all this is done, you won't see much because we'll be too zoomed out. Put our focal region `KN811289.1:1050000-1100000` in the navigation bar at the top. 
+
+The very top panel should orient you to where you are in the genome. 
+
+The next panel down will give sequencing depth per base across the region. The third panel is called a *sashimi plot*. The ribbons show inferred splice junctions and their relative frequency. Red ribbons above the axis are on the forward strand, blue below are on the reverse. If you click anywhere on the panel, a window should open telling you the span and frequency of splices that overlap that point. 
+
+The next panel contains the actual alignments. Left click here and select `collapsed`, then left click again and select `View as pairs`. This will connect read pairs. Pairs will be connected by thin gray lines, while spliced chunks of single reads will be connected by light blue lines. If you click on any of the reads, the information from the SAM file should pop up for the read pair. 
+
+The next panel down should be the genome itself. If you zoom in close enough it should show the actual sequence. 
+
+The very bottom panel will show the genome annotation. Left click and select "Expanded", this will break out the annotations for each gene model so they no longer overlap and crowd each other. For the gene `septin6` in the middle, you'll see three different transcripts. For `septin6` you should see pretty good concordance between the blue ribbons in the sashimi plot and the exons in the transcript models (exons are the rectangles). 
+
+IGV is good for spot checking regions of interest in BAM files, and for getting a sense of what alignment data actually look like. Take some time to explore this and get a sense of what's going on. 
+
+
+
+## Alignment QC
+
+
+We've now gotten our sequence data aligned to the reference genome, and you're hopefully coming to grips with SAM formatted alignments and how we can manage them. Now we're going to cover a couple tools we can use to get high level summaries of our alignments that can help us spot problems, or be assured of the quality of our data and analysis. 
+
+### `samtools stats`
+
+The first tool we're going to use is `samtools stats`. This tool generates a large variety of summary tables for each bam alignment file. We're going to focus on just one table it produces, the "summary numbers" table. The usage of `stats` is simple:
+
+```bash
+samtools stats $INDIR/myfile.bam >$OUTDIR/myfile.stats
+```
+
+Many tables are captured in the output file, but they are all prefixed with an abbreviation. To get the summary numbers table we do:
+
+```bash
+grep ^SN myfile.stats | cut -f 2-
+```
+
+An output looks like this:
+
+```
+raw total sequences:	24930228	# excluding supplementary and secondary reads
+filtered sequences:	0
+sequences:	24930228
+is sorted:	1
+1st fragments:	12465114
+last fragments:	12465114
+reads mapped:	21198487
+reads mapped and paired:	19076072	# paired-end technology bit set + both mates mapped
+reads unmapped:	3731741
+reads properly paired:	17742952	# proper-pair bit set
+reads paired:	24930228	# paired-end technology bit set
+reads duplicated:	0	# PCR or optical duplicate bit set
+reads MQ0:	101133	# mapped and MQ=0
+reads QC failed:	0
+non-primary alignments:	807636
+supplementary alignments:	0
+total length:	2469910867	# ignores clipping
+total first fragment length:	1241272173	# ignores clipping
+total last fragment length:	1228638694	# ignores clipping
+bases mapped:	2102633790	# ignores clipping
+bases mapped (cigar):	2086249016	# more accurate
+bases trimmed:	0
+bases duplicated:	0
+mismatches:	13827822	# from NM fields
+error rate:	6.628078e-03	# mismatches / bases mapped (cigar)
+average length:	99
+average first fragment length:	100
+average last fragment length:	99
+maximum length:	101
+maximum first fragment length:	101
+maximum last fragment length:	101
+average quality:	36.4
+insert size average:	677.8
+insert size standard deviation:	1306.0
+inward oriented pairs:	8877193
+outward oriented pairs:	108775
+pairs with other orientation:	69478
+pairs on different chromosomes:	482537
+percentage of properly paired reads (%):	71.2
+```
+
+In our script, we're going to use `parallel` to run `stats` on all our bam files, and then extract the summary numbers from each output file and put them in one large table. `MultiQC` can also parse this output, so we'll run that as well. 
+
+Our script is `scripts/03_align/03_samtools_stats.sh`. It looks like this:
+
+```bash
+#!/bin/bash 
+#SBATCH --job-name=samstats
+#SBATCH --mail-user=
+#SBATCH --mail-type=ALL
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=15G
+#SBATCH --qos=general
+#SBATCH --partition=general
+
+hostname
+date
+
+##################################
+# calculate stats on alignments
+##################################
+
+# calculate alignment statistics for each bam file using samtools
+
+# load software--------------------------------------------------------------------------
+module load samtools/1.16.1
+module load parallel/20180122
+
+# input, output directories--------------------------------------------------------------
+
+INDIR=../../results/03_align/alignments
+OUTDIR=../../results/03_align/samtools_stats
+mkdir -p $OUTDIR
+
+ACCLIST=../../metadata/accessionlist.txt
+
+# samtools bam statistics----------------------------------------------------------------
+
+cat $ACCLIST | parallel -j 10 \                       #<1>
+	"samtools stats $INDIR/{}.bam >$OUTDIR/{}.stats"
+
+# put the basic stats all in one file.---------------------------------------------------
+
+# bash array containing all stats file names
+FILES=($(find $OUTDIR -name "*.stats" | sort))        #<2>
+
+# initialize big table for all samples with row names
+grep "^SN" ${FILES[0]} | cut -f 2 > $OUTDIR/SN.txt    #<3>
+
+# loop over each stats file, add data column to main table
+for file in ${FILES[@]}                                                       #<4>
+do paste $OUTDIR/SN.txt <(grep ^SN $file | cut -f 3) > $OUTDIR/SN2.txt && \   #<5>
+	mv $OUTDIR/SN2.txt $OUTDIR/SN.txt                                           #<6>
+	echo $file
+done
+
+# add a header with sample names
+cat \                                                                         #<7>
+<(echo ${FILES[@]} | sed 's,samtools_stats/,,g' | sed 's/.stats//g' | sed 's/ /\t/g') \
+$OUTDIR/SN.txt \
+>$OUTDIR/SN2.txt && \
+	mv $OUTDIR/SN2.txt $OUTDIR/SN.txt
+```
+1. Hopefully this idiom is becoming familiar at this point!
+2. This is a bash array. We are taking all the stats output files and putting them in a list. 
+3. Initialize our table with *just* the rownames
+4. Loop over every stats file. 
+5. This is a bit new. `paste` is like the horizontal version of `cat`. We're adding new columns to this file. By default they are tab-separated. `<(command)` is called a "process substitution". It's like a pipe inside the command line. Instead of a file, we're passing the output of `grep ^SN $file | cut -f 3` as the second argument to `paste`. 
+6. We redirected the previous line to `SN2.txt`, which now contains the previous iteration's version of `SN.txt` plus the new column. Here we replace `SN.txt` with `SN2.txt` and then repeat in the next iteration of the loop, iteratively building the table. 
+7. Here we add a header containing sample names to the table. 
+
+This is a bit clunky, but it works. We will also aggregate these stats using multiqc below, but it doesn't get *all* the statistics for us, and we're going to need a nice table like this for downstream analysis in `R`. 
+
+Go ahead and run this with `sbatch 03_samtools_stats.sh`. Monitor its progress. Check that it completed without error. Make sure that you have the expected number of files in the results directory. 
+
+### `qualimap`
+
+samtools gave us some basic summaries of the alignments, but it would also be helpful to get a high level overview of mapping with respect to our annotation. We have RNA-seq data, so most of our reads should map to genes, right? We're going to use `qualimap` for this. It will tell us how many reads map to exons, introns, and intergenic regions. It will calculate 5'-3' bias (where within transcripts reads tend to map) and strand bias (whether more reads map to the forward or reverse strand, but only if you specify a stranded library). 
+
+We have been referring to our annotation file repeatedly, and you are probably wondering about it by now, but we are going to put off an explanation of annotation formats until the next chapter when we cover expression quantification. 
+
+Our script is `scripts/03_align/04_qualimap.sh`. It looks like this:
+
+```bash
+#!/bin/bash 
+#SBATCH --job-name=qualimap
+#SBATCH --mail-user=
+#SBATCH --mail-type=ALL
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=5
+#SBATCH --mem=10G
+#SBATCH --qos=general
+#SBATCH --partition=general
+
+hostname
+date
+
+##################################
+# calculate stats on alignments
+##################################
+# this time we'll use qualimap
+
+# load software--------------------------------------------------------------------------
+module load qualimap/2.2.1
+module load parallel/20180122
+
+# input, output directories--------------------------------------------------------------
+
+INDIR=../../results/03_align/alignments
+OUTDIR=../../results/03_align/qualimap_reports
+mkdir -p $OUTDIR
+
+# gtf annotation is required here
+GTF=../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf 
+
+# accession list
+ACCLIST=../../metadata/accessionlist.txt
+
+# run qualimap in parallel
+cat $ACCLIST | \
+parallel -j 5 \
+    qualimap \
+        rnaseq \
+        -bam $INDIR/{}.bam \
+        -gtf $GTF \
+        -outdir $OUTDIR/{} \
+        --java-mem-size=2G  
+```
+
+Most of this should look familiar. We are telling `qualimap` to operate in `rnaseq` mode. We provide a bam file and a GTF annotation file. It will output an HTML formatted report. 
+
+### MultiQC
+
+Finally, run our MultiQC script `scripts/03_align/05_multiqc.sh`. 
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=multiqc
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 4
+#SBATCH --mem=5G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+hostname
+date
+
+#################################################################
+# Aggregate reports using MultiQC
+#################################################################
+
+module load MultiQC/1.9
+
+STATS=../../results/03_align/samtools_stats
+QUALIMAP=../../results/03_align/qualimap_reports
+OUTDIR=../../results/03_align/multiqc
+
+# run on samtool stats output
+multiqc -f -o ${OUTDIR}/samtools_stats ${STATS}
+
+# run on qualimap output
+multiqc -f -o ${OUTDIR}/qualimap ${QUALIMAP}
+```
+
+We could run this in one go with the qualimap and stats output in a single report, but here we're going to produce separate reports. 
+
+## Results
+
+We should note a few things about these data before moving on. 
+
+1. We have a single sample that essentially failed. It has a very small number of sequences and will need to ultimately be excluded from analysis. These days we shoot for about 20 million read pairs for RNA-seq analysis. This is an older data set that falls a little short of that, but our failed sample has only about 10,000 read pairs. It's not uncommon for samples to fail or to be otherwise problematic. Study designs should have high enough replication that this doesn't compromise the experiment. 
+2. Our mapping rate is a little low at the mid to low 80s. This is a result most likely of a fragmented and slightly incomplete genome assembly. This also lowers our rate of properly paired reads. 
+3. We have reads mapping to introns and intergenic regions. This is nearly always the case. Intronic reads can arise from sequencing precursor mRNAs that have not yet been spliced. Because introns are so much larger than exons in most eukaryotes, it doesn't take many unspliced RNAs to increase this fraction. Intergenic reads can arise from unannotated genes, inaccurate exon boundaries at read edges (annotating 5' and 3' UTRs is harder than annotating coding regions), and genomic DNA contamination. The numbers we observe here are ok. 
+

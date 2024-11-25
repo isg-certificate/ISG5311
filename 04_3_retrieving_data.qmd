@@ -1,0 +1,646 @@
+---
+title: "Retrieving data"
+---
+
+|                                                                        |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                               |
+| Retrieve data from public databases |
+| Distinguish between types of parallel analysis |
+| Run tasks in parallel with GNU Parallel |
+| Run tasks in parallel with SLURM arrays |
+| Perform initial QC |
+
+## Getting set up
+
+As we walk through this RNA-seq workflow you will do the following at each step:
+
+1. Go over the details of a script that has already been written. 
+2. Run the script. 
+3. Check that the script completed successfully. 
+4. Examine the output. 
+5. As an exercise, modify the script in one or more ways. 
+
+### Getting the scripts
+
+The scripts you'll run and modify are in a code repository on [GitHub](https://github.com). GitHub is a web platform that hosts code repositories. It's built on the version control software [`git`](https://git-scm.com). We will cover git extensively next semester. 
+
+You can see our scripts [here](https://github.com/isg-certificate/rnaseq). Note that this repository already has the skeletal project organization we discussed in the previous chapter. To download the scripts to your home directory on Xanadu, we're going to use `git`, specifically the subcommand `clone`, to create a local copy of this repository. Git is available by default on Xanadu nodes, including the login node, so we don't need load any modules. 
+
+To clone any git repository you have access to, you can go to the repository's GitHub site, click on the big green button in the upper right that says `<> Code`, select "HTTPS", and copy the URL. Then, in general:
+
+```bash
+git clone <URL> <directory_name>
+```
+
+You can omit `<directory_name>` and the name of the repository will be used. 
+
+Let's name our first local copy of the repository `rnaseq_tutorial`:
+
+```bash
+git clone https://github.com/isg-certificate/rnaseq.git rnaseq_tutorial
+```
+
+The directory tree should start like this:
+
+```
+rnaseq_tutorial/
+├── metadata
+│   └── SraRunTable.txt
+├── README.md
+└── scripts
+    ├── 01_rawdata
+    │   ├── 01_downloadSRA.sh
+    │   └── 02_downloadGenome.sh
+    ├── 02_QC
+    │   ├── 01_fastqc.sh
+    │   ├── 02_multiqc.sh
+    │   └── ...    
+    ├── 03_...
+```
+
+You can modify these scripts in any way you like without impacting the remote repository on GitHub (you don't have permission to push changes there). You can also create as many clones of the repository as you like as long as you give them different names. 
+
+## Downloading data from the SRA
+
+### Where do we get the data?
+
+Our first step is to download RNA-seq data. As we mentioned in the overview chapter, we're going to walk through the workflow using real expression data from [this paper](https://www.science.org/doi/10.1126/science.aah4993):
+
+>Reid, Noah M., et al. "The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish." Science 354.6317 (2016): 1305-1308.
+
+The data have been deposited in a database at [NCBI](https://www.ncbi.nlm.nih.gov). There are actually many interconnecting databases at NCBI, and this dataset touches on several of them. To start with, the data have been organized into a **BioProject**. BioProjects accessions are umbrellas that can encompass a wide variety of data, including assembled genomes, resequencing data, expression data and more. Our BioProject has accession number [PRJNA658029](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658029). If you follow the link, you'll find information about the experiment, including links to other databases. 75 individual fish embryos were selected for sequencing, so there are 75 accessions in the **BioSample** database. 
+
+The key link here is to [SRA](https://www.ncbi.nlm.nih.gov/sra) or the Sequence Read Archive. SRA houses raw sequencing datasets, and holds an [enormous amount of data](https://www.ncbi.nlm.nih.gov/sra/docs/sragrowth/). Many scientific journals require sequence data to be deposited in the SRA as a condition of publication. If you click on the SRA experiment link, you should get to a page that lists SRA accessions for each of our samples. At the top, there should be a link, `Send results to run selector`. If you click there, you should be able to view a table containing the metadata for all of our samples, including their population of origin and their experimental PCB-126 exposure. Downloading this table will give you the same file that is found in the `metadata` directory of the git repository. 
+
+Note also that the BioProject page has a link to **GEO**, or the Gene Expression Omnibus. That database also houses the count data generated from these samples that was used in the original publication. 
+
+To download the data, we're going to use `sratools`, a toolkit created by NCBI to access the SRA. 
+
+The expression data are **unstranded, paired-end sequenced RNA-seq**. You should now know what paired-end refers to, but *unstranded* means that the cDNA has been sequenced without respect to strand. In a stranded RNA-seq library, reads will all be derived from one strand or the other. 
+
+### Running tasks in parallel
+
+We're going to download the data using the script `scripts/01_rawdata/01_downloadSRA.sh`. But before we do that, we need to talk about running tasks in **parallel**. Part of the reason we use computer clusters for bioinformatics is that consumer laptops and desktops don't have the computational power required to accomplish some tasks. In truth, however, individual CPU cores on a consumer machine might not be much slower, if at all, than the individual CPU cores on Xanadu. Xanadu, however, is composed of many nodes, and on each of these nodes are 32-96 CPU cores, compared with 8-12 on a high end consumer computer. The increased computing speed we get from using a cluster primarily comes from the ability to divide work up into pieces and use many CPU cores simultaneously, or *in parallel*. 
+
+There are two general types of parallel computing applications:
+
+1. **Coupled applications**, in which parallel processes need to communicate with each other, at least sometimes. 
+2. **"Embarrassingly parallel"** applications, in which parallel processes are independent. 
+
+Many programs that require parallel operations to be coupled are written so that they can easily use many CPU cores on a single computer. As we have seen in some past applications, you may provide the flag `-t` or `-p` to specify the number of CPU cores to be used. Because the CPU cores are all in a single machine, they can communicate easily. 
+
+This type of within-machine parallelism is **very common** in bioinformatics software. The main thing to know about this is that though many programs can be sped up by allowing them to use more processors, but the speedup is seldom linear. Adding more processors comes with increasing overhead for managing them, and for most applications, how quickly returns diminish depends on the program. We rarely use more than 8-12 CPUs for a single program. 
+
+In some coupled applications, however, even the 96 CPUs on Xanadu's are insufficient. In those cases, coupled parallel processes need to be able to communicate *across nodes*. That adds an extra layer of complexity, which is often handled by [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface), or "Message Passing Interface". Applications requiring this large scale parallelism are often written to use MPI to manage it. Between-node coupled parallelism is fairly uncommon in bioinformatics, and we won't cover it in this course. 
+
+There are some cases where extremely high coupled parallelism is required, and the overhead of MPI is inefficient. For those cases, we often use graphical processing units (`GPUs`). These days, the most common use cases involve machine learning models. Basecalling raw Nanopore signal data essentially requires a GPU to complete in a reasonable amount of time. Multiple nodes on Xanadu have GPUs available. Next semester we will use GPU resources in some of our workflows. 
+
+**Embarrassingly parallel** problems are **extremely common** in bioinformatics. It is very often the case that a large analysis can be broken up into many small, independent pieces. Most commonly, we break these problems up by sample (think of running `fastqc` on, say, 75 RNA-seq samples) or by genomic region (think of searching for genetic variants in 10,000 genomic windows). 
+
+There are two typical ways to manage embarrassingly parallel jobs on an HPC:
+
+1. Use a program like `GNU parallel`
+2. Use a SLURM array
+
+We're going to cover `GNU parallel` in this section, and SLURM arrays just a few sections down. 
+
+#### GNU parallel
+
+Usually just called [`parallel`](http://www.gnu.org/software/parallel), this program is one of the most commonly used Linux utilities. It's a very powerful and flexible program and we'll cover only a couple of approaches to using it here, but there is an [extensive tutorial](https://www.gnu.org/software/parallel/parallel_tutorial.html). 
+
+The basic idea is that given a list of inputs, parallel can be used to operate on each element of the list simultaneously. 
+
+Let's create a test file:
+
+```bash
+echo -e "A\nB\nC" >abc-file.txt
+```
+
+It should read:
+
+```
+A
+B
+C
+```
+
+You can run parallel on this file like this:
+
+```bash
+parallel -a abc-file.txt echo {}
+```
+
+The `{}` is used as a placeholder for the input value and you can use it to construct command lines. In this simple case you can leave it out. There are lots of options for modifying it (see the docs) but we're going to keep it simple here. 
+
+Alternatively, you can have it read from stdin like this:
+
+```bash
+cat abc-file.txt | parallel echo {}
+```
+
+Or like this:
+
+```bash
+parallel echo {} < abc-file.txt
+```
+
+Oor directly from the command line, using whitespace as a separator:
+
+```bash
+parallel echo {} ::: A B C
+```
+
+Importantly, you can limit the number of jobs that run simultaneously with `-j`
+
+```bash
+parallel -j 2 echo {} ::: A B C
+```
+
+And you can get it to "dry run" by simply printing the commands instead of running them. This is critical to check when building complex command lines:
+
+```bash
+parallel --dry-run -j 2 echo {} ::: A B C
+```
+
+If you're having trouble formatting the command line you want, you can resort to constructing it in bash and just sending it to parallel to be read from stdin:
+
+```bash
+for i in $(cat abc-file.txt)
+do echo "echo $i"
+done |
+parallel -j 2
+```
+
+### Finally, the download script
+
+Ok, so you're logged into Xanadu, you've cloned the git repository, you get the gist of `parallel`. You're ready to walk through our script and run it. The script is found in `scripts/01_rawdata/01_downloadSRA.sh`. It's written to be run from that directory, so `cd` there to have a look. 
+
+We'll go through the script in chunks. 
+
+First, the SLURM header. We're requesting 12 cpus and 15G. We're going to run two downloads simultaneously in this script, with one CPU per execution of the download tool, but we'll compress 12 samples at a time after they've finished downloading, so we request 12 CPUs. We're submitting to general partition with general QOS. 
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=fasterq_dump_xanadu
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 12
+#SBATCH --mem=15G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+```
+
+This is not required, but we often start scripts with these commands to make it simpler to keep track of when and where (on xanadu) they ran. 
+ 
+```bash
+hostname
+date
+```
+
+We're loading `parallel` and `sratoolkit` here. `sratoolkit` has the tool we'll use to download the data. 
+
+```bash
+# load software
+module load parallel/20180122
+module load sratoolkit/3.0.1
+```
+
+Oooh look! Comments that help us keep track of what data exactly we're going to download. 
+
+```bash
+# The data are from this study:
+    # https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE156460
+    # https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658029
+```
+
+Below we're specifying variables that point to things we'll use further down in the script. We find that obscuring paths and filenames with descriptive variables can help make them much more readable and organized. Note that we're using relative paths here. This helps keep our project directory self-contained and minimizes problems if things get moved around on the cluster. It also means the script needs to be run from this location. 
+
+```bash
+OUTDIR=../../data/fastq
+    mkdir -p ${OUTDIR}
+METADATA=../../metadata/SraRunTable.txt
+```
+
+Note that `OUTDIR` does not exist yet. We create it in this script so that we can write our fastq files there. This a small example of writing everything you do into a script. In this case, a key project directory is created only when it is needed. 
+
+`METADATA` is a file that is a part of the repository and was downloaded when you cloned it. It's the SRA metadata mentioned in a section above. You can do `less` on the file to see what it looks like. The metadata file contains all 75 samples from all 8 populations. We're just going to work with 2 populations here, so we're going to extract the SRA accession numbers for those samples and put them into a text file:
+
+```bash
+# extract rows matching our population names, pull out the SRA accession number (the first column)
+ACCLIST=../../metadata/accessionlist.txt
+grep -E "Elizabeth River|King's Creek" $METADATA | cut -f 1 -d "," >$ACCLIST
+```
+
+Make sure you know why we use these options with `cut`: `-f 1 -d ","`, and then have a look at the accession list file. We will return to this file over and over again to construct file names in future scripts. The accession list should have 20 elements in it. 
+
+Finally, we run the program `fasterq-dump`:
+
+```bash
+# use parallel to download 2 accessions at a time. 
+cat $ACCLIST | parallel -j 2 "fasterq-dump -O ${OUTDIR} {}"
+```
+
+Try manually creating all these variables in an interactive session and running this command line with the `--dry-run` option. As I mentioned, when writing your own scripts this is a critical step for checking for mistakes. 
+
+`fasterq-dump` does not automatically compress the fastq files, so to be efficient with disk space we will compress them:
+
+```bash
+ls ${OUTDIR}/*fastq | parallel -j 12 gzip
+```
+
+Submit this job with `sbatch 01_downloadSRA.sh`. Monitor it periodically for progress or errors. It should take under an hour. Look back at the chapter on monitoring SLURM jobs if you need to refresh. Make sure you look at `.out` and `.err`. 
+
+This is going to sound silly, *but check that you have the correct number of files in your output directory*. This is a basic sanity check and people often do not do it. SRA network connections can be problematic, and downloads are occasionally interrupted, so it's important not to just assume this worked. 
+
+Notes:
+
+- There are THREE files per sample. This is because these data were uploaded after an initial QC step, and orphaned reads were included. We're going to ignore these. 
+- From the moment you get your hands on data, you should start treating it skeptically. Ask if it meets your expectations. Look at the file sizes for our data. `SRR12475446` has comparatively *very* little data. Ultimately we will have to drop this sample. 
+
+## Downloading genomes from ENSEMBL
+
+Our analysis here is going to be reference-genome based. This means we're going to align our RNA-seq data to a reference genome and use the gene annotation to attribute RNA fragments to genes. We need to download the genome and annotation in order to do this. 
+
+While NCBI and Europe's equivalent, [ENA](https://www.ebi.ac.uk/ena/browser/home), are probably the two biggest concentrations of public raw sequence data, genome, and particularly genome annotations, are housed in more dispersed databases. NCBI has an annotation pipeline it runs on many genomes. When researchers generate an annotation as part of a project, they will often deposit it in generic data repository. There are some taxon-specific databases as well, such as [flybase](http://flybase.org) and [phytozome](https://phytozome-next.jgi.doe.gov). 
+
+We're going to get our genome and annotation from [ENSEMBL](https://useast.ensembl.org/index.html). ENSEMBL is a database for vertebrate genomes. They generate their own annotations, and resources for comparing genes and genomes among species. Using ENSEMBL will allow us to easily extract functional information for *F. heteroclitus* genes that we would otherwise have to infer ourselves with a separate pipeline. 
+
+ENSEMBLE releases new versions periodically. Annotated genes have accession numbers that are tied to ENSEMBLE release versions. Automated gene annotation is a constantly improving field, so gene models can change a lot, even if the underlying genome assembly does not. It's important when getting data from ENSEMBL to get it from a specific version of the database, and to keep track of which version you're using. 
+
+Note also that ENSEMBL doesn't sequence genomes. They pull genomes in from other organizations. Our genome is identical to an NCBI accessioned genome, for which they provide an NCBI accession number (GCA_000826765.1). 
+
+Getting the data is pretty straightforward. We visit our [organism's page](https://useast.ensembl.org/Fundulus_heteroclitus/Info/Index) and follow the appropriate links to get URLs which we use with `wget`. The FASTA file for the genome we want has the suffix `dna_sm.toplevel.fa.gz`. `sm` means repetitive elements have been softmasked. We're also going to grab the annotation in `GTF` format and the inferred transcript sequences (suffix `cdna.all.fa.gz`). 
+
+The script is straightforward. It requires few resources. 
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=get_genome
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 4
+#SBATCH --mem=2G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+```
+
+We're going to index the genome with samtools (more in a moment). 
+
+```bash
+# load software
+module load samtools/1.16.1
+```
+
+As before, we're going to create our output directory as part of the script. 
+
+```bash
+# output directory
+GENOMEDIR=../../genome
+mkdir -p $GENOMEDIR
+```
+
+More useful comments!
+
+```bash
+# we're using Fundulus heteroclitus from ensembl v112
+    # we'll download the genome, GTF annotation and transcript fasta
+    # https://useast.ensembl.org/Fundulus_heteroclitus/Info/Index
+# note that in these URLs we are downloading v112 specifically. 
+```
+
+Download the files.
+
+```bash
+# download the genome
+wget -P ${GENOMEDIR} http://ftp.ensembl.org/pub/release-112/fasta/fundulus_heteroclitus/dna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa.gz
+
+# download the GTF annotation
+wget -P ${GENOMEDIR} http://ftp.ensembl.org/pub/release-112/gtf/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf.gz
+
+# download the transcript fasta
+wget -P ${GENOMEDIR} http://ftp.ensembl.org/pub/release-112/fasta/fundulus_heteroclitus/cdna/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.cdna.all.fa.gz
+```
+
+Decompress the files. Unfortunately, reference genome/transcriptome fasta files need to be decompressed for lots of applications. 
+
+```bash
+# decompress files
+gunzip ${GENOMEDIR}/*gz
+```
+
+Finally, we're going to create simple indexes for the fasta files with `samtools faidx`. 
+
+```bash
+# generate simple samtools fai indexes 
+samtools faidx ${GENOMEDIR}/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa
+samtools faidx ${GENOMEDIR}/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.cdna.all.fa
+```
+
+All the outputs from this script should be pretty self-explanatory, except the index files (suffix `.fai`), which we covered in the chapter on sequence data formats. Remember to check the `.err` and `.out` files for errors or warnings, and to verify that your files downloaded. 
+
+## Sequence data QC
+
+In the previous module we discussed doing quality control on Illumina data using FastQC, MultiQC and Trimmomatic. Here we will do each of these steps on our newly downloaded data. 
+
+### FastQC on raw data
+
+The script for FastQC is `scripts/02_QC/01_fastqc.sh`. The full script looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=fastqc
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 10                   #<1>
+#SBATCH --mem=20G               #<1>
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+echo `hostname`
+
+#################################################################
+# FastQC
+#################################################################
+module load fastqc/0.12.1       #<2>
+module load parallel/20180122   #<2>
+
+# set input/output directory variables
+INDIR=../../data/fastq/                           #<3>
+REPORTDIR=../../results/02_qc/fastqc_reports
+mkdir -p $REPORTDIR
+
+ACCLIST=../../metadata/accessionlist.txt          #<4>
+# run fastp in parallel, 10 samples at a time
+cat $ACCLIST | parallel -j 10 \                   #<5>
+    "fastqc --outdir $REPORTDIR $INDIR/{}_{1..2}.fastq.gz"
+```
+1. We'll use 10 CPUs and 20G of memory. 
+2. We will again use parallel to run fastqc in parallel on multiple files. 
+3. Specify the input and output directories as variables, and create the output directory. 
+4. Re-use the accession list we created previously. 
+5. Run fastqc in parallel. Note here we are *also* using a shell expansion `{1..2}` to simplify things. This runs fastqc on both files in a pair. 
+
+Run this script with `sbatch 01_fastqc.sh`. Monitor it and ensure that it produces the output you expect with no errors. Run `seff <jobid>` to see how efficiently we used our resource request. 
+
+Download (or connect to Xanadu's file system) and look at a few of the HTML reports. You don't need to check them all because...
+
+### MultiQC on raw data
+
+FastQC is going to produce 40 HTML reports - too many to comfortably look through one by one. We'll use MultiQC to aggregate the reports. 
+
+The script is `scripts/02_QC/02_multiqc.sh`. It looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=multiqc
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 2
+#SBATCH --mem=10G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+hostname
+date
+
+#################################################################
+# Aggregate reports using MultiQC
+#################################################################
+
+module load MultiQC/1.15
+
+INDIR=../../results/02_qc/fastqc_reports/
+OUTDIR=../../results/02_qc/multiqc
+
+# run on fastqc output
+multiqc -f -o ${OUTDIR} ${INDIR}
+```
+
+It should require little explanation at this point. Get the HTML file and look at it in a browser. You should see some minor adapter contamination consistent with read-through. This is unlikely to be a problem at this very small level, but we're going to trim it out anyway. 
+
+FastQC will label adapter contamination as "Illumina universal adapter". If you try to search for this term, you'll find it to be ambiguous. You'll remember that you need to supply adapters to Trimmomatic to be trimmed. So how can you figure this out? FastQC's adapter list is found here `/isg/shared/apps/fastqc/0.12.1/Configuration/adapter_list.txt`. You can see our adapter sequence is `AGATCGGAAGAG`. Trimmomatic is pre-packaged with common adapters here `/isg/shared/apps/Trimmomatic/0.39/adapters/`. Let's see if this sequence matches any of them:
+
+```bash
+grep "AGATCGGAAGAG" /isg/shared/apps/Trimmomatic/0.39/adapters/*
+```
+
+We get results:
+
+```
+/isg/shared/apps/Trimmomatic/0.39/adapters/NexteraPE-PE.fa:AGATCGGAAGAG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-PE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-PE.fa:AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq2-SE.fa:AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa:AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa:AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
+```
+
+Let's use `/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa` in Trimmomatic.  
+
+### Running Trimmomatic in a SLURM array
+
+Quality trimming requires a bit more resources for each job than than FastQC, and it takes longer to do. Here we'll use a SLURM array to run each trimming job independently. SLURM arrays are a feature of SLURM that allows you to essentially write a single script and have it run repeatedly. There is a [guide to running SLURM arrays on Xanadu](https://github.com/CBC-UCONN/Job-Arrays-on-Xanadu). Please read through it, try out the simple examples there, and then come back here. 
+
+So the idea is that, much like a bash loop, or running GNU parallel, in an array job script, we write generic code, and then figure out how to substitute in the specific files or parameters for each instance of the array. The advantage of arrays over using parallel, is that each instance of the array (or "array task") will be scheduled independently, receive its own resource allocation, and can run on any node where there is space for that job. This makes arrays better suited than parallel for repetitive jobs that require substantial resources. For example, if you had 30 tasks that each required 1 cpu and 10G of RAM, running that job with GNU parallel would require the majority of resources on a single node (30 CPUs and 300G of RAM), and there might be a wait for those resources to become available. If you run the job as an array, however, each task can be slotted in on any node where resources are available, so your tasks will fan out and soak up smaller chunks of unused resources. If you have 1000 jobs, each requiring 20G of RAM and 10 CPUs, restricting yourself to a single node with GNU parallel will take *much* longer than allowing those jobs to spread out over the cluster. Only 4-6 could run at a time, depending on the node, whereas 40 could run simultaneously with an array (user max CPU limit on general partition is 400). 
+
+So, to sum up, SLURM arrays are a key means to execute parallel jobs on Xanadu. 
+
+For a SLURM array, every instance (or task) has a unique numerical value assigned to the environment variable `SLURM_ARRAY_TASK_ID`. We're going to use that variable to make substitutions into our generic code. Our script is `scripts/02_QC/03_trimmomatic.sh`. It looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=trimmomatic
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 1                    #<1>
+#SBATCH --mem=15G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%A_%a.out       #<2>
+#SBATCH -e %x_%A_%a.err       #<2>
+#SBATCH --array=[1-20]%10     #<3>
+
+hostname
+date
+
+#################################################################
+# Trimmomatic
+#################################################################
+
+module load Trimmomatic/0.39
+module load parallel/20180122
+
+# set input/output directory variables
+INDIR=../../data/fastq/
+TRIMDIR=../../results/02_qc/trimmed_fastq
+mkdir -p $TRIMDIR
+
+# adapters to trim out
+ADAPTERS=/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa #<4>
+
+# accession list
+ACCLIST=../../metadata/accessionlist.txt
+
+# run trimmomatic
+
+SAMPLE=$( sed -n ${SLURM_ARRAY_TASK_ID}p ${ACCLIST} ) #<5>
+
+java -jar $Trimmomatic PE -threads 4 \ #<6>
+        ${INDIR}/${SAMPLE}_1.fastq.gz \
+        ${INDIR}/${SAMPLE}_2.fastq.gz \
+        ${TRIMDIR}/${SAMPLE}_trim_1.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_1.fastq.gz \
+        ${TRIMDIR}/${SAMPLE}_trim_2.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_2.fastq.gz \
+        ILLUMINACLIP:"${ADAPTERS}":2:30:10 \
+        SLIDINGWINDOW:4:25 MINLEN:45
+```
+1. 15G is probably overkill for Trimmomatic. We'll check at the end. 
+2. These options specify the array job `.err` and `.out` file name formats. The file names will be `<jobname>_<jobid>_<SLURM_ARRAY_TASK_ID>.{err,.out}`
+3. This specifies the array task IDs, in this case a range: `[1-20]` and the number of jobs to run at once: `%10`. If you leave out the number of simultaneous jobs to run, the array will run as many as your resource allocation (and available resources) allow. If the array is large enough, this will prevent you from running any other jobs. 
+4. The adapter sequences we determined we should supply. 
+5. In contrast to GNU parallel or a loop, we need a way to pull out a single sample for each array task. Here we use `sed` to extract a sample ID by its line number in our list of accessions. 
+6. This is our Trimmomatic command line, which we covered in the section on sequence QC. 
+
+With array jobs, as with loops and with GNU parallel, you may want to test that you have written the generic code correctly, and that the substitutions will occur as you expect. You could modify your code to simply echo important file paths and check the `.out` files to ensure things are correct:
+
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=trimmomatic
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 1                    
+#SBATCH --mem=15G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%A_%a.out       
+#SBATCH -e %x_%A_%a.err       
+#SBATCH --array=[1-20]%10     
+
+hostname
+date
+
+#################################################################
+# Trimmomatic
+#################################################################
+
+module load Trimmomatic/0.39
+module load parallel/20180122
+
+# set input/output directory variables
+INDIR=../../data/fastq/
+TRIMDIR=../../results/02_qc/trimmed_fastq
+mkdir -p $TRIMDIR
+
+# adapters to trim out
+ADAPTERS=/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa 
+
+# accession list
+ACCLIST=../../metadata/accessionlist.txt
+
+# run trimmomatic
+
+SAMPLE=$( sed -n ${SLURM_ARRAY_TASK_ID}p ${ACCLIST} ) 
+
+echo $SAMPLE
+echo ${INDIR}/${SAMPLE}_1.fastq.gz
+
+# java -jar $Trimmomatic PE -threads 4 \ 
+#         ${INDIR}/${SAMPLE}_1.fastq.gz \
+#         ${INDIR}/${SAMPLE}_2.fastq.gz \
+#         ${TRIMDIR}/${SAMPLE}_trim_1.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_1.fastq.gz \
+#         ${TRIMDIR}/${SAMPLE}_trim_2.fastq.gz ${TRIMDIR}/${SAMPLE}_trim_orphans_2.fastq.gz \
+#         ILLUMINACLIP:"${ADAPTERS}":2:30:10 \
+#         SLIDINGWINDOW:4:25 MINLEN:45
+```
+
+You can also simply set some of these variables in an interactive session and check if they get constructed correctly:
+
+```bash
+INDIR=../../data/fastq/
+ACCLIST=../../metadata/accessionlist.txt
+SLURM_ARRAY_TASK_ID=5
+SAMPLE=$( sed -n ${SLURM_ARRAY_TASK_ID}p ${ACCLIST} ) 
+echo $SAMPLE
+echo ${INDIR}/${SAMPLE}_1.fastq.gz
+```
+
+It's advisable to try these methods of testing before launching a new array script. 
+
+Run the script now with `sbatch 03_trimmomatic.sh`. 
+
+You should see using `squeue` that up to 10 jobs are spawned simultaneously, and that new `fastq.gz` files are growing in the results directory. When the jobs have all completed, check that they were successful, and examine the resource efficiency for a few of the array tasks (`seff <jobid>_<taskid>`)
+
+Trimmomatic will not print much in the way of progress reports. It will give a short summary in the `.err` file about how many reads were retained. To grab those, do 
+
+```bash
+grep "Surviving" trimmomatic_<JOBID>_*err | sort -V
+```
+
+That will pull out the summary for each file and sort the summaries by the array task ID. 
+
+To get a better sense of how our data were impacted, we will run FastQC and MultiQC again below. 
+
+### FastQC and MultiQC
+
+We will run these programs just as we did previously. We have new scripts: `scripts/02_QC/04_fastqc_trim.sh` and `scripts/02_QC/05_multiqc_trim.sh`. Because we've covered this material already, we can use this as an opportunity to check out another feature of SLURM: dependencies. 
+
+You can set SLURM jobs to start only after some condition is satisfied. The option is `-d` or `--dependency` and you specify them as `--dependency=type:jobid`. The most type we'll use here is `afterok`, which means the dependent job will begin after the specified job completes without error. See [here](https://slurm.schedmd.com/sbatch.html) for more details. 
+
+So if we do:
+
+```bash
+sbatch 05_fastqc_trim.sh
+```
+
+And get the message
+
+```
+Submitted batch job 8017345
+```
+
+We can submit MultiQC, which requires the fastqc output as:
+
+```bash
+sbatch --dependency=afterok:8017345 05_multiqc.sh
+```
+
+You can automatically grab the job ID like this and submit both scripts:
+
+```bash
+JOBID=$(sbatch --parsable 04_fastqc_trim.sh)
+sbatch --dependency=afterok:${JOBID} 05_multiqc.sh
+```
+
+When these are complete, download the FastQC and MultiQC results and compare them in terms of the number of sequences, the quality scores and the adapter content. 
+
+## Exercises
+
+For this section, your assignment is to clone a new copy of the github repository and modify the scripts we have done so far to run with **all 75 samples** in the experiment. 
+
+Answer the following questions:
+

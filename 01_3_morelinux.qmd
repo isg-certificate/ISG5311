@@ -342,6 +342,37 @@ grep -o -P "\b[A-Za-z]{4,}\b" darwin1859.txt | sort | uniq -c | sort -g | tail -
 
 This isn't totally optimal as it is case-sensitive, but hopefully you can begin to see how these tools will let you rapidly inspect and summarize files in useful ways. 
 
+#### File compression redux
+
+Now that we've learned about the pipe, let's see how we can use it to inspect `gzip` compressed files without having to decompress them first. 
+
+Let's first use a pipe to create a second, compressed copy of `darwin1859.txt`:
+
+```bash
+gzip -c darwin1859.txt >darwin1859.txt.gz
+```
+
+`-c` tells `gzip` to write to the stdout, and we redirect the output to a new file. 
+
+Ok, so how can we inspect this compressed file? `zcat`!
+
+```bash
+zcat darwin1859.txt.gz | head
+```
+
+Or with `grep`
+
+```bash
+zcat darwin1859.txt.gz | grep "endless forms"
+```
+
+There is even a shortcut for the `zcat | grep` idiom:
+
+```bash
+zgrep "endless forms" darwin1859.txt.gz
+```
+
+This sort of thing is especially important when it comes to dealing with large compressed files that you want to inspect. You don't always have to create decompressed copies, and in fact you shouldn't if you can avoid it!
 
 ## `sed`
 
@@ -446,12 +477,26 @@ We see here that 474,790,822 bases of our 1 gigabase genome falls inside of gene
  
 | Command | Description                          |
 |---------|--------------------------------------|
-| cmnd     | desc              |
+| wget     | download a file              |
+| curl     | download a file              |
+| scp     | copy a file to/from a remote server            |
+| rsync     | copy a file to/from a remote server              |
+| tar     | compress/decompress archive files              |
+| less     | view a text file              |
+| head     | print the first n lines of a file to stdout              |
+| tail     | print the last n lines of a file to stdout              |
+| cat     | print a file to stdout              |
+| cut     | cut a column(s) out of a tabular file              |
+| grep     | search for a regex pattern in a file              |
+| wc     | count lines, words, characters in a file              |
+| gzip     | compress/decompress a file with gzip algorithm              |
+| zcat     | decompress a gzipped file and print to the stdout              |
+| sed     | the "stream editor", often find-and-replace              |
+| awk     | a fully fledged programming language! we usually use it to manipulate files in simple ways though              |
 
 
 ## Exercises
 
-### Quiz: 
-This week's quiz is a practical demonstration of the skills from this section. Find it on Xanadu here: `/core/cbc/ISG5311/quizzes/week2quiz.docx`. Transfer it to your local computer, and using Microsoft Word, answer the questions it and upload it to blackboard. <details...>
+See Blackboard Ultra for this section's exercises. 
 
 

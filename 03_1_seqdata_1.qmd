@@ -1,0 +1,312 @@
+---
+title: "High-throughput sequencing data"
+editor: source
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Explain common sequence data formats FASTA and FASTQ | 
+| Manipulate sequence data in fasta and fastq format |
+
+## Sequence data
+
+Now that we've covered the basics of Linux, BASH, SLURM and HPC topics in general, we are going to start looking at the data type that will be the main focus of this certificate: nucleotide sequence data (and to a lesser extent, amino acid sequence data). In this chapter we're going to cover the most basic formats for storing it and some ways to manipulate it. In the next chapter we'll go over the basic characteristics of three major platforms for producing it. 
+
+## File formats
+
+Sequence data are relatively straightforward. Nucleotide sequence data are typically stored as character strings consisting primarily of A (adenine), G (guanine), C (cytosine), or T (thymine). Even when we sequence RNA, we typically represent the uracil's as T instead of U. There are cases where sequences are stored with ambiguities, in which case [IUPAC ambiguity codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) are used (e.g. "R" for "G or A", or "N" for any nucleotide). Amino acid sequence data are similarly stored as character strings using single-letter abbreviations, also [per IUPAC](https://iupac.qmul.ac.uk/AminoAcid/AA1n2.html). 
+
+### `FASTA`
+
+In the case of both nucleotide and amino acid sequences, the most basic file format is known as [`FASTA`](https://en.wikipedia.org/wiki/FASTA_format). It is pronounced variously as "fast-ay", "fast-uh", or if maybe if you're from the UK "fahstuh". 
+
+FASTA format is very simple. A sequence record consists of a header line, beginning with a `>` and immediately followed by a sequence name, and one or more following lines containing a sequence. This can be as simple as:
+
+```
+>Sequence1
+aaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaaccctaaaccctaa
+```
+
+A sequence can also be broken up across multiple lines, which can be helpful for very long sequences like chromosomes. 
+
+```
+>Sequence1
+aaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaa
+accctaaaccctaaaccctaaaccctaaaccctaaaaccctaaaccctaa
+```
+
+Sequence header lines can contain information besides the name:
+
+```
+>CM042378.1 Thymallus thymallus isolate DD20220222a ecotype Europe chromosome 1A, whole genome shotgun sequence
+cctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccc
+taaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaacccta
+accctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaac
+cctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccc
+```
+
+In this case, the name `CM042378.1` is an accession number for the sequence at [NCBI](https://www.ncbi.nlm.nih.gov). Everything starting with the first space is extra information and is **usually ignored** by programs that accept FASTA sequences. Only the text after `>` and before the first space should be considered the sequence name. 
+
+FASTA files can contain multiple sequences like so:
+
+```
+>101020_0:000000
+MALLRLPYLFSSSTPNQSSLITCQTHPFSSVRTKKREVSRLYASSSGGKSDPYLMDSEERREWRDKIRQVLDKNPDLEEELDP
+>101020_0:000001
+MCPRNADINILKLKAFPFSLEDRAKSWLIDLPTGHIDSWEKMMSEFLTKYFPASKITVMRKQITGIQQGPEETFCAYYERFKALVATCPSHGF
+>101020_0:000002
+MEACNCIEPQWPADELLIKYQYISDFFIAIAYFSIPLELIYFVKKSAVFPYRWVL
+```
+
+You may notice that in above sequences we have a mix of upper and lower-case letters. These do not change the meaning of the sequence itself, but are a form of sequence **annotation**. In nucleotide sequences, we typically use lower-case letters to indicate that sequences have been identified by some algorithm as **repetitive** or **low-complexity**. This is referred to as "soft-masking" because some algorithms will take this as a signal to ignore the bases, without our having to change them to `N` (referred to as "hard-masking"). 
+
+Because telomeric sequences at chromosome ends are typically highly repetitive, when a whole chromosome has been assembled and annotated, a large fraction of the first few kilobases is often soft-masked. 
+
+`FASTA` format contains only sequences. Because of this, it's only really suitable for sequences we are pretty confident in. That is to say, we believe that each of the bases or amino acids in the sequence has been correctly determined. In the case of high-throughput sequencing data, however, it's not always the case that each base is known with a high degree of confidence. That leads us to our second file format...
+
+### `FASTQ`
+
+`FASTQ` format is essentially `FASTA` with base qualities. The base qualities carry information about the certainty that a given base has been determined correctly. This makes `FASTQ` a more suitable format for raw sequence data from high-throughput sequencers, which have error rates high enough that they need to be accounted for in some analyses. A sequence record in `FASTQ` has 4 lines: 
+
+1. A header line starting with `@` (instead of `>`) immediately followed by a sequence identifier. 
+2. A sequence (usually a nucleotide sequence). Unlike `FASTA`, all on a single line. 
+3. A line beginning with `+`, typically followed either by nothing, or the sequence name repeated. 
+4. A line containing ASCII-character-encoded, PHRED-scaled base qualities. 
+
+A single `FASTQ` record looks like this, but as with `FASTA`, many records can be put in a single file:
+
+```
+@A01010:43:H2YNYDSXY:1:1101:1108:1000 1:N:0:GCGTATTAAT+TGCGGTGTTG
+NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGGATTGTTTCTCCACTACTTTTGGAGCTGCTTTATCTTCACTTGTTCAATAACAGGAGAGTCCCTTATTTATA
++
+#FFF:FFFFFFFFFF::FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFF::FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FF,FF
+```
+
+This sequence was generated by an Illumina sequencer (more on that later). The sequence identifier contains lots of [information about the sequencing run](https://help.basespace.illumina.com/files-used-by-basespace/fastq-files), but we rarely, if ever, need to parse that ourselves, so we won't break it down here. 
+
+The next two lines are pretty straightforward. The final line requires some explanation. To repeat, it contains *ASCII-character-encoded, Phred-scaled base qualities*. 
+
+ASCII-encoded refers to the fact that each [ASCII character](https://en.wikipedia.org/wiki/ASCII) in the string codes a quality score. The standard translation for data produced from the early 2010s on is referred to as [`Sanger` encoding](https://en.wikipedia.org/wiki/FASTQ_format#Encoding), which means that quality scores from 0-93 are encoded by characters 33-126 in the ASCII table. For an easy translation see [this website](https://broadinstitute.github.io/picard/explain-qualities.html) and enter the quality string above. 
+
+The quality scores themselves are [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score). They have a log-scaled relationship with the probability that a base has been called in error. The quality score **Q** is related to the error probability **P** by the following equations:
+
+$$ Q = -10 log_{10} P$$
+$$ P = 10^{-Q/10} $$
+
+So:
+
+| Phred Quality Score | Probability of incorrect base call | Base call accuracy |
+|---------------------|-----------------------------------|---------------------|
+| 10                  | 1 in 10                           | 90%                 |
+| 20                  | 1 in 100                          | 99%                 |
+| 30                  | 1 in 1000                         | 99.9%               |
+| 40                  | 1 in 10,000                       | 99.99%              |
+| 50                  | 1 in 100,000                      | 99.999%             |
+| 60                  | 1 in 1,000,000                    | 99.9999%      
+
+Phred-scaled error probabilities crop up repeatedly in genomics, so it's a good idea to get a handle on them now. 
+
+## Manipulating `FASTA` and `FASTQ`
+
+In this section we're going to introduce some approaches for manipulating fasta and fastq files. We'll start simple, with tools we have already seen, and then introduce some pieces of software that will be faster and suitable for more complex tasks. 
+
+Let's start by downloading two versions of the human genome: GRCh38, which has been in use for many years (with occasional patches and updates), but has some unfinished gaps, and CHM13, a telomere-to-telomere assembly of a human genome. We're going to get them from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), a US government organization that houses a staggering amount of sequence data, both raw output from sequencers, and finished genome and gene sequences. We're going to use a tool developed by NCBI to download data called `datasets`. If you visit [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/) and [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/) you'll see that they provide you with a datasets command to run that will download several files for each genome (we'll modify it slightly to get a gtf annotation in addition to gff2):
+
+```bash
+module load datasets/16.13.0
+# T2T
+datasets download genome accession GCF_009914755.1 --include gtf,gff3,rna,cds,protein,genome,seq-report --filename T2T.zip
+unzip -d T2T T2T.zip
+# GRCh38
+datasets download genome accession GCF_000001405.40 --include gtf,gff3,rna,cds,protein,genome,seq-report --filename GRCh38.zip
+unzip -d GRCh38 GRCh38.zip
+
+rm GRCh38.zip T2T.zip
+```
+
+This is a bit of a mess, so let's move things around a little:
+
+```bash
+mkdir genomes
+mv T2T/ncbi_dataset/data/GCF_009914755.1 genomes/
+mv GRCh38/ncbi_dataset/data/GCF_000001405.40 genomes/
+```
+
+Try
+
+```bash
+ls -lh genomes/*
+```
+
+You should see that each directory contains a number of files:
+
+- `*genomic.fna`: the genome sequence in fasta format. 
+- `genomic.gff`: a gff3 formatted annotation file
+- `genomic.gtf`: a gtf formatted annotation file
+- `cd_from_genomic.fna`: coding sequences in fasta format as inferred from the gff file
+- `rna.fna`: RNA sequences in fasta format
+- `protein.faa`: protein sequences in fasta format
+
+### Basic Linux tools
+
+Let's explore the genome sequences a bit with some commands we already know:
+
+How many sequences are in each genome fasta? The regular expression `^>" matches only lines that begin with `>`, which is every header line, and no sequence lines. 
+
+```bash
+grep -c "^>" genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna 
+grep -c "^>" genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+```
+
+There are so many sequences GRCh38 because it has some alternate haplotypes and unplaced sequences. T2T does not have those. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?
+
+We can't count fastq records this way because "@" and "+" can both be present in the quality string. 
+
+### bioawk
+
+Using standard Linux command-line tools to manipulate files in this way is fairly limited (though we did do it a little more in depth with our RADseq exercise). 
+
+We can take things a little further with `bioawk`, a modification of `awk` to deal with genomic data formats that adds a few nice functions. `bioawk` is suitable for quick data exploration and validation tasks. 
+
+Let's look at the length and GC composition of sequences in our genomes:
+
+```bash
+module load bioawk/1.0
+
+bioawk -c fastx '{print $name, gc($seq), length($seq), $comment}' genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna
+bioawk -c fastx '{print $name, gc($seq),length($seq), $comment}' genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+```
+
+`bioawk` has built in functions, like `gc()` and built-in variables like `$seq`, `$name`, and `$comment` that allow you to access different parts of a sequence record. `-c fastx` indicates that we're giving it a fasta or fastq file. 
+
+GRCh38 has some alternate haplotypes and unplaced sequences. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?
+
+As in `awk` you can use `BEGIN` and `END` blocks to execute code before and after processing a file. To get the mean GC content in the entire T2T genome:
+
+```bash
+bioawk -c fastx '{tl+=length($seq); gcl+=length($seq) * gc($seq)}END{print gcl / tl}' genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+```
+With fastq files we can do something similar (here we pass the stdout to `head` because there are millions of sequences in that fastq file):
+
+```bash
+FQ=/core/cbc/tutorials/workshopdirs/RNA-seq-with-reference-genome-and-annotation/01_raw_data/SRR12475447_1.fastq.gz
+
+bioawk -c fastx '{print $name, gc($seq),length($seq), meanqual($qual)}' $FQ | head -n 100
+```
+
+Note that for fastq files, bioawk has a `$qual` variable for the quality scores. 
+
+In principle, you could use bioawk and Linux tools piped together to do all kinds of manipulation and filtering. We usually just use them for quick inspection and summarization though, as we have faster purpose-built tools we can use for large datasets. 
+
+### seqkit
+
+[`seqkit`](https://bioinf.shenwei.me/seqkit/) is one such fast, purpose-built tool for manipulating fastx files. It has tons of features, and skimming through the documentation is worth your time. It may take a minute, because at the time of writing, `seqkit` had 38 subcommands to accomplish various tasks. We'll look at just a couple here. 
+
+::: {.callout-note}
+Note that the model of developing a "toolkit" containing many individual tools (invoked commonly with the syntax `<toolkit> <tool> --options` is a common one in bioinformatics (see also samtools, bcftools, vcftools, bedtools, gatk, kat, and others). In this course we'll typically only be working through a handful of tools in any given toolkit, but the above advice usually holds, that it can be well worth your time to acquaint yourself with other features by skimming the documentation. 
+:::
+
+#### Summarizing files
+
+We can start out by calculating some basic stats on all of our fasta files:
+
+```bash
+module load seqkit/2.8.1
+
+seqkit stats genomes/GCF_00*/*f{n,a}a
+```
+
+Which will print this output table:
+
+```
+file                                                               format  type     num_seqs        sum_len     min_len        avg_len      max_len
+genomes/GCF_000001405.40/cds_from_genomic.fna                      FASTA   DNA       145,346    296,946,179           8          2,043      107,976
+genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna   FASTA   DNA           705  3,298,430,636         970      4,678,625  248,956,422
+genomes/GCF_000001405.40/rna.fna                                   FASTA   DNA       185,121    714,952,247          33        3,862.1      109,224
+genomes/GCF_009914755.1/cds_from_genomic.fna                       FASTA   DNA       130,323    269,579,101           8        2,068.5      107,976
+genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna  FASTA   DNA            24  3,117,275,501  45,090,682  129,886,479.2  248,387,328
+genomes/GCF_009914755.1/rna.fna                                    FASTA   DNA       178,809    695,829,185          33        3,891.5      109,224
+genomes/GCF_000001405.40/protein.faa                               FASTA   Protein   136,194     94,348,091          12          692.7       35,991
+genomes/GCF_009914755.1/protein.faa                                FASTA   Protein   129,662     89,665,798          12          691.5       35,991
+```
+
+#### Extracting sequences
+
+Let's extract every exon from the T2T genome using the GTF file:
+
+```bash
+GENOME=genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+GTF=genomes/GCF_009914755.1/genomic.gtf
+EXONS=genomes/GCF_009914755.1/exons.fna
+
+seqkit subseq --gtf ${GTF} --feature exon ${GENOME} >${EXONS}
+```
+
+In this case we're using the GTF file, restricted only to exon features (column 3), to extract all exonic sequence from the genome into a fasta file. 
+
+The first two records:
+
+```
+>NC_060931.1_59220-59296:- LOC124906657
+agatttttataaaatgaaagctgCCTCTGAAGCACTGCAGACTCAGCTGAGCACCGatac
+aaagaaagacaaacatc
+>NC_060931.1_42869-42973:- LOC124906657
+TAACAATTTGGACAAGACAGCAAATGCTATTGTCCAAGTTTTCTAAAGAAGAATCTGAAG
+TGAAATGACATCAAGAGACCTATCAAGACCTGTATCCAGGAAAAG
+```
+
+In this case, `seqkit` has given a sequence identifier corresponding to the location and strand of the feature in the format `SEQUENCE_START-STOP:STRAND`, and added the contents of the `gene_id` tag from the feature following a space. In this case an NCBI gene identifier `LOC124906657`. 
+
+We can also extract arbitrary sequence ranges from fastx files. First we need to **index** the file we want to extract sequence from. Indexes play a big role in 'omics. Just like in a book, an index allows us to rapidly skip to a particular region of interest without scanning the entire volume. Indexes can be content based (as in books), as we'll see when we get to sequencing mapping, or they can be positional (more like a table of contents). Here we'll make a positional index. 
+
+```bash
+GENOME=genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+
+seqkit faidx $GENOME
+```
+
+This creates the file `GCF_009914755.1_T2T-CHM13v2.0_genomic.fna.fai`. It has a pretty simple format. Five tab-separated columns giving the sequence ID, how long it is, where it starts in the file, how many bases are on each line, and the length of each line in bytes. 
+
+```
+NC_060925.1	248387328	87	80	81
+NC_060926.1	242696752	251492344	80	81
+NC_060927.1	201105948	497222893	80	81
+...
+```
+
+To extract after indexing:
+
+```bash
+GENOME=genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
+
+seqkit faidx $GENOME NC_060927.1:10000000-10000200
+```
+
+Produces:
+
+```
+>NC_060927.1:10000000-10000200
+GAGCTGCTGTCCTTTAAATCCACATTGGGGATGAAGGTCCCTCAGGTGTCAATACTGGAT
+GTCCCTCCACCCAATGCCAGTTTGTACCCCCAGAAAGAGGGCCCCTGTGGGTTCTGCTTG
+AGCTCCCCAAGGGCCCATCAGAGTCTGTCCCTCCACCTTGCTGCTGTGCCCCCTCTGGAA
+GTGCTGTCCTGTGAGAGGGCA
+```
+
+You can also extract sequences using a list of sequence identifiers, or by matching identifiers (or by matching the sequences themselves) with a regular expression. Our RNA file has gene names in the comment section of the header. We can search those like this:
+
+```bash
+RNA=genomes/GCF_009914755.1/rna.fna
+
+seqkit grep -n -r -p ".ryl .ydrocarbon" $RNA
+```
+
+This will return sequences with headers like:
+
+```
+>NM_001033054.3 Homo sapiens aryl hydrocarbon receptor interacting protein like 1 (AIPL1), transcript variant 2, mRNA
+>XM_054336619.1 PREDICTED: Homo sapiens aryl hydrocarbon receptor nuclear translocator (ARNT), transcript variant X25, mRNA
+```
+
+There are many, many more things you can do with seqkit, but we're going to move on to another tool. 
+

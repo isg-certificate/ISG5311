@@ -1,0 +1,64 @@
+---
+title: "Sequencing platforms"
+editor: source
+---
+
+|                                                                                 |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                        |
+| Distinguish between data produced by the three major sequencing platforms | 
+
+In this chapter we cover three major sources of high-throughput sequencing data. Each has different characteristics and hence different applications. We will cover these basic characteristics before moving on to quality control analyses in the next chapter. There is [innovation](https://sandiegomics.com/ngs_companies/) and [competition](https://www.nature.com/articles/d41586-023-00512-4) in this space, so things may change. 
+
+A few terms: 
+
+- **sequence read** or **sequence** or **read**: a nucleotide sequence produced by a DNA sequencer. 
+- **paired-end sequencing**: the practice of determining short nucleotide sequences from each end of a single DNA fragment. 
+- **sequence library**: a set of DNA fragments that have been prepared for sequencing. 
+- **flow cell**: for most platforms, a single consumable sequencing unit. 
+
+## Illumina
+
+[Illumina](https://www.illumina.com) is a company whose name is virtually synonymous with its sequencing format. Data produced by Illumina has the following characteristics:
+
+- Reads are short. Typically 100-300bp.
+- Reads are usually paired end, though single-end reads are possible. 
+- Reads are accurate. Mean raw sequence quality of around Q35 (0.03% error rate). 
+- Throughput is high. The smaller MiSeq instrument can produce 15Gb of data per flow cell. The NovaSeq X can produce 8Tb (these stats subject to constant change). 
+- Sequencing is done by synthesis. This means many mostly identical copies of a single molecular are created to generate the signal that is read by the instrument. 
+- Per-base cost is low. 
+
+Illumina is the workhorse of high-throughput sequencing. Any application that requires lots of sequence data will use Illumina. Expression profiling (as we are about to do) and small variant genotyping are classic applications of Illumina. Repetitive and low-complexity genomic regions common to many organisms make it difficult to use Illumina data for genome or transcriptome assembly, to detect structural variants accurately, or to detect small variants in such regions. 
+
+Illumina sequence is typically paired end, which means any given fragment of DNA is sequenced from either end, yielding two sequence reads. These "forward" and "reverse" reads are typically delivered in two separate files `sample_R1.fastq.gz` and `sample_R2.fastq.gz`. Mate pairs are in the same order in each file, so you should never do anything to disrupt that order. All commonly used tools for filtering or trimming Illumina data are aware of this. 
+
+DNA fragments put on the sequencer vary in length, but unless you are sequencing short RNAs, they are typically 200-600bp long. Many fragments are longer than the sum of the two read lengths, so for many fragments, a segment in the middle remains unsequenced, while for others, there is a region of overlap between the two reads. For some short fragments, the read length is longer than the fragment, so sequence reads will pass through the template fragment and into sequencing adapter. This is referred to as "read-through" adapter contamination and it should be trimmed (see the next section). 
+
+## Pacbio
+
+[PacBio](https://www.pacb.com) is another important platform. Their most successful product is "HiFi" sequencing. HiFi data has the following characteristics:
+
+- Reads are long. Typically 10-20kb. 
+- Reads are accurate, though not quite as good as Illumina at around Q30. 
+- Reads are NOT paired. 
+- Single molecules are sequenced (sort of!). For HiFi, reads are the consensus of many copies of a single molecule (you will learn more details in ISG5301). 
+- Throughput is moderately high, with around 90Gb of data per flow cell on the Revio instrument. 
+- Per-base cost is high compared to Illumina. On par with long-read competitor Oxford Nanopore. 
+
+PacBio's technology is incredibly useful for genome assembly. The long reads and high accuracy mean that many repetitive regions can be assembled, leading to high contiguity, high completeness, and high accuracy in the final product (rather than the fragmented and incomplete genomes produced early-on using Illumina data). For heterozygous organisms, phased diploid (or polyploid) assemblies are possible. The long reads are also excellent for resolving transcript isoforms, a big challenge when assembling transcriptomes with Illumina data, though the high cost per base is prohibitive for differential expression studies requiring lots of replicates. 
+
+## Oxford Nanopore Technologies
+
+[ONT](https://nanoporetech.com) is the last platform we'll cover. They have a range of products with diverse uses, but the key characteristics are:
+
+- Reads can be **very** long. Up to 4 megabases with an ultra-long library prep. Standard preps are more like 15-40 kilobases with a fat tail of much longer reads into the 100's of kb.  
+- Reads have variable accuracy. Current chemistry and base callers can produce around Q20 reads with the standard approach. "Duplex" sequencing can yield higher accuracy, but lower throughput. Older data is more like Q13. 
+- Raw signal data is produced, which can be reinterpreted when new base-calling software is released, improving accuracy. 
+- Single molecules are sequenced. 
+- Methylation can be detected as part of the base-calling process. 
+- Throughput can be highly variable depending on organism, instrument, and library prep. The extremely tiny, portable MinION: 48Gb. 60-200Gb per flow cell on the production instrument PromethION. 
+- Per-base cost on par with PacBio. 
+
+ONT produces by far the longest reads. At the moment, these are required to produce genuinely complete, unfragmented chromosome-scale assemblies of larger eukaryotic genomes. The very long reads are necessary to resolve messy arrays of tandem repeats, though PacBio is often used in these assemblies as well, because the lower error rate yields a lower error rate in the final assembly, and allows assembly of phased diploid genomes. ONT is also good for resolving transcript isoforms. Detecting modified (i.e. methylated) bases is also an important application of ONT data. 
+
+Raw signal data is in fast5 (now deprecated) or pod5 formats. These files are needed if re-basecalling or calling modified bases is desired. 

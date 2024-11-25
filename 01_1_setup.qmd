@@ -51,7 +51,7 @@ Again, this particular terminal prompt has been customized (we'll show you how t
 
 Because this is our first command issued in the course, I want to break down what we did. When you typed `ssh username@xanadu-submit-ext.cam.uchc.edu`, you used the fundamental command-line syntax `<command> <arguments>`. You told **your computer** to execute the program `ssh`, which allows you to securely gain command-line access to another computer, and provided the details ("arguments") `username@xanadu-submit-ext.cam.uchc.edu`, which are your username, and the server address of the computer you want to connect to.
 
-I want to take a moment to emphasize something that might not be entirely clear yet, but which is very important. When you first opened your terminal window, any commands you wrote there were commands directed to and executed by **your computer**. After you ran `ssh` on your computer to connect to Xanadu, your terminal window effectively became a terminal window on the **Xanadu cluster**. Any subsequent commands you enter at the prompt will be received and executed by **Xanadu**. It is as if you were actually sitting at a terminal physically connected to one of Xanadu's nodes. Nothing you do at this terminal will impact your computer in any way, and programs running on Xanadu cannot directly access your local system or any of its files. Conversely, nothing you do outside this terminal window will impact Xanadu.
+I want to take a moment to emphasize something that might not be entirely clear yet, but which is very important. When you first opened your terminal window, any commands you wrote there were commands directed to and executed by **your computer**. After you ran `ssh` on your computer to connect to Xanadu, your terminal window effectively became a terminal window on the **Xanadu cluster**. Any subsequent commands you enter at the prompt will be received and executed by **Xanadu**. It is as if you were actually sitting at a terminal physically connected to one of Xanadu's nodes. Nothing you do at this terminal will impact your computer in any way, and *programs running on Xanadu cannot directly access your local system or any of its files*. Conversely, nothing you do outside this terminal window will impact Xanadu.
 
 Unless you are told directly, all the work for the Linux and HPC sections of this course should be conducted on Xanadu, after using `ssh` to connect.
 
@@ -72,4 +72,5 @@ By now you've probably noticed the terms **remote** and **local** being used reg
  
 | Command | Description                          |
 |---------|--------------------------------------|
-| cmnd     | desc              |
+| ssh     | initiates connection to a remote machine using secure shell protocol.     |
+| hostname     | prints the name of the current system     |

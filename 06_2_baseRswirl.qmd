@@ -1,0 +1,18 @@
+---
+title: "Base R with Swirl"
+editor: source
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Use **base** R to do basic interactive data manipulation and plotting | 
+
+
+In this section, we're going to pass you off to a [Swirl](https://swirlstats.com) course to learn some base R. As we mentioned, "base R" is one of the two major paradigms for working in R. 
+
+The instructions are fairly simple. Visit [this page](https://swirlstats.com/students.html) and follow the initial instructions. 
+
+Install the course [`R Programming`](http://swirlstats.com/scn/rprog.html) and work through it. There are 15 lessons. Swirl lessons should take 10-20 minutes each, leading to a total time of 3-6 hours. 
+
+For future reference, check out this [base R cheat sheet](https://iqss.github.io/dss-workshops/R/Rintro/base-r-cheat-sheet.pdf). 

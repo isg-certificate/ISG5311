@@ -1,0 +1,294 @@
+---
+title: "Expression Quantification"
+---
+
+|                                                                                       |
+|------------------------------------------------------------------------|
+| **Learning Objectives:**                                                              |
+| Manipulate annotation files in GTF/GFF3 format |
+| Quantify gene expression using reference alignments and a genome annotation | 
+
+We have now aligned our sequence data to the reference genome and we are ready to quantify gene expression. The basic idea here is that we want to count the number of fragments of RNA attributable to each gene. That count is a proxy for the level of gene expression. To get this count, we need only our mapping of reads to genomic locations and the locations of genes in the genome. Before we actually do the count, however, we're going to talk a bit about genome annotation and file formats.
+
+## Genome annotation
+
+When we talk about *genome annotation* we often conflate two different types of annotation: **structural annotation** and **functional annotation**. 
+
+A **structural annotation** gives the locations of genomic features. These can be any type of feature, from transcription factor binding sites, to low complexity or repetitive sequence, to protein coding genes. For protein coding genes in eukaryotes, a structural annotation typically gives the exon-intron structure for one or more transcripts. Importantly, a structural annotation may contain little or no *functional* information about the genomic features it identifies. Genes may be identified as protein-coding, but their names, any important domains, orthology to other genes, or information about what they do is likely to be absent. Because many gene-finding algorithms operate independently of this information (sometimes using only patterns in the target genome and/or evidence of expression), this information may not even be known. 
+
+A **functional annotation** contains functional information about genomic features. This can comprise any sort of knowledge, from tissues or life stages a gene is expressed in and its expression levels, to information about high level biological processes a feature may be involved with, to responses to environment. One common component of a functional annotation is the assignment of [Gene Ontology](https://geneontology.org) terms to genes. The Gene Ontology is a controlled vocabulary for describing gene products. We'll cover it in more detail later. A functional annotation often (though not always) refers back to elements in a structural annotation, but may not itself contain any structural or location information. 
+
+To quantify gene expression from reference-mapped sequences, we need a *structural annotation*. To learn what processes may be implicated after the discovery of a set of genes responding to some experimental treatment, we need a *functional annotation*. 
+
+## Annotation file formats
+
+In this chapter our goal is to quantify gene expression, so here we'll cover structural annotation file formats. We will cover functional annotations later. 
+
+There are two main file formats used for genome annotation data, **GFF3** ("general feature format version 3") and **GTF** (gene transfer format, an extension of the older GFF2). They are very similar. You can find a specification for GFF3 [here](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) and one for GTF [here](http://mblab.wustl.edu/GTF22.html). While these formats have specifications, there have been many versions over the years, and they are often violated by software developers (see an extensive discussion [here](https://agat.readthedocs.io/en/latest/gxf.html). It is very common for annotation files output by one program to cause errors when used as input to another. It is sometimes possible to modify these files to make them work. 
+
+Both of these formats are tabular. Unfortunately, unlike some other genomic data, annotation data is not really all that well suited to tabular plain text data formats. Genomic features can be complex. If you think of a protein-coding gene model in a eukaryote, at a minimum you would want to know:
+
+1. The span of the gene in the genome. 
+2. The span of one or more transcripts produced by the gene. 
+3. The intron-exon boundaries for each of those transcripts. 
+4. The coding sequence boundaries for each of those transcripts. 
+
+You may also want to specifically annotate start codons, stop codons, untranslated regions, and possibly other features. These features are *nested* (coding sequences within exons within transcripts within genes, for example). 
+
+The solution both of these file formats have hit upon is to create a single record (or row in the table) for every feature of interest. Each gene gets a row, each transcript gets a row, each exon and coding sequence within each transcript gets a row. Because of this nested structure, records are interrelated, and to fully evaluate any given feature above the lowest level, you must collect and manage multiple records. This doesn't mesh well with our nice clean stdin/stdout/stderr streaming data model in Linux. For this reason we only use Linux shell tools to do very basic investigations of GTF/GFF files, and use specialized tool sets for more complicated tasks. 
+
+We're now going to cover these file formats in a bit more detail. 
+
+### GTF
+
+GTF has 9 mandatory fields:
+
+1. **seqname** - Sequence name
+2. **source** - Source of annotation information (database or program)
+3. **feature** - The type of feature annotated. Most commonly `gene`, `transcript`, `exon`, `CDS`, though there are others. 
+4. **start** - Start position, 1-based, inclusive. 
+5. **end** - End position, 1-based, inclusive. 
+6. **score** - A quantitative evaluation of the accuracy of the feature. If blank `.`. 
+7. **strand** - Positive or negative strand, if blank `.`
+8. **frame** - If coding, 0,1,2 for how many bases before the first whole codon, if not applicable `.`. 
+9. **attributes** - minimally `gene_id` and `transcript_id`. Attributes are separated by `; `. 
+
+Some example lines:
+
+```
+KN805525.1	ensembl	gene	2500	10348	.	-	.	gene_id "ENSFHEG00000014345"; gene_version "1"; gene_name "cdx1a"; gene_source "ensembl"; gene_biotype "protein_coding";
+KN805525.1	ensembl	transcript	2500	10348	.	-	.	gene_id "ENSFHEG00000014345"; gene_version "1"; transcript_id "ENSFHET00000020248"; transcript_version "1"; gene_name "cdx1a"; gene_source "ensembl"; gene_biotype "protein_coding"; transcript_name "cdx1a-201"; transcript_source "ensembl"; transcript_biotype "protein_coding"; tag "Ensembl_canonical";
+KN805525.1	ensembl	exon	10201	10348	.	-	.	gene_id "ENSFHEG00000014345"; gene_version "1"; transcript_id "ENSFHET00000020248"; transcript_version "1"; exon_number "1"; gene_name "cdx1a"; gene_source "ensembl"; gene_biotype "protein_coding"; transcript_name "cdx1a-201"; transcript_source "ensembl"; transcript_biotype "protein_coding"; exon_id "ENSFHEE00000072050"; exon_version "1"; tag "Ensembl_canonical";
+KN805525.1	ensembl	CDS	10201	10348	.	-	0	gene_id "ENSFHEG00000014345"; gene_version "1"; transcript_id "ENSFHET00000020248"; transcript_version "1"; exon_number "1"; gene_name "cdx1a"; gene_source "ensembl"; gene_biotype "protein_coding"; transcript_name "cdx1a-201"; transcript_source "ensembl"; transcript_biotype "protein_coding"; protein_id "ENSFHEP00000012884"; protein_version "1"; tag "Ensembl_canonical";
+KN805525.1	ensembl	start_codon	10346	10348	.	-	0	gene_id "ENSFHEG00000014345"; gene_version "1"; transcript_id "ENSFHET00000020248"; transcript_version "1"; exon_number "1"; gene_name "cdx1a"; gene_source "ensembl"; gene_biotype "protein_coding"; transcript_name "cdx1a-201"; transcript_source "ensembl"; transcript_biotype "protein_coding"; tag "Ensembl_canonical";
+```
+
+Note that each feature has a `gene_id`, and all features except `gene` also have a `transcript_id`, in spite of the fact that the specification linked above suggests both attributes are mandatory for all features. 
+
+### GFF3
+
+GFF3 has the same columns as GTF, but the `feature` and `attributes` columns are different. 
+
+The feature column must be drawn from [the Sequence Ontology](http://www.sequenceontology.org/), specifically, it must be a child term of [`sequence_feature`](http://www.sequenceontology.org/browser/current_release/term/SO:0000110). The sequence ontology is a controlled vocabulary for describing biological sequences in sequence annotation. 
+
+The attributes column comes in the format **Tag**=*Value*. Some key tags are `ID` and `Parent`. ID is only required for features with children, and obviously, Parent is only required for features that have parents. 
+
+Some example lines:
+
+```
+JXMV01047516.1	Fundulus_heteroclitus-3.0.2	region	1	31188	.	.	.	ID=region:JXMV01047516.1;Alias=Scaffold1464,NW_012225865.1
+JXMV01047516.1	.	biological_region	483	554	57	+	.	external_name=Undet;logic_name=trnascan
+JXMV01047516.1	ensembl	gene	3698	8092	.	+	.	ID=gene:ENSFHEG00000023248;Name=cyb561d2;biotype=protein_coding;description=cytochrome b561 domain-containing protein 2 [Source:NCBI gene%3BAcc:105922942];gene_id=ENSFHEG00000023248;logic_name=ensembl;version=1
+JXMV01047516.1	ensembl	mRNA	3698	8092	.	+	.	ID=transcript:ENSFHET00000035598;Parent=gene:ENSFHEG00000023248;Name=cyb561d2-201;biotype=protein_coding;transcript_id=ENSFHET00000035598;version=1
+JXMV01047516.1	ensembl	five_prime_UTR	3698	4028	.	+	.	Parent=transcript:ENSFHET00000035598
+JXMV01047516.1	ensembl	exon	3698	4142	.	+	.	Parent=transcript:ENSFHET00000035598;Name=ENSFHEE00000241684;constitutive=0;ensembl_end_phase=0;ensembl_phase=-1;exon_id=ENSFHEE00000241684;rank=1;version=1
+JXMV01047516.1	ensembl	CDS	4029	4142	.	+	0	ID=CDS:ENSFHEP00000035198;Parent=transcript:ENSFHET00000035598;protein_id=ENSFHEP00000035198
+JXMV01047516.1	ensembl	CDS	7426	7929	.	+	0	ID=CDS:ENSFHEP00000035198;Parent=transcript:ENSFHET00000035598;protein_id=ENSFHEP00000035198
+JXMV01047516.1	ensembl	exon	7426	8092	.	+	.	Parent=transcript:ENSFHET00000035598;Name=ENSFHEE00000116855;constitutive=1;ensembl_end_phase=-1;ensembl_phase=0;exon_id=ENSFHEE00000116855;rank=2;version=1
+JXMV01047516.1	ensembl	three_prime_UTR	7930	8092	.	+	.	Parent=transcript:ENSFHET00000035598
+```
+
+GFF3 is a bit more complicated than GTF in that with GTF, every feature is tagged with a high level `gene_id`, but in GFF3, child features may only be tagged with their immediate parent (i.e. a CDS feature may have a transcript as a parent, but the gene feature that serves as parent to the transcript will not also be listed). 
+
+## Manipulating annotation files
+
+Perhaps it's now a bit clear why GFF3 and GTF are not the easiest file formats to work with using our simple Linux tools. There are a few specific tools we use instead, including [`gffread`](https://ccb.jhu.edu/software/stringtie/gff.shtml) and [`AGAT`](https://agat.readthedocs.io/en/latest/). We'll look at `AGAT` here. 
+
+`AGAT` is essentially a collection of scripts for performing many different tasks. We'll only cover a few here, but it's worth scanning through [the documentation](https://agat.readthedocs.io/en/latest/agat_for_you.html) to get an idea of what it can do. Mainly we use it to 
+
+1. Convert and/or fix file formats. 
+2. Summarize GFF/GTF files. 
+3. Filter GFF/GTF file.
+4. Other types of manipulations and comparisons. 
+
+Let's try a few of the scripts. AGAT is easiest to use as a container. We have a copy of the container on Xanadu here: `/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img`, but you can use `singularity pull docker://quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0` to grab your own copy if you like (a newer version may be available [here](https://quay.io/repository/biocontainers/agat?tab=tags&tag=latest)). 
+
+Log in to Xanadu, start an interactive session and try the following. 
+
+We've been working with *Fundulus heteroclitus*, so let's go to the `genome` directory in our RNAseq project and download the GFF3 version of the annotation from ENSEMBL (previously we grabbed the GTF). 
+
+```bash
+wget https://ftp.ensembl.org/pub/release-112/gff3/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3.gz
+gunzip Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3.gz
+```
+
+Let's run the GFF conversion script to see if AGAT notes any issues with our GFF:
+
+```bash
+# load singularity, create a variable for the container
+module load singularity/vcell-3.10.0
+AGAT=/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img
+
+GFF=Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3
+
+singularity exec ${AGAT} agat_convert_sp_gxf2gxf.pl -g ${GFF} -o fhet_agat.gff3
+```
+
+It outputs a nice summary, then thousands of warning messages. These messages are all written to a `.log` file as well as STDERR, in case your terminal doesn't store all the output. 
+
+The warnings are cryptic, but a result of the fact that `biological_region` features do not have the required `ID` tags, which AGAT fixes. 
+
+Compare this:
+
+```bash
+grep biological_region Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3 | head
+```
+
+```
+JXMV01047516.1	.	biological_region	483	554	57	+	.	external_name=Undet;logic_name=trnascan
+JXMV01047516.1	.	biological_region	14145	14626	257	.	.	external_name=oe %3D 0.82;logic_name=cpg
+JXMV01047516.1	.	biological_region	14980	14981	0.999	+	.	logic_name=eponine
+```
+
+to this:
+
+```bash
+grep biological_region fhet_agat.gff3 | head
+```
+
+```
+JXMV01047516.1	.	biological_region	483	554	57	+	.	ID=agat-biological_region-1;external_name=Undet;logic_name=trnascan
+JXMV01047516.1	.	biological_region	14145	14626	257	.	.	ID=agat-biological_region-2;external_name=oe %3D 0.82;logic_name=cpg
+JXMV01047516.1	.	biological_region	14980	14981	0.999	+	.	ID=agat-biological_region-3;logic_name=eponine
+```
+
+Otherwise, AGAT notes only that the feature name `lnc_rna` (long non-coding RNA) is not in the sequence ontology. 
+
+Let's get AGAT to calculate summary statistics for our GFF:
+
+```bash
+GENOME=Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa
+singularity exec ${AGAT} agat_sp_statistics.pl --gff ${GFF} -gs ${GENOME} -o gffstats.txt
+```
+
+Option flag `-gs` provides the genome so that some statistics can be calculated with respect to genome size. This outputs stats for each feature type in the GFF file, and is very helpful in understanding the relationship of the annotation to the genome. 
+
+For example:
+
+```
+% of genome covered by gene                  46.5
+% of genome covered by mrna                  44.6
+% of genome covered by cds                   3.4
+% of genome covered by exon                  5.6
+% of genome covered by five_prime_utr        0.4
+% of genome covered by three_prime_utr       1.8
+% of genome covered by intron from cds       37.0
+% of genome covered by intron from exon      39.0
+% of genome covered by intron from five_prime_utr1.8
+% of genome covered by intron from three_prime_utr0.1
+```
+
+We can see that exons and coding sequence comprise a vastly smaller proportion of the genome than introns. 
+
+In a demonstration video, we walked through a rough way of estimating the average intron size from this annotation. Using AGAT we can do a little bit better of a job. 
+
+```bash
+# first select only one transcript per gene (longest isoform) to avoid double-counting
+singularity exec ${AGAT} agat_sp_keep_longest_isoform.pl -gff ${GFF} --out fhet_agat_longiso.gff3
+
+# then add intron features
+singularity exec ${AGAT} agat_sp_add_introns.pl --gff fhet_agat_longiso.gff3 --out fhet_agat_introns.gff3
+```
+
+We can now see that for the first gene record, with three exons, we have two intron records:
+
+```
+JXMV01047516.1	ensembl	gene	3698	8092	.	+	.	ID=gene:ENSFHEG00000023248;Name=cyb561d2;biotype=protein_coding;description=cytochrome b561 domain-containing protein 2 [Source:NCBI gene%3BAcc:105922942];gene_id=ENSFHEG00000023248;logic_name=ensembl;version=1
+JXMV01047516.1	ensembl	mRNA	3698	8092	.	+	.	ID=transcript:ENSFHET00000035597;Parent=gene:ENSFHEG00000023248;Name=cyb561d2-202;biotype=protein_coding;tag=Ensembl_canonical;transcript_id=ENSFHET00000035597;version=1
+JXMV01047516.1	ensembl	exon	3698	4015	.	+	.	ID=ENSFHEE00000241674;Parent=transcript:ENSFHET00000035597;Name=ENSFHEE00000241674;constitutive=0;ensembl_end_phase=1;ensembl_phase=-1;exon_id=ENSFHEE00000241674;rank=1;version=1
+JXMV01047516.1	ensembl	exon	4105	4142	.	+	.	ID=ENSFHEE00000241672;Parent=transcript:ENSFHET00000035597;Name=ENSFHEE00000241672;constitutive=0;ensembl_end_phase=0;ensembl_phase=1;exon_id=ENSFHEE00000241672;rank=2;version=1
+JXMV01047516.1	ensembl	exon	7426	8092	.	+	.	ID=agat-exon-1;Parent=transcript:ENSFHET00000035597;Name=ENSFHEE00000116855;constitutive=1;ensembl_end_phase=-1;ensembl_phase=0;exon_id=ENSFHEE00000116855;rank=3;version=1
+JXMV01047516.1	ensembl	CDS	3883	4015	.	+	0	ID=CDS:ENSFHEP00000035196;Parent=transcript:ENSFHET00000035597;protein_id=ENSFHEP00000035196
+JXMV01047516.1	ensembl	CDS	4105	4142	.	+	2	ID=CDS:ENSFHEP00000035196;Parent=transcript:ENSFHET00000035597;protein_id=ENSFHEP00000035196
+JXMV01047516.1	ensembl	CDS	7426	7929	.	+	0	ID=CDS:ENSFHEP00000035196;Parent=transcript:ENSFHET00000035597;protein_id=ENSFHEP00000035196
+JXMV01047516.1	ensembl	five_prime_UTR	3698	3882	.	+	.	ID=agat-five_prime_utr-2;Parent=transcript:ENSFHET00000035597
+JXMV01047516.1	ensembl	intron	4016	4104	.	+	.	ID=intron_added-184054;Parent=transcript:ENSFHET00000035597;Name=ENSFHEE00000116855;constitutive=1;ensembl_end_phase=-1;ensembl_phase=0;exon_id=ENSFHEE00000116855;rank=3;version=1
+JXMV01047516.1	ensembl	intron	4143	7425	.	+	.	ID=intron_added-184055;Parent=transcript:ENSFHET00000035597;Name=ENSFHEE00000116855;constitutive=1;ensembl_end_phase=-1;ensembl_phase=0;exon_id=ENSFHEE00000116855;rank=3;version=1
+JXMV01047516.1	ensembl	three_prime_UTR	7930	8092	.	+	.	ID=agat-three_prime_utr-2;Parent=transcript:ENSFHET00000035597
+```
+
+We can now calculate the mean intron (and exon) length pretty easily:
+
+
+```bash
+awk '{if($3 ~ /intron/){n+=$5-$4+1; x+=1}}END{print n/x}' fhet_agat_introns.gff3
+awk '{if($3 ~ /exon/){n+=$5-$4+1; x+=1}}END{print n/x}' fhet_agat_introns.gff3
+```
+
+We get a mean intron size of 2140bp compared to a mean exon size of 275bp. Using our rough approach in the demonstration video, we came up with a mean intron size of 2092bp. 
+
+## Expression quantification
+
+We're finally ready to quantify gene expression. Not to be overly repetitive, but the idea here is that we've sequenced fragments of mRNA (converted to cDNA). We have pairs of sequences (one sequence from each end of a fragment), and we want to figure out which genes those fragments have originated from. We've mapped the sequence pairs back to the reference, so what we need to do now is figure out which genes they fall in. To be specific, here we are quantifying expression at the *gene* level. There are other methods to quantify expression at the transcript level (e.g. [kallisto](https://github.com/pachterlab/kallisto)), but they require a transcriptome to map against, rather than a genome, and they must use more complex statistical machinery to estimate how many fragments map to each transcript because transcripts from the same gene are highly similar and many more fragments cannot be assigned a transcript unambiguously. 
+
+There are several packages that can do this, including [`htseq`](https://htseq.readthedocs.io/en/latest/) and [`subread`](https://subread.sourceforge.net). We're going to use the module `htseq-count` from the `htseq` package. For details on how `htseq-count` works, see [here](https://htseq.readthedocs.io/en/latest/counting.html) and [here](https://htseq.readthedocs.io/en/latest/htseqcount.html). You should read through the second link and think about what happens when gene features overlap, or reads map to multiple locations in the genome. 
+
+Our script looks like this:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=htseq_count
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -c 10
+#SBATCH --mem=20G
+#SBATCH --partition=general
+#SBATCH --qos=general
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=first.last@uconn.edu
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+echo `hostname`
+date
+
+#################################################################
+# Generate Counts 
+#################################################################
+module load htseq/0.13.5
+module load parallel/20180122
+
+INDIR=../../03_align/alignments
+OUTDIR=../../04_counts/counts
+mkdir -p $OUTDIR
+
+# accession list
+ACCLIST=../../metadata/accessionlist.txt
+
+# gtf formatted annotation file
+GTF=../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf 
+
+# run htseq-count on each sample, up to 5 in parallel
+cat $ACCLIST | \
+parallel -j 10 \
+    "htseq-count \
+        -s no \                               #<1>
+        -r pos \                              #<2>
+        -f bam $INDIR/{}.bam \                
+        $GTF \
+        > $OUTDIR/{}.counts"
+```
+1. `-s no` This indicates our library is "unstranded". This means that fragments were sequenced without respect to which strand was coding. Some library prep procedures are "stranded". This allows more precise attribution of fragments to genes. 
+2. `-r pos` This indicates our BAM files are position-sorted. 
+
+You should be familiar with this idiom using `parallel` by now. `htseq-count` can only use 1 cpu per bam file, so for only 20 samples, running it with `parallel` rather than using an array job will work fine. 
+
+By default, `htseq-count` is expecting a GTF file. It will identify fragments mapping to `exon` features, and aggregate them by their `gene_id` (this is the same for all exons coming from all transcripts for a given gene). You can use a GFF file, but you will need to specify which attribute to use to aggregate fragments (`gene_id` is not an attribute in GFF3). 
+
+The output is very simple: one output file for each BAM file with a count for each `gene_id`. For example:
+
+```
+ENSFHEG00000000002	0
+ENSFHEG00000000003	3
+ENSFHEG00000000004	0
+ENSFHEG00000000005	5
+ENSFHEG00000000006	0
+ENSFHEG00000000007	2
+ENSFHEG00000000008	0
+ENSFHEG00000000009	0
+ENSFHEG00000000010	0
+ENSFHEG00000000011	2
+```
+
+The `ENSFHEG...` are ENSEMBL gene accessions. If you grab one and search on the ENSEMBL webpage, it will bring up details for the gene. We will retrieve those important details *en masse* using R later on. 
+
