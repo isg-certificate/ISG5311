@@ -368,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Untitled</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Writing documents in Quarto</span></span></a>
   </div>
 </li>
       </ul>
@@ -735,7 +735,7 @@ $y
         }
     }
 }
-&lt;bytecode: 0x7f8ff8c9cbd8&gt;
+&lt;bytecode: 0x7fc8abbb61d8&gt;
 &lt;environment: namespace:methods&gt;</code></pre>
 </div>
 </div>
@@ -884,19 +884,19 @@ Call:
 lm(formula = y ~ x, data = z)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--26.743  -6.542   0.074   5.673  32.006 
+     Min       1Q   Median       3Q      Max 
+-29.2223  -7.1995   0.1041   7.2571  25.7367 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 24.22262    0.74883   32.35   &lt;2e-16 ***
-x            5.10518    0.05443   93.80   &lt;2e-16 ***
+(Intercept) 24.99026    0.86256   28.97   &lt;2e-16 ***
+x            4.92482    0.06038   81.57   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 9.201 on 298 degrees of freedom
-Multiple R-squared:  0.9672,    Adjusted R-squared:  0.9671 
-F-statistic:  8798 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 10.16 on 298 degrees of freedom
+Multiple R-squared:  0.9571,    Adjusted R-squared:  0.957 
+F-statistic:  6653 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Add a trendline to our scatter plot:</p>
@@ -923,19 +923,19 @@ Call:
 lm(formula = y ~ x, data = z)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--26.743  -6.542   0.074   5.673  32.006 
+     Min       1Q   Median       3Q      Max 
+-29.2223  -7.1995   0.1041   7.2571  25.7367 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 24.22262    0.74883   32.35   &lt;2e-16 ***
-x            5.10518    0.05443   93.80   &lt;2e-16 ***
+(Intercept) 24.99026    0.86256   28.97   &lt;2e-16 ***
+x            4.92482    0.06038   81.57   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 9.201 on 298 degrees of freedom
-Multiple R-squared:  0.9672,    Adjusted R-squared:  0.9671 
-F-statistic:  8798 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 10.16 on 298 degrees of freedom
+Multiple R-squared:  0.9571,    Adjusted R-squared:  0.957 
+F-statistic:  6653 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>For many years, a different pipe operator was the only one available: <code>%&gt;%</code> It was part of the package <code>magrittr</code>, and then later the <code>tidyverse</code> set of packages. You will probably still see it around a lot and there are <a href="https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/">some differences</a>.</p>
