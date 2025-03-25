@@ -6,7 +6,7 @@ This course is focused on imparting practical knowledge of how to conduct bioinf
 
 You will need a laptop or desktop computer running a Windows, MacOS or Linux operating system. Most machines produced in the last few years will be sufficient because heavy computation will be done on a powerful remote computer cluster. 
 
-You'll be working at your a computer a lot during this course, often simultaneously using multiple applications, so it will be helpful to have the right setup. Screen real estate is an important factor. If you're working at a desktop, the bigger the display(s) the better. If you are using a laptop, we recommend a desk space with a second display, mouse and keyboard, if possible. Something like this:
+You'll be working at your a computer a lot during this course, often simultaneously using multiple applications, so it will be helpful to have the right setup. Screen real estate is an important factor. If you're working at a desktop, the bigger the display(s) the better. If you are using a laptop, we recommend a desk space with a second display, mouse and keyboard, if possible. Something like the picture below.
 
 ![A useful, though maybe not aesthetically pleasing, work station](images/workstation.jpg)
 

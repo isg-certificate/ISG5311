@@ -18,20 +18,43 @@ book:
     - 02_1_scripts.qmd
     - 02_2_hpc_1.qmd
     - 02_3_software.qmd
-  - part: Sequencing Data
+    - 02_4_bonus_ssh.qmd
+    - 02_5_bonus_bashrc.qmd
+  - part: 03_0_sequencing_data.qmd
     chapters:
-    - seqdata_1.qmd
-  - part: RNA-seq
+    - 03_1_seqdata_1.qmd
+    - 03_2_platforms.qmd
+    - 03_3_QC.qmd
+  - part: 04_0_measuring_expression_1.qmd
     chapters:
-    - rnaseq_1.qmd
+    - 04_1_rnaseq_overview.qmd
+    - 04_2_project_organization.qmd
+    - 04_3_retrieving_data.qmd
+    - 04_4_alignment.qmd
+    - 04_5_quantification.qmd
+  - part: 06_0_statistical_analysis_1.qmd
+    chapters:
+    - 06_1_stats_1.qmd
+    - 06_2_baseRswirl.qmd
+    - 06_3_tidyverse.qmd
+  - part: 07_0_statistical_analysis_2.qmd
+    chapters:
+    - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.qmd
+    - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.qmd
+    - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.qmd
+    - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.qmd
+  - part: 08_0_writing.qmd
+    chapters:
+    - 08_1_writing.qmd
+
+
 
 bibliography: references.bib
 
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
+
 
 
 
