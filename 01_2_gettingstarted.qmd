@@ -33,11 +33,17 @@ Now that we have learned a little about the Linux operating system and how to co
 
 These days, many people's primary experience with computers is through smartphones. Smartphones running the IOS and Android operating systems obscure and restrict access to the file system. On a smartphone, your entire interaction with the OS is through apps, of which the phone's graphical user interface (GUI) is one. For example, if you want to explore, edit, copy, or delete photos you've taken, you might use Google Photos, or some other specialized app. If you want to listen to music files you've downloaded, you might use Spotify. At no point do you, personally, manipulate any of these files. 
 
+![An android home screen](images/android.jpg)
+
 GUIs and CLIs on personal computers, on the other hand, often give you more flexibility in access to the filesystem. You might use a photo app to explore or edit photos on your laptop, but if you wished to copy, move, or delete a photo, you could do that yourself by navigating through the filesystem to the place the photo is stored and then directly acting on the file through the operating system, rather than by asking a specialized app to do it for you. 
 
 In a GUI, the file system itself is usually represented as a nested series of directories, graphically depicted as windows. You open the window for a directory, and inside you will see files and subdirectories, possibly in the form of a list, or maybe as a series of icons laid out in a grid. There are also likely to be directories which you can open up in new windows by pointing the mouse at them and double-clicking. You may have multiple windows open at once, but only one of these will be the window in which you are actively working. If you use a keyboard shortcut or menu option to create a new file or directory, that action will occur in the active window. 
 
+![The MacOS GUI](images/macos.jpg)
+
 In a Linux CLI, the file system is also represented by a hierarchical directory structure, where each directory contains files and often sub-directories. There is, however, typically no graphical visualization of that structure available. Though you cannot see that structure in the form of windows, you still have something analogous to the "active window" in a GUI, a *working directory*. If you issue commands that create or modify files or directories, their effects will by default occur in your current working directory. 
+
+![A linux CLI](images/linux.jpg)
 
 ### Paths
 
@@ -49,7 +55,7 @@ When doing any kind of work on a Linux CLI, you'll need to be aware of what the 
 /home/FCAM/username
 ```
 
-This is called a *path*. It gives the full sequence of enveloping directories for the current working directory, with each directory name separated by `/`, and ending in the current working directory with name `username`. The initial `/` refers to the *root directory*, which has no name and no parent directories. `home` is one of the directories found in root, `FCAM` is found inside `home`, and `username` is found inside `FCAM`. If you change your current working directory, the results of `pwd` and `echo $PWD` will change as well. 
+This is called a *path*. It gives the full sequence of enveloping directories for the current working directory, with each directory name separated by `/`, and ending in the current working directory with name `username`. The initial `/` refers to the *root directory*, which has no name and no parent directories. On our system, `home` is one of the directories found in root, `FCAM` is found inside `home`, and `username` is found inside `FCAM`. If you change your current working directory, the results of `pwd` and `echo $PWD` will change as well. 
 
 Assuming you executed the above commands after logging in, and before doing anything else, *the particular path* you saw is pretty important. It is your **home directory**. Xanadu, like most high performance computing clusters, has many users, and each has a home directory where only they have permission to make or modify files and directories. Because of the special status of this directory, it is also assigned a symbolic shortcut: `~`. 
 
@@ -255,10 +261,10 @@ It's often the case that you will want to find files in a large and complicated 
 
 `find` is an extremely flexible utility included with Linux. It allows searching for files within a specified directory on combinations of attributes such as name, modification date, size, owner and more. Here we'll just cover the simple case of searching by name. The most basic usage of find is `find <path to search> <expression>`. The expression we're going to use is `-name "matchpattern"`. The match pattern can use one or more globs as a wildcard. 
 
-**Try this now**: We can search for all files with the suffix `fastq.gz` in the directory `/core/cbc/tutorials/workshopdirs/RNA-seq-with-reference-genome-and-annotation` like this:
+**Try this now**: We can search for all files with the suffix `fq.gz` in the directory `/core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling/data/demux/` like this:
 
 ```bash
-find /core/cbc/tutorials/workshopdirs/RNA-seq-with-reference-genome-and-annotation -name "*fastq.gz"
+find /core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling/data/demux/ -name "*fq.gz"
 ```
 
 Find needs to traverse all the subdirectories of a target, so in a very large and complicated project, it can be somewhat slow. 
@@ -633,9 +639,13 @@ Since 2022, the emergence of large language models like [chatGPT](https://chat.o
 For a simple example of how you can get help, visit [chat.openai.com](chat.openai.com) and try this question: "In bash, how can I use the find command to find all files created since 2022?"
 
 ::: {.callout-warning}
-We encourage the use of LLMs as an aid in this program, but caution students that they can sometimes do inefficient, unpredictable or incorrect things, and that they should understand what code is doing, and verify that it is correct by checking documentation and validating it through testing. Also, be aware that sometimes an LLM will produce a result that is technically correct, but problematic for other reasons. 
+We (hesitantly) encourage the use of LLMs as an aid for writing code and navigating the command-line in this program. They can help you focus in on something you don't understand, or point you toward ideas or resources that can help you learn, but which you weren't finding through a traditional search engine. We caution students, however that they frequently suggest inefficient or incorrect things. When using code from LLMs, students should:
 
-For example, if you ask ChatGPT for code to calculate the variance from a sample, it will give you code for a standard statistics textbook equation for estimating variance. This method is subject to [numerical instability](https://en.wikipedia.org/wiki/Numerical_stability), however, and will yield inaccurate estimates under some circumstances. If you know enough to *ask* ChatGPT about the numerical stability issue, it will immediately suggest fixes, but we don't always know what we don't know. 
+- understand what the code is doing.
+- verify that it is correct by checking documentation.
+- validate it through testing. 
+
+Also, be aware that sometimes an LLM will produce a result that is technically correct, but problematic for other reasons. For example (as of 2024), if you ask ChatGPT for code to calculate the variance from a sample, it will give you code for a standard statistics textbook equation for estimating variance. This method is subject to [numerical instability](https://en.wikipedia.org/wiki/Numerical_stability), however, and will yield inaccurate estimates under some circumstances. If you know enough to *ask* ChatGPT about the numerical stability issue, it will immediately suggest fixes, but we don't always know what we don't know. 
 :::
 
 ## Asking questions about the system
@@ -650,9 +660,9 @@ For example, if you ask ChatGPT for code to calculate the variance from a sample
 
 **What processes are currently running on the system?** Try `top`. This is a list of running processes. To sort by CPU usage, type `shift-p`. To sort by memory usage type `shift-m`. Since you're most likely on a login node (rather than a heavy duty compute node), hopefully you will not see any processes using a substantial percentage of CPU or memory. Type `q` to quit. You can also use `ps aux`. 
 
-**How long and how intensively has the system been used?** Try `uptime`. Per the man page, `uptime` will tell you how long the system has been running, how many users are currently logged on, and the system load averages for the past 1, 5, and 15 minutes. Note that "Load averages  are  not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time."
+**How long and how intensively has the system been used?** Try `uptime`. Per the man page, `uptime` will tell you how long the system (the machine you are currently logged into, not an entire cluster) has been running, how many users are currently logged on, and the system load averages for the past 1, 5, and 15 minutes. Note that "Load averages  are  not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time."
 
-**How full are available storage systems?** Try `df -h`. Xanadu has several network-attached file systems (NFS). Hopefully none are too close to full...
+**How full are available storage systems?** Try `df -h`. This should give the total amount of storage on each system and how much is currently used. Xanadu has several network-attached file systems (NFS). Some of them don't mount and thus won't be visible to the command unless you visit them first (e.g. `cd /seqdata`). Hopefully none are too close to full...
 
 **How much space is a given directory using?** We've seen that `ls -l` can tell us how much disk space a file uses, but it won't sum everything up for a whole directory. Try `du -sh`. This will give you an accounting of the space used in your current working directory. To tally up each directory in the current working directory individually, try `du -sh *` or for a specific directory `du -sh killifishGenomes`. 
 
