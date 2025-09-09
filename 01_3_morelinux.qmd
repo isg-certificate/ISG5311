@@ -178,7 +178,7 @@ You'll likely notice some messiness. `cut` is not smart, and doesn't recognize t
 
 ## Regular expressions and `grep`
 
-We very frequently want to search a text file for occurrences of some pattern, perhaps a word, phrase, or series of numbers. `grep` is a frequently used for this purpose. Provided a file and a matching pattern, it's default behavior is to return all lines in the file containing the matching pattern. It has a lot of flexibility, however. You can have it *exclude* all lines with matches, return lines preceding and succeeding matches, print line numbers, just a count of occurrences, or instead of the whole line, only the matching string. You can check the `man` page for more detail. 
+We very frequently want to search a text file for occurrences of some pattern, perhaps a word, phrase, or series of numbers. `grep` is a frequently used for this purpose. Provided a file and a matching pattern, its default behavior is to return all lines in the file containing the matching pattern. It has a lot of flexibility, however. You can have it *exclude* all lines with matches, return lines preceding and succeeding matches, print line numbers, just a count of occurrences, or instead of the whole line, only the matching string. You can check the `man` page for more detail. 
 
 How do we specify these matching patterns? with **regular expressions** (sometimes shortened to `regex`. You can think of regular expressions as a very elaborate expansion of the `*` wildcard we have already seen (e.g. `*.txt` to match any file with suffix `.txt`). [This](https://www.regular-expressions.info/charclass.html) is a great page explaining lots of regex features, and is worth skimming through. 
 
