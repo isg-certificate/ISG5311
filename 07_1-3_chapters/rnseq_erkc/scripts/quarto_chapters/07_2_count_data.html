@@ -882,7 +882,7 @@ attr(,"package")
   .. .. ..@ listData       : Named list()
   ..@ metadata          :List of 1
   .. ..$ version:Classes 'package_version', 'numeric_version'  hidden list of 1
-  .. .. ..$ : int [1:3] 1 36 0</code></pre>
+  .. .. ..$ : int [1:3] 1 46 0</code></pre>
 </div>
 </div>
 <p>There are 8 slots at the first level, but many of those slots contain other S4 objects with their own sets of slots. If we want to pull out the count data, we can find it buried in the <code>assays</code> slot.</p>
@@ -1172,6 +1172,9 @@ F-statistic: 2.31e+04 on 1 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>DESeq2 has a wrapper function for doing PCA from an object containing transformed counts. By default it uses the 500 genes with the highest variance in expression among samples.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1184,15 +1187,17 @@ F-statistic: 2.31e+04 on 1 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>A useful feature of PCA is that we can tell how much of the total variation in the data (in our case, the variance-stabilized transformed data) is explained by the PCs. In this case, we see PC1 explains a whopping 42% of the variance, and PC2 another 23%.</p>
 <p>We can immediately see a few major features in this plot. The most obvious one is that a single sample is off on its own on PC1, which explains a huge amount of observed variance. This is a pretty clear case of a sample being an outlier. Something unique has gone wrong with this sample, and ultimately we’re going to have to remove it from the analysis. This wrapper function makes it a little challenging to figure out which sample is the outlier, so we’re going to extract the PCs and remake this plot ourselves with ggplot, and a new package you’ll have to install, <code>ggrepel</code>. <code>ggrepel</code> will add labels to the points on the plot</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1210,25 +1215,25 @@ F-statistic: 2.31e+04 on 1 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h3 data-number="21.2.3" class="anchored" data-anchor-id="heatmaps"><span class="header-section-number">21.2.3</span> Heatmaps</h3>
 <p>A heatmap is a common, but somewhat tricky method for visualizing expression data. It generally allows the visualization of many continuous variables measured across samples or groups. Before explaining further, let’s look at one. We’ll use the package <code>pheatmap</code>, so you’ll need to install that first.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co"># find genes with highest variance in expression</span></span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>rv <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">%&gt;%</span> <span class="fu">apply</span>(., <span class="at">MAR=</span><span class="dv">1</span>, <span class="at">FUN=</span>var)</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>genes50 <span class="ot">&lt;-</span> <span class="fu">order</span>(rv, <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>]</span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[genes50,], </span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
-<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="co"># find genes with highest variance in expression</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>rv <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">%&gt;%</span> <span class="fu">apply</span>(., <span class="at">MAR=</span><span class="dv">1</span>, <span class="at">FUN=</span>var)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>genes50 <span class="ot">&lt;-</span> <span class="fu">order</span>(rv, <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>]</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[genes50,], </span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1247,26 +1252,28 @@ F-statistic: 2.31e+04 on 1 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Let’s remove our problematic sample and remake the plots. Removing samples can be a fraught process. You don’t want to bias your findings by removing legitimate results, but on the other hand, it is not uncommon for errors in library preparation, sample handling, or the experiment itself to result in problematic samples. In an ideal world, we would track down the sources of problems, but sometimes we need to just make a decision and move forward. This is one of the best arguments for including more than the bare minimum of replicates in an experiment.</p>
 <p>To remove the sample:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>sn <span class="ot">&lt;-</span> sn[sn<span class="sc">$</span>sampleName <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> meta[meta<span class="sc">$</span>Run <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> sampleTable[sampleTable<span class="sc">$</span>sampleName <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> ddsHTSeq[,<span class="fu">colnames</span>(ddsHTSeq) <span class="sc">!=</span> <span class="st">"SRR12475449"</span>] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>sn <span class="ot">&lt;-</span> sn[sn<span class="sc">$</span>sampleName <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> meta[meta<span class="sc">$</span>Run <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> sampleTable[sampleTable<span class="sc">$</span>sampleName <span class="sc">!=</span> <span class="st">"SRR12475449"</span>,]</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> ddsHTSeq[,<span class="fu">colnames</span>(ddsHTSeq) <span class="sc">!=</span> <span class="st">"SRR12475449"</span>] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note that if we had a list of sample names we could use the <code>%in%</code> operator. For example <code>!(sn$sampleName %in% c("SAMPLE1","SAMPLE2"))</code>, rather than using the <code>!=</code> operator. You can get help for operators in R with</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>?<span class="st">`</span><span class="at">%in%</span><span class="st">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>?<span class="st">`</span><span class="at">%in%</span><span class="st">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To make the PCA:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> <span class="fu">estimateSizeFactors</span>(ddsHTSeq)</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(ddsHTSeq)</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> <span class="fu">estimateSizeFactors</span>(ddsHTSeq)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(ddsHTSeq)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1278,23 +1285,23 @@ F-statistic: 2.31e+04 on 1 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Now we have a much better looking plot. You may be a little confused that PC1, which now separates our populations as PC2 did before, explains 41% of the variation, where PC2 only explained 20% before. This is mostly because the percent variation explained depends on the observed data, and there is a lot less total variation in the data now that we’ve tossed that outlier sample.</p>
 <p>To make the heatmap:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="co"># find genes with highest variance in expression</span></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>rv <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">%&gt;%</span> <span class="fu">apply</span>(., <span class="at">MAR=</span><span class="dv">1</span>, <span class="at">FUN=</span>var)</span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>genes50 <span class="ot">&lt;-</span> <span class="fu">order</span>(rv, <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>]</span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[genes50,], </span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
-<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="co"># find genes with highest variance in expression</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>rv <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">%&gt;%</span> <span class="fu">apply</span>(., <span class="at">MAR=</span><span class="dv">1</span>, <span class="at">FUN=</span>var)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>genes50 <span class="ot">&lt;-</span> <span class="fu">order</span>(rv, <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>]</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[genes50,], </span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

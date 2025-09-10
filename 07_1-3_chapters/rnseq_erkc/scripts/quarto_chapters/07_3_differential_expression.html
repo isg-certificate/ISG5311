@@ -603,7 +603,7 @@ low counts [2]     : 0, 0%
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(simvals, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
- 493.975 1445.000 </code></pre>
+ 492.000 1434.025 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a histogram using base R</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(simvals, <span class="at">breaks=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1224,7 +1224,7 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["baseMean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2504.91429","2":"8.003643","3":"0.2543706","4":"1.325714e-218","5":"2.599461e-214","_rn_":"ENSFHEG00000010510"},{"1":"1267.13309","2":"6.323822","3":"0.2764744","4":"1.146296e-116","5":"1.123829e-112","_rn_":"ENSFHEG00000008855"},{"1":"19.85558","2":"5.353391","3":"0.6254974","4":"1.987678e-18","5":"4.330488e-15","_rn_":"ENSFHEG00000008848"},{"1":"115.45892","2":"4.949948","3":"0.3084651","4":"1.451381e-58","5":"5.691737e-55","_rn_":"ENSFHEG00000002649"},{"1":"792.49226","2":"4.517178","3":"0.2694031","4":"8.240991e-64","5":"4.039734e-60","_rn_":"ENSFHEG00000021655"},{"1":"1597.11234","2":"4.193588","3":"0.1942319","4":"2.545203e-104","5":"1.663545e-100","_rn_":"ENSFHEG00000011110"},{"1":"19.98550","2":"-3.115233","3":"1.7770506","4":"3.765727e-06","5":"1.070121e-03","_rn_":"ENSFHEG00000020789"},{"1":"84.86309","2":"2.613928","3":"0.3888698","4":"1.651428e-14","5":"3.238120e-11","_rn_":"ENSFHEG00000008836"},{"1":"33.33021","2":"2.486423","3":"0.4117707","4":"1.377845e-12","5":"2.456072e-09","_rn_":"ENSFHEG00000014747"},{"1":"216.79832","2":"2.463991","3":"0.2560286","4":"1.277712e-24","5":"3.579054e-21","_rn_":"ENSFHEG00000011240"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["baseMean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2504.91429","2":"8.003642","3":"0.2543707","4":"1.325714e-218","5":"2.599461e-214","_rn_":"ENSFHEG00000010510"},{"1":"1267.13309","2":"6.323821","3":"0.2764744","4":"1.146296e-116","5":"1.123829e-112","_rn_":"ENSFHEG00000008855"},{"1":"19.85558","2":"5.353385","3":"0.6254973","4":"1.987678e-18","5":"4.330488e-15","_rn_":"ENSFHEG00000008848"},{"1":"115.45892","2":"4.949947","3":"0.3084651","4":"1.451381e-58","5":"5.691737e-55","_rn_":"ENSFHEG00000002649"},{"1":"792.49226","2":"4.517177","3":"0.2694031","4":"8.240991e-64","5":"4.039734e-60","_rn_":"ENSFHEG00000021655"},{"1":"1597.11234","2":"4.193587","3":"0.1942319","4":"2.545203e-104","5":"1.663545e-100","_rn_":"ENSFHEG00000011110"},{"1":"19.98550","2":"-3.115234","3":"1.7770443","4":"3.765727e-06","5":"1.070121e-03","_rn_":"ENSFHEG00000020789"},{"1":"84.86309","2":"2.613930","3":"0.3888696","4":"1.651428e-14","5":"3.238120e-11","_rn_":"ENSFHEG00000008836"},{"1":"33.33021","2":"2.486425","3":"0.4117706","4":"1.377845e-12","5":"2.456072e-09","_rn_":"ENSFHEG00000014747"},{"1":"216.79832","2":"2.463992","3":"0.2560286","4":"1.277712e-24","5":"3.579054e-21","_rn_":"ENSFHEG00000011240"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -1386,14 +1386,16 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
 <span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>vsd_kcdose <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
 <span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_kcdose,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span>
-<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_kcdose,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1405,17 +1407,19 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>vsd_doseint <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(doseint<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_doseint,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb103-8"><a href="#cb103-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb103-9"><a href="#cb103-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb103-10"><a href="#cb103-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb103-11"><a href="#cb103-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>vsd_doseint <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(doseint<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_doseint,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1427,17 +1431,19 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
-<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>vsd_popdiff <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(popdiff<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
-<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_popdiff,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span>
-<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb104-7"><a href="#cb104-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb104-8"><a href="#cb104-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb104-9"><a href="#cb104-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb104-10"><a href="#cb104-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb104-11"><a href="#cb104-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>vsd_popdiff <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(popdiff<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_popdiff,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1456,34 +1462,34 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <p>Heatmaps are a tricky way to visualize expression data. Let’s plot the 50 genes that respond most strongly in KC.</p>
 <p>Let’s get the data ready first.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
-<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
-<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
-<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
-<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a><span class="co"># transform the count data</span></span>
-<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
+<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
+<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
+<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
+<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a><span class="co"># transform the count data</span></span>
+<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Make the plot:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pull the top 50 genes by shrunken log2 fold change</span></span>
-<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>top50 <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
-<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange)) <span class="sc">%&gt;%</span></span>
-<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>  rownames <span class="sc">%&gt;%</span></span>
-<span id="cb106-7"><a href="#cb106-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">50</span>)</span>
-<span id="cb106-8"><a href="#cb106-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb106-9"><a href="#cb106-9" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
-<span id="cb106-10"><a href="#cb106-10" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb106-11"><a href="#cb106-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
-<span id="cb106-12"><a href="#cb106-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb106-13"><a href="#cb106-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb106-14"><a href="#cb106-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb106-15"><a href="#cb106-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
-<span id="cb106-16"><a href="#cb106-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pull the top 50 genes by shrunken log2 fold change</span></span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>top50 <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
+<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange)) <span class="sc">%&gt;%</span></span>
+<span id="cb112-6"><a href="#cb112-6" aria-hidden="true" tabindex="-1"></a>  rownames <span class="sc">%&gt;%</span></span>
+<span id="cb112-7"><a href="#cb112-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">50</span>)</span>
+<span id="cb112-8"><a href="#cb112-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb112-9"><a href="#cb112-9" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
+<span id="cb112-10"><a href="#cb112-10" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb112-11"><a href="#cb112-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
+<span id="cb112-12"><a href="#cb112-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb112-13"><a href="#cb112-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb112-14"><a href="#cb112-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb112-15"><a href="#cb112-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
+<span id="cb112-16"><a href="#cb112-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1499,14 +1505,14 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>This clusters better by expression pattern, but overall differences in expression still make it messy looking.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1519,15 +1525,15 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>We can rescale the transformed counts by overall expression level to try to make it a bit clearer.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd))</span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
-<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb108-7"><a href="#cb108-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb108-8"><a href="#cb108-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb108-9"><a href="#cb108-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd))</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
+<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb114-7"><a href="#cb114-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb114-8"><a href="#cb114-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb114-9"><a href="#cb114-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1540,15 +1546,15 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p>We can similarly rescale by KC control mean transformed counts, as this is the closest thing we have to reference group in these samples.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd)[, dds<span class="sc">$</span>population<span class="sc">==</span><span class="st">"KC"</span> <span class="sc">&amp;</span> dds<span class="sc">$</span>dose<span class="sc">==</span><span class="st">"control"</span>])</span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
-<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd)[, dds<span class="sc">$</span>population<span class="sc">==</span><span class="st">"KC"</span> <span class="sc">&amp;</span> dds<span class="sc">$</span>dose<span class="sc">==</span><span class="st">"control"</span>])</span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
+<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb115-6"><a href="#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb115-7"><a href="#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb115-8"><a href="#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb115-9"><a href="#cb115-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1570,7 +1576,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1582,7 +1588,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1594,7 +1600,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1606,7 +1612,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1624,7 +1630,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1636,7 +1642,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1648,7 +1654,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1660,7 +1666,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 <div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
