@@ -184,7 +184,7 @@ How do we specify these matching patterns? with **regular expressions** (sometim
 
 To introduce this, we will work through some examples with `grep`. **Follow along in the terminal** using the file `darwin1859.txt` that we downloaded above.  
 
-We'll start with the simplest regex, an unambiguous text string, by searching for every occurrence of the word species:
+We'll start with the simplest kind of regex, an unambiguous text string, by searching for every occurrence of the word species:
 
 ```bash
 grep "species" darwin1859.txt
@@ -209,13 +209,13 @@ grep ".pecies\." darwin1859.txt
 ```
 
 
-Of course, this only works when the rest of the word can't have any other unintended matches. Searching for "had" with ".ad", would not only match "Had" and "had", but every other three letter string ending in "ad". Try it now:
+Of course, this only works when the rest of the word can't have any other unintended matches. Searching for "had" with ".ad", would not only match "Had" and "had", but every other three letter string containing "ad". Try it now:
 
 ```bash
 grep ".ad" darwin1859.txt
 ```
 
-`grep` has an option `-w` that will match only "words", i.e. only matches that are preceeded or followed by "non-word" characters or line starts/endings. 
+`grep` has an option `-w` that will match only "words", i.e. only matches that are preceded or followed by "non-word" characters or line starts/endings. 
 
 ```bash
 grep -w ".ad" darwin1859.txt
@@ -273,7 +273,7 @@ We have now seen a few different tools we can use to inspect and summarize files
 
 Linux programs operate on three main streams of data which users can redirect in various ways. First is the **standard input** (sometimes abbreviated STDIN). Programs can often read data from this stream. The second is the **standard output** (STDOUT) programs often write output to this stream. The third is the **standard error** (STDERR). This stream is often used by programs to send warning or error messages (though scientific software written by scientists, rather than software engineers, will sometimes write output directly to a file, and warnings or errors to stdout, as you will see later in the course). These three streams have numerical file descriptors 0, 1, and 2, for stdin, stdout and stderr. 
 
-For programs that write output to stdout and errors to stderr by default, these outputs will be written to the terminal. We saw this above with `grep`. When we searched our text file, the lines we requested streamed across our terminal window. If we made any typos, say referring to a non-existent file such as `darwin1959.txt`, the resulting error message would have come from the stderr stream. 
+For programs that write output to stdout and errors to stderr by default, both streams will be simultaneously printed to the terminal and sometimes mixed together. We saw this above with `grep`. When we searched our text file, the lines we requested streamed across our terminal window. If we made any typos, say referring to a non-existent file such as `darwin1959.txt`, the resulting error message would have come from the stderr stream. 
 
 We can **redirect** these streams, however, causing them to be written to files, or if we wish, taking the stdout stream from one program and hooking it up to the stdin stream for another. 
 
@@ -300,7 +300,7 @@ That error was written to stderr, and we can redirect it to a file like this:
 grep "species" darwin2000.txt >species_lines.txt 2>species_lines.err
 ```
 
-`2>` is taking the stderr (which has file descriptor 2) and sending it to a file. The command creates two files. Though the program failed with an error, the redirect still created the file `species_lines.txt`. It's important to know this is the usual behavior. Seeing an output file does not mean a program executed successfully. The second file, `species_lines.err` now contains the output from stderr. 
+`2>` is taking the stderr (which has file descriptor 2) and sending it to a file. The command creates two files. Though the program failed with an error, the redirect still created an empty file `species_lines.txt`. It's important to know this is the usual behavior. Seeing an output file does not mean a program executed successfully. The second file, `species_lines.err` now contains the output from stderr. 
 
 You can even redirect stderr to stdout with:
 
@@ -312,7 +312,7 @@ The `&1` refers to the stdout file descriptor. If you just wrote `2>1` stderr wo
 
 ### The pipe
 
-The character `|` is usually referred to as the **pipe**. It allows us to redirect the stdout from one program to the stdin for another, thus *piping* together one or more programs, or creating a *pipeline*, though the term pipeline is also used in a much broader sense to refer to any workflow consisting of many sequential steps. 
+The character `|` is usually referred to as the **pipe**. It allows us to redirect the stdout from one program to the stdin for another, thus *piping* together one or more programs, creating a *pipeline*, though the term pipeline is also used in a much broader sense to refer to any workflow consisting of many sequential steps. 
 
 Above we extracted every line containing the word species. We could have used `-c` to count lines We can also *pipe* the output to `wc` to count the number of lines:
 
@@ -431,7 +431,7 @@ wget https://ftp.ensembl.org/pub/release-111/gtf/fundulus_heteroclitus/Fundulus_
 gunzip Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf.gz
 ```
 
-We'll get into genome annotation files more later, but for now you should know `GTF` is a tab-delimited format that contains the locations of important genomic features. For each feature, column 1 gives the sequence (often a whole chromosome, sometimes a chromosomal fragment) that the feature is found on, columns 4 and 5 give the start and end positions (1-based, inclusive) of the feature, and column 3 gives the type of feature (exon, CDS, transcript, gene). Features are hierarchical, so coding sequences (CDS) and exons always have a transcript parent feature, and transcripts always have a gene parent feature. In a GTF, all these identifiers are supposed to be provided for each record, though gene annotation file formats are very frequently violated by different pieces of software. The transcript and gene identifiers are found as part of a long semicolon-separated list in column 9. 
+We'll get into genome annotation files more later, but for now you should know `GTF` is a tab-delimited format that contains the locations of important genomic features. For each feature, column 1 gives the name of the sequence (often a whole chromosome, sometimes a chromosomal fragment) that the feature is found on, columns 4 and 5 give the start and end positions (1-based, inclusive) of the feature, and column 3 gives the type of feature (exon, CDS, transcript, gene). Features are hierarchical, so coding sequences (CDS) and exons always have a transcript parent feature, and transcripts always have a gene parent feature. In a GTF, all these identifiers are supposed to be provided for each record, though gene annotation file formats are very frequently violated by different pieces of software. The transcript and gene identifiers are found as part of a long semicolon-separated list in column 9. 
 
 Let's first use `awk` in the simplest possible way. We'll print only lines containing gene features. `awk` automatically parses text files with white space as field separators, so we can access the columns (or fields) with special variables `$1, $2, $3...` with `$0` referring to the entire line. We can match individual fields with a regular expression like this:
 
@@ -441,7 +441,7 @@ awk -F "\t" '$3 ~ /transcript/' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.
 
 Here we're using `-F "\t"` to tell `awk` to use only tabs as field separators (to the exclusion of spaces). Piping this whole thing to `wc -l` we would see this file contains 35,597 transcript records. 
 
-We can use logical statements to require multiple matches to pull out transcripts matching a gene identifier:
+We can use logical statements to require multiple matches to pull out transcripts records matching a gene identifier:
 
 ```bash
 awk  -F "\t" '$3 ~ /transcript/ && $9 ~ /ENSFHEG00000021448/' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
@@ -449,9 +449,11 @@ awk  -F "\t" '$3 ~ /transcript/ && $9 ~ /ENSFHEG00000021448/' Fundulus_heterocli
 
 `awk` has considerably more utility than this, however. I often use it to reformat files. 
 
-Another common format used to store information about genomic regions is `BED`. `BED` has only 3 required columns: the sequence identifier, the start position and the end position. The trick here is that whereas GTF is 1-based and fully closed, BED is 0-based and half-open. This means that in a GTF file, an interval of 1-1000 refers to the first 1000 bases, including the start and end point of the interval. In BED format, however, the first base in a sequence is numbered 0, and the end base in an interval is not included as part of the interval, making the BED interval 0-1000. See this [blog](https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/) for a discussion. 
+Another common format used to store information about genomic regions is `BED`. `BED` has only 3 required columns: the sequence identifier, the start position and the end position. There is a wrinkle here though: the interval notation used is different from GTF. Whereas GTF intervals are 1-based and fully closed, BED intervals are 0-based and half-open. 0-based counting means the first element in a sequence is numbered "0". A "closed" interval includes the interval boundaries in the interval. A half-open interval means one boundary is included and the other is not. 
 
-If you find this fully closed vs half-open, 0-based vs 1-based stuff irritating, know that it will come up repeatedly, as it has for many decades (see [this](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html) 40+ year old polemic)
+So for a GTF file, an interval of 1-1000 refers to the first 1000 bases of a sequence, including the start (base 1) and end (base 1000) of the given interval. In BED format, however, this interval would be denoted 0-1000. The first base in a sequence is numbered 0, and the thousandth base is numbered 999. The start of the interval is included, but the end point in the interval is is *not*, making the BED interval 0-1000. See this [blog](https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/) for a discussion of interval notations used in genomics. 
+
+If you find this fully closed vs half-open, 0-based vs 1-based stuff confusing or irritating, know that it will come up repeatedly, as it has for many decades (see [this](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html) 40+ year old polemic). 
 
 At any rate... we can easily output our GTF intervals in BED format like this:
 
@@ -459,7 +461,7 @@ At any rate... we can easily output our GTF intervals in BED format like this:
 awk -F "\t" '{OFS="\t"}{newstart=$4-1}{print $1,newstart,$5}' Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf
 ```
 
-Here we have grouped commands with `{}` and specified an "output field separator" (`OFS="\t"`) because `awk` will by default write spaces instead of tabs. We told awk to print field 1, our new variable `newstart`, and field 5. 
+Here we have grouped commands with `{}` and specified an "output field separator" (`OFS="\t"`) because `awk` will by default write spaces instead of tabs. We told awk to print field 1 (the sequence name), our new variable `newstart`, and field 5 (the original interval endpoint), thus converting our GTF coordinates into BED coordinates. 
 
 Note that in this case, GTF has a few header lines (beginning with `#`) that we have mangled and included. 
 

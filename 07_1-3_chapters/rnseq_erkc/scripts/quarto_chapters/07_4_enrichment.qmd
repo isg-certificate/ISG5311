@@ -443,13 +443,15 @@ This network plot can help us (a little better than the upset plot) understand h
 ```{r}
 cnetplot(kcdose_enrich, showCategory=10, foldChange=l2fcvec, cex_label_gene=0.5)
 ```
+
 <!--
 #### Enrichment map
 
 The enrichment map is another network diagram, but it only contains our terms. It can also be constructed from ORA or GSEA results. In this case the network edges are inferred through DE (or presumably for GSEA leading edge) genes shared among terms by the function `pairwise_termsim()`.  
 
 ```{r}
+#| include: false
+#| eval: false
 emapplot(pairwise_termsim(kcdose_enrich))
 ```
 -->
-
