@@ -399,10 +399,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#editing-files" id="toc-editing-files" class="nav-link" data-scroll-target="#editing-files"><span class="header-section-number">4.4</span> Editing Files</a>
   <ul class="collapse">
-  <li><a href="#command-line-text-editors" id="toc-command-line-text-editors" class="nav-link" data-scroll-target="#command-line-text-editors"><span class="header-section-number">4.4.1</span> Command-line text editors</a></li>
-  <li><a href="#code-editors" id="toc-code-editors" class="nav-link" data-scroll-target="#code-editors"><span class="header-section-number">4.4.2</span> Code editors</a></li>
-  <li><a href="#integrated-development-environments." id="toc-integrated-development-environments." class="nav-link" data-scroll-target="#integrated-development-environments."><span class="header-section-number">4.4.3</span> Integrated development environments.</a></li>
-  <li><a href="#conveniently-accessing-files." id="toc-conveniently-accessing-files." class="nav-link" data-scroll-target="#conveniently-accessing-files."><span class="header-section-number">4.4.4</span> Conveniently accessing files.</a></li>
+  <li><a href="#editors" id="toc-editors" class="nav-link" data-scroll-target="#editors"><span class="header-section-number">4.4.1</span> Editors</a></li>
+  <li><a href="#conveniently-accessing-files." id="toc-conveniently-accessing-files." class="nav-link" data-scroll-target="#conveniently-accessing-files."><span class="header-section-number">4.4.2</span> Conveniently accessing files.</a></li>
   </ul></li>
   <li><a href="#scripts" id="toc-scripts" class="nav-link" data-scroll-target="#scripts"><span class="header-section-number">4.5</span> Scripts</a>
   <ul class="collapse">
@@ -473,11 +471,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this course we’re going to focus mostly on the simpler end of the spectrum: using shell scripts to automate chunks of data analysis performed by other programs written in languages such as <strong>c++</strong>, <strong>python</strong>, or <strong>R</strong>.</p>
 <section id="one-liners" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="one-liners"><span class="header-section-number">4.1</span> One-Liners</h2>
-<p>In the previous chapter we introduced the pipe as a way to link the inputs and outputs of multiple shell commands. Short piped commands are sometimes referred to as “one-liners” and you can find lots of useful repositories of them at pages like <a href="https://github.com/stephenturner/oneliners?tab=readme-ov-file">this</a> and <a href="https://github.com/onceupon/Bash-Oneliner">this</a>. A quick skim through these, especially after we’ve moved a little further through the course will be super helpful.</p>
+<p>In the previous chapter we introduced the pipe as a way to link the inputs and outputs of multiple shell commands. Short piped commands are sometimes referred to as “one-liners” and you can find lots of useful repositories of them at pages like <a href="https://github.com/stephenturner/oneliners?tab=readme-ov-file">this</a> and <a href="https://github.com/onceupon/Bash-Oneliner">this</a>. A quick skim through these, especially after we’ve moved a little further through the course will be super helpful to give you a sense of how short one-liners are commonly employed to inspect and summarize files.</p>
 </section>
 <section id="environment-variables" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="environment-variables"><span class="header-section-number">4.2</span> Environment variables</h2>
-<p>A key feature of BASH is the use of <strong>environment variables</strong>. These are objects used to store text strings. These strings are typically used in 2 ways: to generalize code in shell scripts, or to configure the system.</p>
+<p>A key feature of BASH is the use of <strong>environment variables</strong>. These are objects used to store text strings. These strings are typically used in 3 ways: - To generalize code in shell scripts. - To configure scripts or software. - To configure the system itself.</p>
 <section id="invoking-variables" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="invoking-variables"><span class="header-section-number">4.2.1</span> Invoking variables</h3>
 <p>Some variables are set automatically (usually those used to configure the system or shell options). To see a list try the command <code>env</code>. You should see a long list, but among them is a pretty straightforward variable: <code>USER</code>. To invoke it, try any one of the following:</p>
@@ -485,7 +483,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${USER}</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${USER}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The key thing here is the <code>$</code>. The curly brackets and quotes can slightly modify how the variable itself is invoked or understood by the shell (more in a moment), but the <code>$</code> is how you let the shell know you’re calling out a variable.</p>
-<p>Variables can be interpolated into text strings, or commands in a variety of ways. Try this, for example:</p>
+<p>Variables can be interpolated into text strings or commands in a variety of ways. Try this, for example:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"My username is </span><span class="va">$USER</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="setting-variables" class="level3" data-number="4.2.2">
@@ -494,10 +492,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">MYHOMEDIR</span><span class="op">=</span><span class="st">"/home/FCAM/</span><span class="va">$USER</span><span class="st">/"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$MYHOMEDIR</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this case you can see we’ve defined a variable using another variable. We can equally well define output files this way:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">MYOUTFILE</span><span class="op">=</span><span class="st">"/home/FCAM/</span><span class="va">$USER</span><span class="st">/</span><span class="va">${USER}</span><span class="st">_testfile.txt"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$MYOUTFILE</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"hello world!"</span> <span class="op">&gt;</span><span class="va">$MYOUTFILE</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$MYOUTFILE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># construct file name and echo it</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="va">MYOUTFILE</span><span class="op">=</span><span class="st">"/home/FCAM/</span><span class="va">$USER</span><span class="st">/</span><span class="va">${USER}</span><span class="st">_testfile.txt"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$MYOUTFILE</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># write to the file and cat it out</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"hello world!"</span> <span class="op">&gt;</span><span class="va">$MYOUTFILE</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$MYOUTFILE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="an-aside-about-quotes-in-bash" class="level3" data-number="4.2.3">
 <h3 data-number="4.2.3" class="anchored" data-anchor-id="an-aside-about-quotes-in-bash"><span class="header-section-number">4.2.3</span> An aside about quotes in BASH</h3>
@@ -505,7 +506,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Try to assign the text string “Hello World” without quotes like this:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">HW</span><span class="op">=</span>Hello <span class="ex">World</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HW</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You should get the error <code>-bash: World: command not found</code>. This is because bash tried to assign the string “Hello” to variable “HW”, then saw the whitespace and treated “World” as a separate command, which happens not to exist. The entire command failed.</p>
+<p>You should get the error <code>-bash: World: command not found</code>. This is because bash tried to assign the string “Hello” to variable “HW”, then saw the whitespace and treated “World” as a separate command, which happens not to exist. The entire line failed.</p>
 <p>If we wrap the text in double quotes it will work:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">HW</span><span class="op">=</span><span class="st">"Hello World"</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HW</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -513,39 +514,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">HW</span><span class="op">=</span><span class="st">'Hello World'</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HW</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>But what’s the difference between double and single quotes? Single quotes prevent variable interpolation, leading to <em>very</em> different results:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">HWD</span><span class="op">=</span><span class="st">"Hello </span><span class="va">$USER</span><span class="st">"</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HWD</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">HWS</span><span class="op">=</span><span class="st">'Hello $USER'</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HWS</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Quoting generally ensures whitespace is maintained as part of a string, which is sometimes very important. Single-quoting prevents variable interpolation (i.e.&nbsp;it treats strings literally) while double-quoting allows it. Tripping over quoting is a common source of errors, even with intermediate level bash users.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># using double quotes</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">HWD</span><span class="op">=</span><span class="st">"Hello </span><span class="va">$USER</span><span class="st">"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HWD</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># using single quotes</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="va">HWS</span><span class="op">=</span><span class="st">'Hello $USER'</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$HWS</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Quoting generally ensures whitespace is maintained as part of a string, which is sometimes very important. Single-quoting prevents variable interpolation (i.e.&nbsp;it treats strings literally) while double-quoting allows it. Tripping over quoting and whitespace is a common source of errors, even with intermediate level bash users.</p>
 </section>
 <section id="the-path-variable" class="level3" data-number="4.2.4">
 <h3 data-number="4.2.4" class="anchored" data-anchor-id="the-path-variable"><span class="header-section-number">4.2.4</span> The PATH variable</h3>
 <p>Another key variable you can see in the list produced by <code>env</code> is <code>PATH</code>. It’s a critical variable for configuration. It tells the shell where to look for programs you try to execute. Try</p>
-<pre><code>echo $PATH</code></pre>
-<p>You’ll see a colon-separated list of paths. Every program you successfully execute will be found in one of those paths. You can add to this list if you want bash to look somewhere new in addition like this:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$PATH</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You’ll see a colon-separated list of paths. Every program you successfully execute (without specifying an explicit path) will be found in one of those paths. You can add to this list if you want bash to look somewhere new in addition like this:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:/path/to/my/new/favorite/software</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That is also generally how you can recursively modify variables, should you need to.</p>
 <p>When executing programs it can be really useful to know <em>which</em> copy of a program is being executed, as sometimes there will be multiple versions installed on a given system (this is definitely true of Xanadu). You can use the command <code>which</code> for this:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> ls</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> grep</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> cat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You’ll note that each of these is found in a path found in your PATH variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Xanadu.</p>
+<p>You’ll note that each of these is found in a path found in your <code>PATH</code> variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Xanadu.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you accidentally overwrite your <code>PATH</code> variable, you will suddenly find yourself unable to do anything useful at all, as bash will no longer know where to look for even simple commands like <code>ls</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> PATH=</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">-bash:</span> ls: No such file or directory</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The easiest way to fix this is to just close your bash session and open a new one.</p>
+</div>
+</div>
 </section>
 <section id="generalizing-code" class="level3" data-number="4.2.5">
 <h3 data-number="4.2.5" class="anchored" data-anchor-id="generalizing-code"><span class="header-section-number">4.2.5</span> Generalizing code</h3>
 <p>So far we have been executing commands by explicitly referring to files, programs and their parameters. For example:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span> darwin1859.txt <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this case, we have specified programs by name, several options, a regular expression, and an input file. We could easily make this line of code more general by replacing important parts of it with variables:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="va">REGEX</span><span class="op">=</span><span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">INFILE</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"</span><span class="va">${REGEX}</span><span class="st">"</span> <span class="va">$INFILE</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="va">REGEX</span><span class="op">=</span><span class="st">"(?&lt;=[Ss]pecies )[A-Za-z]+"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="va">INFILE</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"</span><span class="va">${REGEX}</span><span class="st">"</span> <span class="va">$INFILE</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Note that quoting the regular expression variable: <code>"${REGEX}"</code> is necessary in this case. If you try without the quotes, some of those special characters will trip bash up, and by extension cause grep to fail.</p>
 <p>Using variables like this can be especially useful in two cases:</p>
 <ol type="1">
 <li>When paths get extremely long and cumbersome and/or file names are not descriptive. Long paths can make code difficult to read. Obscuring them with descriptive variables allows you (and anyone else) to quickly see HOW you ran a program, instead of having to scan over multiple instances of <code>/the/very/long/and/convoluted/path/to/my/precious/input/data.txt</code>.</li>
-<li>When code must be repeated many times on many different input files. Copying, pasting and editing the same line over and over again is extremely inadvisable as even the most conscientious people will be prone to mistakes. If we get used to using variables like this, we gain the flexibility to use loops and other means of parallelization that make our code less error prone, faster, and prefigure the way workflow languages we will explore in the next semester require us to think about and write code.</li>
+<li>When code must be repeated many times on many different input files. Copying, pasting and editing the same line over and over again is a really bad idea. Even the most conscientious people are prone to mistakes when doing dull repetitive tasks. If we get used to using variables like this, we gain the flexibility to use loops and other means of parallelization that make our code less error prone, faster, and prefigure the way workflow languages we will explore in the next semester require us to think about and write code.</li>
 </ol>
 </section>
 </section>
@@ -555,103 +576,123 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>One common way to approach this is with a <strong>loop</strong>. A loop generally has the following very general syntax:</p>
 <pre><code>loop condition 
   { command1
-  command2
-  command3 }</code></pre>
+    command2
+    command3 }</code></pre>
 <p>In BASH we typically use <code>for</code> and <code>while</code> loops. A <code>for</code> loop iterates over a list of fixed length executing the same code each time. A <code>while</code> loop executes code repeatedly until some condition is no longer met.</p>
 <section id="for-loops." class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="for-loops."><span class="header-section-number">4.3.1</span> <code>for</code> loops.</h3>
 <p>With <code>for</code> loops we can iterate over any sort of list. Let’s extract mentions of classic Darwin terms “species”, “forms”, and “varieties” from the Origin:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> WORD <span class="kw">in</span> species forms varieties</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grep</span> <span class="st">"</span><span class="va">$WORD</span><span class="st">"</span> darwin1859.txt <span class="op">&gt;</span><span class="st">"</span><span class="va">${WORD}</span><span class="st">"</span>_mentions.txt</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> WORD <span class="kw">in</span> species forms varieties</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grep</span> <span class="st">"</span><span class="va">$WORD</span><span class="st">"</span> darwin1859.txt <span class="op">&gt;</span><span class="st">"</span><span class="va">${WORD}</span><span class="st">"</span>_mentions.txt</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this syntax we tell bash we’re going to use the variable <code>WORD</code>, and for each iteration of the loop, populate it with an element of the list “species forms varieties”. The elements are separated by whitespace. The code to be executed for each iteration of the list is sandwiched between the keywords <code>do</code> and <code>done</code>. We redirect the output to three separate files named “species_mentions.txt”, etc.</p>
 <p>We can specify the list of elements to be iterated over any number of ways. We can use a range of numbers or letters with a shell expansion:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> NUM <span class="kw">in</span> <span class="dt">{</span><span class="dv">1</span><span class="dt">..</span><span class="dv">10</span><span class="dt">}</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="va">$NUM</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We can use a glob to iterate over files:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="pp">*</span>mentions.txt</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="st">"</span><span class="va">$FILE</span><span class="st">"</span></span>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> NUM <span class="kw">in</span> <span class="dt">{</span><span class="dv">1</span><span class="dt">..</span><span class="dv">10</span><span class="dt">}</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="va">$NUM</span></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can use a glob to iterate over files (assuming you ran the first loop):</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="pp">*</span>mentions.txt</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="st">"</span><span class="va">$FILE</span><span class="st">"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="a-digression-about-bash-arrays" class="level4" data-number="4.3.1.1">
 <h4 data-number="4.3.1.1" class="anchored" data-anchor-id="a-digression-about-bash-arrays"><span class="header-section-number">4.3.1.1</span> A digression about BASH arrays</h4>
 <p>Sometimes we may wish to construct a list outside of the context of the loop itself. It can be useful to store that list in a special type of variable called a <strong>bash array</strong> (or just “array”, but we will deal with other types of arrays later, so we’ll try to be specific). bash arrays are lists that require you to use a special syntax to create and access their elements.</p>
 <p>bash arrays can be created simply with parentheses like this:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">(</span>species forms varieties<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">(</span>species forms varieties<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Or using <code>ls</code> or <code>find</code>, or <code>*</code> to grab files:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">(</span><span class="pp">*</span>mentions.txt<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">(</span><span class="pp">*</span>mentions.txt<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this last case the syntax <code>$(command)</code> is a command substitution. It means run the command and insert the output in place (in this case, inside the <code>()</code> used to define the array). Also note that the array elements will be parsed based on whitespace, so if file names contain whitespace (you should <em>avoid</em> this always) this approach will break.</p>
 <p>bash arrays are zero-indexed, meaning the first element is element <code>0</code>. We can access elements with this syntax:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${DARWIN</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${DARWIN</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To write out ALL the elements:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${DARWIN</span><span class="op">[@]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${DARWIN</span><span class="op">[@]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To get the length of the array:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${</span><span class="op">#</span><span class="va">DARWIN</span><span class="op">[@]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${</span><span class="op">#</span><span class="va">DARWIN</span><span class="op">[@]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To use this in a loop we can either provide the whole array like this:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="va">${DARWIN</span><span class="op">[@]</span><span class="va">}</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"FIRST TEN LINES OF </span><span class="va">$FILE</span><span class="st"> -------------------"</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="va">$FILE</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Or we can iterate over the indexes like this:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> NUM <span class="kw">in</span> <span class="dt">{</span><span class="dv">0</span><span class="dt">..</span><span class="dv">2</span><span class="dt">}</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="va">${DARWIN</span><span class="op">[@]</span><span class="va">}</span></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"FIRST TEN LINES OF </span><span class="va">${DARWIN</span><span class="op">[</span><span class="va">$NUM</span><span class="op">]</span><span class="va">}</span><span class="st"> -------------------"</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>  <span class="va">${DARWIN</span><span class="op">[</span><span class="va">$NUM</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"FIRST TEN LINES OF </span><span class="va">$FILE</span><span class="st"> -------------------"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="va">$FILE</span></span>
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or we can iterate over the indexes like this:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> NUM <span class="kw">in</span> <span class="dt">{</span><span class="dv">0</span><span class="dt">..</span><span class="dv">2</span><span class="dt">}</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"FIRST TEN LINES OF </span><span class="va">${DARWIN</span><span class="op">[</span><span class="va">$NUM</span><span class="op">]</span><span class="va">}</span><span class="st"> -------------------"</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>  <span class="va">${DARWIN</span><span class="op">[</span><span class="va">$NUM</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="while-loops." class="level3" data-number="4.3.2">
 <h3 data-number="4.3.2" class="anchored" data-anchor-id="while-loops."><span class="header-section-number">4.3.2</span> <code>while</code> loops.</h3>
 <p><code>while</code> loops differ from <code>for</code> loops in that they evaluate repeatedly until some condition is no longer satisfied. You can use:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="va">COUNTER</span><span class="op">=</span>1</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">[</span> <span class="va">$COUNTER</span> <span class="ot">-le</span> 5 <span class="bu">]</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Count: </span><span class="va">$COUNTER</span><span class="st">"</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">((</span><span class="va">COUNTER</span><span class="op">++</span><span class="kw">))</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="va">COUNTER</span><span class="op">=</span>1</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">[</span> <span class="va">$COUNTER</span> <span class="ot">-le</span> 5 <span class="bu">]</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Count: </span><span class="va">$COUNTER</span><span class="st">"</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">((</span><span class="va">COUNTER</span><span class="op">++</span><span class="kw">))</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Where <code>[ $COUNTER -le 5 ]</code> is a conditional construct indicating <code>COUNTER</code> must be less than 5. If this evaluates to false, the loop ends. <a href="https://www.gnu.org/software/bash/manual/html_node/Conditional-Constructs.html">Conditional constructs</a> are a general way to manage when code is executed, and we will cover them more later. <code>((COUNTER++))</code> adds one to <code>COUNTER</code> every time the loop executes.</p>
 <p>You can also use <code>while</code> to iterate over lines in a file:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="va">FILE</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="va">COUNTER</span><span class="op">=</span>1</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="va">IFS</span><span class="op">=</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span> <span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Processing line </span><span class="va">$COUNTER</span><span class="st">: </span><span class="va">$line</span><span class="st">"</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">((</span><span class="va">COUNTER</span><span class="op">++</span><span class="kw">))</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> <span class="va">$FILE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>In this case we’re using <code>&lt; $FILE</code> to direct the standard input to <code>FILE</code> and while will read from it. When <code>FILE</code> runs out of lines, the loop will break.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="va">FILE</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="va">COUNTER</span><span class="op">=</span>1</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="va">IFS</span><span class="op">=</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span> <span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Processing line </span><span class="va">$COUNTER</span><span class="st">: </span><span class="va">$line</span><span class="st">"</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">((</span><span class="va">COUNTER</span><span class="op">++</span><span class="kw">))</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> <span class="va">$FILE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this case we’re using <code>&lt; $FILE</code> to pass the contents of <code>FILE</code> to the standard input for the <code>while</code> loop.</p>
+<p><code>line</code> is the variable populated for each iteration.</p>
+<p><code>IFS=</code> is variable read by <code>read</code> that defines the input field separator. Because this is empty, the entire line is treated as a single string.</p>
+<p><code>read -r</code> reads a line in and with <code>-r</code> treats all characters as literal (e.g.&nbsp;<code>\t</code> does not mean <code>tab</code>).</p>
+<p>When <code>FILE</code> runs out of lines, the loop will break.</p>
 </section>
 </section>
 <section id="editing-files" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="editing-files"><span class="header-section-number">4.4</span> Editing Files</h2>
 <p>We’ve covered lots of basic bash features. We’re almost ready to start writing scripts. Now that you’ve been writing lots of commands in the terminal, and you recognize you’re connected to a remote computer cluster that your local file system doesn’t have access to, you’re probably starting to wonder, how do I actually write and save lots of code on the remote server?</p>
 <p>In this section we’ll deal with that issue and cover some tools you can use to write and edit code, both locally and remotely.</p>
-<section id="command-line-text-editors" class="level3" data-number="4.4.1">
-<h3 data-number="4.4.1" class="anchored" data-anchor-id="command-line-text-editors"><span class="header-section-number">4.4.1</span> Command-line text editors</h3>
-<p>The most straightforward approach to this is to use CLI text editors that are already available on Xanadu (and most Linux systems). Since you run them on Xanadu, they can directly create and access files. The most common ones are <code>nano</code>, <code>vim</code> and <code>emacs</code>. <code>vim</code> and <code>emacs</code> are very powerful editors. They are highly customizable and have large user communities. They have steep learning curves, however, and there are alternatives to CLI editors, so in this course we are going to focus on <code>nano</code>, which is simple to use and suitable for quick edits and copy-paste operations.</p>
+<section id="editors" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="editors"><span class="header-section-number">4.4.1</span> Editors</h3>
+<section id="command-line-text-editors" class="level4" data-number="4.4.1.1">
+<h4 data-number="4.4.1.1" class="anchored" data-anchor-id="command-line-text-editors"><span class="header-section-number">4.4.1.1</span> Command-line text editors</h4>
+<p>The most straightforward approach to this is to use CLI text editors that are already available on Xanadu (and most Linux systems). Since you run them on Xanadu, they can directly create and access files. The most common ones are <code>nano</code>, <code>vim</code> and <code>emacs</code>. <code>vim</code> and <code>emacs</code> are very powerful editors. They are highly customizable and have large user communities. They have steep learning curves, however, and there are accessible and powerful alternatives to CLI editors, so in this course we are only going to introduce <code>nano</code>. <code>nano</code> is simple to use and suitable for quick edits and copy-paste operations.</p>
 <p>If you simply type <code>nano</code> on the command line, it will open a new text document. You can immediately begin typing whatever you like. When you’re done, you can type <code>ctrl-x</code> and it will ask you if you want to save the file. If you do, type <code>y</code>, then when prompted, write a file name and hit <code>enter</code>. That’s it. If you want to edit an existing file, type <code>nano filename</code>. Save and exit the same way. <code>ctrl-c</code> cancels.</p>
-<p>You can navigate around with the arrows on your keyboard (and some keyboard shortcuts we’ll talk about in a video). That’s it.</p>
+<p>You can navigate around with the arrows on your keyboard (and some keyboard shortcuts covered in a video). That’s it. If you use <code>nano</code> a bit, you’ll get a feeling for the pretty big tradeoff <code>nano</code> makes between power and simplicity.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you’re determined to learn a CLI editor (not necessarily a bad idea!) <code>vim</code> and various extensions of it are probably more popular than <code>emacs</code> these days. <a href="https://vim-adventures.com/">VIM Adventures</a> is a game that can help you learn it.</p>
+</div>
+</div>
 </section>
-<section id="code-editors" class="level3" data-number="4.4.2">
-<h3 data-number="4.4.2" class="anchored" data-anchor-id="code-editors"><span class="header-section-number">4.4.2</span> Code editors</h3>
+<section id="gui-code-editors" class="level4" data-number="4.4.1.2">
+<h4 data-number="4.4.1.2" class="anchored" data-anchor-id="gui-code-editors"><span class="header-section-number">4.4.1.2</span> GUI code editors</h4>
 <p>Another approach suitable for users starting up is to write code using a locally installed, dedicated code editor such as <a href="https://www.sublimetext.com">Sublime Text</a>. There are others, but for this course I recommend you download and use Sublime for at least some cases. Unlike <code>nano</code>, it has lots of features and user-created plugins. It has <strong>syntax highlighting</strong>, which means if you select the language you are writing in from a dropdown menu in the bottom right corner, it will recognize syntactic features of the language and change the color of the text in ways that greatly help with editing.</p>
 <p>A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using <code>nano</code>, or use <code>scp</code>/<code>rsync</code> to upload the documents to Xanadu. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Xanadu, but we haven’t yet shown you the tools to do that, and we’ll introduce another, easier approach in a moment.</p>
 </section>
-<section id="integrated-development-environments." class="level3" data-number="4.4.3">
-<h3 data-number="4.4.3" class="anchored" data-anchor-id="integrated-development-environments."><span class="header-section-number">4.4.3</span> Integrated development environments.</h3>
-<p>IDEs are dedicated code editors with <em>lots</em> more features. <a href="https://code.visualstudio.com">Visual Studio Code</a> is another program we recommend you download and install locally. It also has syntax highlighting, but you’ll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. Xanadu’s operating system is a bit old (it will soon be replaced by a new cluster, Mantis), so you will need to install an older version of VS Code, <code>1.85</code>, which is available <a href="https://code.visualstudio.com/updates/v1_85">here</a>.</p>
+<section id="integrated-development-environments." class="level4" data-number="4.4.1.3">
+<h4 data-number="4.4.1.3" class="anchored" data-anchor-id="integrated-development-environments."><span class="header-section-number">4.4.1.3</span> Integrated development environments.</h4>
+<p>IDEs are dedicated code editors with <em>lots</em> more features. <a href="https://code.visualstudio.com">Visual Studio Code</a> is another program we recommend you download and install locally. It also has syntax highlighting, but you’ll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. There is a plugin that will let you connect VS Code to Xanadu and open and edit files remotely (discussed below). Xanadu’s operating system is a bit old (it will soon be replaced by a new cluster, Mantis), so for remote editing you will need to install an older version of VS Code, <code>1.85</code>, which is available <a href="https://code.visualstudio.com/updates/v1_85">here</a>.</p>
 </section>
-<section id="conveniently-accessing-files." class="level3" data-number="4.4.4">
-<h3 data-number="4.4.4" class="anchored" data-anchor-id="conveniently-accessing-files."><span class="header-section-number">4.4.4</span> Conveniently accessing files.</h3>
+</section>
+<section id="conveniently-accessing-files." class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="conveniently-accessing-files."><span class="header-section-number">4.4.2</span> Conveniently accessing files.</h3>
 <p>Ok, so aside from using <code>nano</code> (or learning to be a <code>vim</code> power user), how can you conveniently access and edit files on Xanadu? There are two relatively straightforward ways:</p>
 <ol type="1">
 <li>Visual Studio Code has an extension <a href="https://code.visualstudio.com/docs/remote/ssh-tutorial">Remote - SSH</a>. This is <strong>highly</strong> recommended. You can connect VS Code to Xanadu directly via SSH. You can open windows focusing on specific directories, visualize the directory structure, and create and edit files directly on Xanadu. You can also open a Xanadu terminal window so that you can test and execute code, all in VS Code.</li>
@@ -666,18 +707,17 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Please don’t use language-specific code extensions (python, R, etc) to run code on Xanadu from within VS Code. We’ll cover this in the next chapter, but VS Code connects to a <strong>login</strong> node, which has few resources and is shared by many users. To run code on Xanadu, it must be submitted through the batch scheduler, <code>SLURM</code>. A VS Code extension that runs code for you can only run it on the login node, which will cause problems for everyone.</p>
+<p>Please don’t use language-specific code extensions (python, R, etc) to run code on Xanadu from within VS Code. We’ll cover this in the next chapter, but VS Code connects to a <strong>login</strong> node, which has few resources and is shared by many users. To run code on Xanadu, it must be submitted through the batch scheduler, <code>SLURM</code>. A VS Code extension that runs code for you can only run it on the login node, which will cause problems for everyone (something we will discuss in more detail in chapter 5).</p>
 </div>
 </div>
 <ol start="2" type="1">
-<li>You can mount the Xanadu file system on your local computer. You can get your operating system to “see” Xanadu’s filesystem, and access files as if they were local. You can then edit them using Sublime, VS Code, or anything else. To do this, you <strong>must</strong> be connected to the CAM VPN (<a href="https://health.uconn.edu/high-performance-computing/tutorials/cam-vpn/">instructions</a>).<br>
-</li>
+<li>You can mount the Xanadu file system on your local computer. You can get your operating system to “see” Xanadu’s filesystem, and access files as if they were local. You can then edit them using Sublime, VS Code, or anything else. To do this, you <strong>must</strong> be connected to the CAM VPN (<a href="https://health.uconn.edu/high-performance-computing/tutorials/cam-vpn/">instructions</a>).</li>
 </ol>
 <ul>
-<li>From a mac, you can select from your top dropdown menu <code>Go:Connect to Server</code> and enter <code>smb://cfs09.cam.uchc.edu/home/FCAM/&lt;username&gt;</code>. When prompted, enter your CAM credentials (not your netID/password).<br>
-</li>
+<li>From a mac, you can select from your top dropdown menu <code>Go:Connect to Server</code> and enter <code>smb://cfs09.cam.uchc.edu/home/FCAM/&lt;username&gt;</code>.</li>
 <li>From Windows, you can map a network filesystem using <a href="https://health.uconn.edu/high-performance-computing/tutorials/mapping-a-network-resource/">these directions</a> and the address formatted like this: <code>\\cfs09.cam.uchc.edu\home\FCAM\&lt;username&gt;</code></li>
 </ul>
+<p>When prompted, enter your CAM credentials (not your netID/password). For paths on <code>/core</code>, replace <code>cfs09</code> with <code>cfs12</code>. <code>df -h</code> will tell you which file systems various important system directories are found on.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -695,97 +735,110 @@ Warning
 </section>
 <section id="scripts" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="scripts"><span class="header-section-number">4.5</span> Scripts</h2>
-<p>Ok, now we’ve got all the pieces, we can start writing longer bits of code into <strong>scripts</strong> so that we can run them as batches instead of interactively, line-by-line. Scripts can be as simple as a series of commands that you <em>could</em> execute interactively, or as complicated as computer programs that run entire analyses for you.</p>
-<p>In this course, we’ll aim for the simpler end of the spectrum. We want to write code in chunks that we can pass off to Xanadu’s job scheduler and that will serve as the most fundamental documentation of the analyses we do. While keeping notes on what you do (or try) is important, the code itself is the ultimate documentation of your analysis, so it should be complete and well organized into scripts.</p>
+<p>Ok, now we’ve got all the pieces, we can start writing longer bits of code into <strong>scripts</strong> so that we can run them as batches instead of interactively, line-by-line. Scripts can be as simple as a series of commands that you <em>could</em> execute interactively, or as complicated as computer programs that run entire analyses that take hours, days or weeks.</p>
+<p>In this course, we’ll aim for the simpler end of the spectrum. We want to write code in chunks that we can pass off to Xanadu’s job scheduler and that will serve as the most fundamental documentation of the analyses we do. While keeping notes on what you do (or try) is important, the code itself is the ultimate documentation of your final analysis, so it should be complete and well organized into scripts.</p>
 <section id="the-shebang" class="level3" data-number="4.5.1">
 <h3 data-number="4.5.1" class="anchored" data-anchor-id="the-shebang"><span class="header-section-number">4.5.1</span> The shebang</h3>
-<p>A script can be written in any language, so typically the way we start one off in a Linux environment is to tell bash what interpreter to use. Right now we’re writing bash code (rather than R, python, perl or something else), so we need to tell bash that. To do that, the first line of the script will always be what’s referred to as a <strong>shebang</strong>, or <code>#!</code> followed by the interpreter we wish to use, in this case <code>/bin/bash</code> so:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A script can be written in any language, so typically the way we start one off in a Linux environment is to tell Linux what interpreter to use. Right now we’re writing bash code (rather than R, python, perl or something else), so we need to tell Linux that. To do that, the first line of the script will always be what’s referred to as a <strong>shebang</strong>, or <code>#!</code> followed by the interpreter we wish to use, in this case <code>/bin/bash</code> so:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If we were writing python code we might write:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/env python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This would tell the shell to use whichever python interpreter was found by searching our <code>PATH</code> variable.</p>
-<p>After the shebang line, we can start writing code.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/env python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This would tell the shell to use whichever python interpreter was found by searching our <code>PATH</code> variable. After the shebang line, we can start writing code.</p>
 </section>
 <section id="comment-lines" class="level3" data-number="4.5.2">
 <h3 data-number="4.5.2" class="anchored" data-anchor-id="comment-lines"><span class="header-section-number">4.5.2</span> Comment lines</h3>
 <p>Despite our best efforts, code can sometimes be complicated and confusing to read. Because of this, it’s really important to document your code with <strong>comments</strong>. In shell scripting, you can include lines prefixed with <code>#</code>, that will be ignored by the interpreter. You can and should write notes on these lines explaining what the code does.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Create this script with the title <code>commonWords.sh</code> on Xanadu and change the permission so that you can execute it.</p>
 </section>
 <section id="executing-scripts" class="level3" data-number="4.5.3">
 <h3 data-number="4.5.3" class="anchored" data-anchor-id="executing-scripts"><span class="header-section-number">4.5.3</span> Executing scripts</h3>
 <p>There are a few ways to execute scripts.</p>
 <ol type="1">
-<li><code>source commonWords.sh</code> This method <em>ignores</em> the shebang (it begins with <code>#</code> after all) and executes all the code in the current shell session as if you had typed it on the command line. If you created any variables in the current environment they will be available in the script.</li>
-<li><code>bash commonWords.sh</code> This method also ignores the shebang and explicitly invokes bash, but it creates a <em>subshell</em>. The execution context is mostly isolated from the environment you submitted the script, and environment variables you create are not available unless you export them.</li>
-<li><code>./commonWords.sh</code> This will execute the script, and looks for the shebang to see which intepreter should be used. It also creates an isolated execution context.</li>
-<li>Passing the script to a job scheduler (in our case SLURM). This will be covered in then next chapter.</li>
+<li><code>source commonWords.sh</code> This method <em>ignores</em> the shebang (it begins with <code>#</code> after all) and executes all the code in the current shell session as if you had typed it on the command line. If you created any variables in the current environment <em>they will be available in the script</em>.</li>
+<li><code>bash commonWords.sh</code> This method also ignores the shebang and explicitly invokes bash, but it creates a <em>subshell</em>. The execution context is mostly isolated from the environment you submitted the script from, and environment variables you created there are not available unless you <code>export</code> them (see below).</li>
+<li><code>./commonWords.sh</code> This will execute the script, and Linux looks for the shebang to see which intepreter should be used. It also creates an isolated execution context. For options 1 and 2, the script does not need to have execute permission. To run it this way, execute permission is required.</li>
+<li>Passing the script to a job scheduler (in our case SLURM). This will be covered in the next chapter.</li>
 </ol>
 <p>What does it mean to have an isolated environment? Modify the <code>commonWords.sh</code> script so that the variable definition is <em>commented out</em> and thus ignored by the interpreter:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ORIGIN=darwin1859.txt</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ORIGIN=darwin1859.txt</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you try to execute it, you will find that it hangs indefinitely because the ORIGIN variable is empty.</p>
 <p>If you try to define the ORIGIN variable and then run the script it will work with the <code>source</code> method:</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>But for it to work with the other two methods, you need to <code>export</code> the variable:</p>
 <pre><code>export ORIGIN=darwin1859.txt
 ./commonWords.sh</code></pre>
-<p>Exporting the variable makes it so that it will be inherited by any processes spawned by the current shell.</p>
-<p>Another big difference between <code>source</code> and the other two methods is that any variables created by the script will be available in the current shell session after the script has completed.</p>
+<p>Exporting the variable causes it to be “inherited” by any processes spawned by the current shell.</p>
+<p>Another big difference between <code>source</code> and the other two methods is that with <code>source</code>, any variables created <em>within</em> the script will be available in the current shell session after the script has completed.</p>
 <section id="command-line-arguments" class="level4" data-number="4.5.3.1">
 <h4 data-number="4.5.3.1" class="anchored" data-anchor-id="command-line-arguments"><span class="header-section-number">4.5.3.1</span> Command-line arguments</h4>
 <p>Note that we can generalize our script by writing it so that it expects command-line input from the user:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span><span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="va">REGEX</span><span class="op">=</span><span class="st">"</span><span class="va">$2</span><span class="st">"</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"</span><span class="va">$REGEX</span><span class="st">"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span><span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="va">REGEX</span><span class="op">=</span><span class="st">"</span><span class="va">$2</span><span class="st">"</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"</span><span class="va">$REGEX</span><span class="st">"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Save this script to the file <code>test.sh</code> and make it executable. We can now run it like this:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./test.sh</span> darwin1859.txt <span class="st">"\b[A-Za-z]{4,}\b"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./test.sh</span> darwin1859.txt <span class="st">"\b[A-Za-z]{4,}\b"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The variables <code>$1</code> and <code>$2</code> are automatically parsed as whitespace separated arguments provided on the command line when executing the script. There are more complex ways to provide and parse command-line arguments, but we won’t cover them here.</p>
 </section>
 </section>
 <section id="errors-and-exit-codes" class="level3" data-number="4.5.4">
 <h3 data-number="4.5.4" class="anchored" data-anchor-id="errors-and-exit-codes"><span class="header-section-number">4.5.4</span> Errors and exit codes</h3>
 <p>Code can fail for many reasons. You will inevitably make mistakes in command line usage for some program, refer to paths that don’t exist, or use incorrect syntax, and an error will result. Computer clusters are complex, and they also inevitably have problems. Sometimes a compute node will crash. Sometimes a user will accidentally get around whatever guardrails the system administrators have in place and muck up some important settings. Troubleshooting these errors can be a major challenge for beginners.</p>
+<section id="common-errors" class="level4" data-number="4.5.4.1">
+<h4 data-number="4.5.4.1" class="anchored" data-anchor-id="common-errors"><span class="header-section-number">4.5.4.1</span> Common errors</h4>
 <p>Here are a few common errors you are likely to encounter:</p>
 <p><strong>“No such file or directory”</strong></p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /path/does/not/exist.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Leads to <code>ls: cannot access /path/does/not/exist.txt: No such file or directory</code>.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /path/does/not/exist.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Leads to <code>cat: cannot access /path/does/not/exist.txt: No such file or directory</code>.</p>
 <p>Check your path/filename.</p>
 <p><strong>“Permission denied”</strong></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"I'm going to put a file in the root directory of the cluster!"</span> <span class="op">&gt;</span>/file.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"I'm going to put a file in the root directory of the cluster!"</span> <span class="op">&gt;</span>/file.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Leads to <code>bash: /file.txt: Permission denied</code></p>
-<p>Check that your path is correct and that you actually <em>should</em> have permission. If you own or share the file or the directory, fix the permissions. If someone else owns it, ask them to fix the permissions.</p>
+<p>Check that your path is correct and the permissions for the file or the directory. Think about whether you actually <em>should</em> have permission. If you own or share the file or the directory, fix the permissions. If someone else owns it, ask them to fix the permissions. <strong>Note</strong>: You are not permitted to open permissions on your home directory so other users can access it. It’s a security risk.</p>
 <p><strong>bad quoting</strong></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> endless forms darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> endless forms darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Leads to search results for “endless” but also <code>grep: forms: No such file or directory</code>. This is a quoting issue. <code>forms</code> is treated as another file to be searched because of the whitespace. It should be <code>grep "endless forms" darwin1859.txt</code></p>
 <p><strong>“Command not found”</strong></p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gep</span> <span class="st">"endless forms"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gep</span> <span class="st">"endless forms"</span> darwin1859.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Leads to <code>bash: gep: command not found</code>. Classic typo. Command not found can also be a sign of incorrect quoting, or the dreaded incorrect line breaks that arise from editing code in non-code-specific editors.</p>
-<p>When a command is evaluated, bash produces an <strong>exit code</strong> and stores it in the special variable <code>$?</code>. If the command executes without error, the exit code will be 0. If there is an error it will be greater than 0. With scripts set up as we have above, the exit code will refer to the <em>last command</em> in the script. So if there are two commands in a script, and the second one completes successfully, but the first fails, the exit code will still be 0. By default the script wont just quit when it hits an error. There are <a href="https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425">settings</a> that can change the behavior of bash when it encounters errors, but there is <a href="https://www.reddit.com/r/bash/comments/mivbcm/the_set_o_pipefail_is_not_a_best_practice/">some</a> controversy about whether you should use them <a href="https://mywiki.wooledge.org/BashPitfalls#pipefail">or not</a>.</p>
-<p>“There is some controversy” is often the case with bash scripting. BASH is a wonky language, and it takes <em>years</em> to truly become an expert in it. When learning to do data analysis, we need to do our best, be vigilant about errors, and be open to learning new ways of doing things when we discover problems with our established habits. Pages like <a href="https://mywiki.wooledge.org/BashPitfalls">this</a> are great for intermediate bash users to consider, but we can’t wait to analyze our data until we’ve assimilated all these best practices.</p>
+</section>
+<section id="exit-codes" class="level4" data-number="4.5.4.2">
+<h4 data-number="4.5.4.2" class="anchored" data-anchor-id="exit-codes"><span class="header-section-number">4.5.4.2</span> Exit codes</h4>
+<p>When a command is evaluated, bash produces an <strong>exit code</strong> and stores it in the special variable <code>$?</code>. If the command executes without error, the exit code will be 0. If there is an error it will be greater than 0.</p>
+<p>Check the exit codes for these two examples:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this should work</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"endless forms"</span> darwin1859.txt</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this should yield an error</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gep</span> <span class="st">"endless forms"</span> darwin1859.txt</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>With scripts set up as we have above, the exit code will refer to the <em>last command</em> in the script. So if there are two commands in a script, and the second one completes successfully, but the first fails, the exit code will still be 0. By default the script wont just quit when it hits an error. There are <a href="https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425">settings</a> that can change the behavior of bash when it encounters errors, but there is <a href="https://www.reddit.com/r/bash/comments/mivbcm/the_set_o_pipefail_is_not_a_best_practice/">some controversy</a> about whether you should use them <a href="https://mywiki.wooledge.org/BashPitfalls#pipefail">or not</a>.</p>
+<p>“There is some controversy” is often the case with bash scripting. BASH is a wonky language, a lot of smart opinionated people with different aims use it. It takes <em>years</em> to truly become an expert in it. When learning to do data analysis, we need to do our best, be vigilant about errors, and be open to learning new ways of doing things when we discover problems with our established habits. Pages like <a href="https://mywiki.wooledge.org/BashPitfalls">this</a> are great for intermediate bash users to consider, but “best practices” are not necessarily universal.</p>
+</section>
 </section>
 </section>
 <section id="exercises" class="level2" data-number="4.6">
