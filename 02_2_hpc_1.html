@@ -447,18 +447,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="high-performance-computing-review" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="high-performance-computing-review"><span class="header-section-number">5.1</span> High performance computing review</h2>
-<p>Now that we’ve covered connecting to a remote server, basic command-line interface usage, and the fundamentals of writing a script, we’re ready to explore how to actually use the Xanadu computer cluster. You should be familiar with this already from ISG5301, but Xanadu is not a single computer. It is a large number of computers networked together, most of which are far more powerful than a standard consumer-grade laptop or desktop. These individual computers are often referred to as <strong>nodes</strong>. Each of the nodes is connected to a <strong>network-attached file system</strong> (NFS) which stores user data. Because all the nodes are connected to this file system, no matter which of the nodes you may be working on at any given moment, you will have access to your data.</p>
+<p>Now that we’ve covered connecting to a remote server, basic command-line interface usage, and the fundamentals of writing a script, we’re ready to explore how to actually use the Xanadu computer cluster. You should be familiar with this already from ISG5301, but Xanadu is not a single computer. It is a large number of computers networked together, most of which are far more powerful than a standard consumer-grade laptop or desktop. These individual computers are often referred to as <strong>nodes</strong>. Each of the nodes is connected to several <strong>network-attached file systems</strong> (NFS) which store user data. Because all the nodes are connected to these file systems, no matter which of the nodes you may be working on at any given moment, you will have access to your data.</p>
 <p>There are three main categories of nodes.</p>
 <ol type="1">
 <li><strong>Compute nodes</strong>: These are the workhorses of the cluster. They typically have many CPUs (24-96) and memory ranging from 256G to 2TB (even a good consumer laptop won’t usually have more than 8 CPUs 16G of memory).</li>
-<li><strong>Login nodes</strong>: These are much smaller computers, often with only 2 CPUs andn 8G of memory. They may not even be physical machines, but virtual ones. They are meant to serve as portals to more powerful resources. When users connect to Xanandu, they are assigned to one of several login nodes.</li>
-<li><strong>The head node</strong>: A head node is typically used only by system administrators to manage the system. It probably runs the workload manager.</li>
+<li><strong>Login nodes</strong>: These are much smaller computers, often with only 2 CPUs and 8G of memory. They may not even be physical machines, but virtual ones. They are meant to serve as portals to more powerful resources. When users connect to Xanandu, they are assigned to one of several login nodes.</li>
+<li><strong>The head node</strong>: A head node is typically used only by system administrators to manage the system. It is usually the place where key workload manager software is running.</li>
 </ol>
-<p>Thus far, when we have connected to Xanadu we have connected to a <strong>login</strong> node. Because login nodes have few resources, which are shared among many users, <strong>you should not use them for analysis</strong>. The kind of light work we have done (navigating the file system, inspecting files) is suitable for the login node, but if you ever run the kind of command that has you thinking, “I’ll just check social media for for a moment while this runs” then you have <strong>far exceeded</strong> what you should be doing on a login node.</p>
+<p>Thus far, when we have connected to Xanadu we have connected to a <strong>login node</strong>. Because login nodes have few resources, which are shared among many users, <strong>you should not use them for analysis</strong>. The kind of light work we have done (navigating the file system, inspecting files) is suitable for a login node, but if you ever run the kind of command that has you thinking, “I’ll just check social media for for a moment while this runs” then you have exceeded what you should be doing on a login node. For that kind of work, you should use a <strong>compute node</strong></p>
 </section>
 <section id="slurm" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="slurm"><span class="header-section-number">5.2</span> SLURM</h2>
-<p>In order to request suitable resources for data analysis, we need to appeal to software that we will variously refer to as the <strong>workload manager</strong> or <strong>job scheduler</strong>. On Xanadu, we use the software <a href="https://slurm.schedmd.com/overview.html"><code>SLURM</code></a>. It is very commonly used on HPCs, but there others such as <a href="https://en.wikipedia.org/wiki/Portable_Batch_System"><code>PBS</code></a> and <a href="https://en.wikipedia.org/wiki/IBM_Spectrum_LSF"><code>LSF</code></a>. From a user perspective, these systems have many features in common, and in fact, Xanadu is set up to interpret <code>PBS</code> commands if necessary, though this is not recommended.</p>
+<p>Computer clusters like Xanadu have many users. To prevent conflicts they use software that we will variously refer to as a <strong>workload manager</strong> or <strong>job scheduler</strong> to control access to compute resources. On Xanadu, we use the software <a href="https://slurm.schedmd.com/overview.html"><code>SLURM</code></a>. It is one of the most commonly used on HPCs, but there others such as <a href="https://en.wikipedia.org/wiki/Portable_Batch_System"><code>PBS</code></a> and <a href="https://en.wikipedia.org/wiki/IBM_Spectrum_LSF"><code>LSF</code></a>. From a user perspective, these systems have many features in common, and in fact, Xanadu is set up to interpret <code>PBS</code> commands if necessary, though using them is not recommended.</p>
 <p>In this chapter we will cover how to use <code>SLURM</code> to ask what resources are available, request resources to do work, monitor the status of running jobs, and evaluate jobs when they have completed.</p>
 <section id="the-general-approach" class="level3" data-number="5.2.1">
 <h3 data-number="5.2.1" class="anchored" data-anchor-id="the-general-approach"><span class="header-section-number">5.2.1</span> The general approach</h3>
@@ -467,10 +467,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Decide what resources are needed to do the work.<br>
 </li>
 <li>Check to see whether the resources are available (whether they exist all, or are currently busy).</li>
-<li>Submit the work with a resource request to the job scheduler (or simply request resources in the case of interactive work).</li>
-<li>Monitor job progress until completion or failure (or if interactive work, do the work).</li>
+<li>Submit the work with a resource request to the job scheduler (or simply request resources in the case of interactive work), which will start the work immediately if required resources are available, or put it in a queue if they are occupied.</li>
+<li>Periodically monitor job progress until completion or failure (or if interactive work, do the work).</li>
 <li>Evaluate the work.</li>
-<li>(Possibly) Go back to (1) for the next step of your analysis.</li>
+<li>(Possibly) Go back to (1) to redo your failed analysis, or for the next step of your analysis.</li>
 </ol>
 <p>We’ll cover each of these below.</p>
 </section>
@@ -506,8 +506,10 @@ gpu           up   infinite      5    mix xanadu-[01,03-04,07-08]
 gpu           up   infinite      1  alloc xanadu-02
 gpu           up   infinite      3   idle xanadu-[06,84-85]
 crbm          up   infinite      2   idle xanadu-[55-56]</code></pre>
-<p>Nodes on clusters are sometimes, though not always divided into <strong>partitions</strong>. If they are, you must decide which partition you want to submit to. Partitions need not be mutually exclusive, and may have different behaviors and limitations. Key partitions on Xanadu are <code>general</code> and <code>himem</code>. In the basic <code>sinfo</code> output, you see nodes in each partition, divided into various categories, and a listing of the nodes in each category: <strong>alloc</strong> = allocated, i.e.&nbsp;all resources on these nodes have been assigned; <strong>mix</strong> = some resources on these nodes have been assigned and some remain available; <strong>idle</strong> = these nodes are currently unused; <strong>drain</strong> = these nodes are not accepting new jobs (probably they will be rebooted when current jobs finish). Xanadu actually has many more nodes than this, at the time of writing many had been removed for maintenance.</p>
-<p>You will frequently want to see more detail than this. The following command will print information for each node, formatted according to the obscure syntax found in the <code>sinfo</code> man page.</p>
+<p>Nodes on clusters are sometimes, though not always divided into <strong>partitions</strong>, which are groups of hardware. The groups may correspond to nodes with similar characteristics, or they may belong to different user groups. They need not be mutually exclusive.</p>
+<p>You can see above there are 10 different partitions on Xanadu. The notation <code>xanadu-[01,03-04,07-08]</code> refers to five nodes. <code>xanadu-01</code>, for example, is in both the <code>gpu</code> and <code>general</code> partitions. When partitions are present, you must decide which partition you want to submit to. Partitions need not be mutually exclusive.</p>
+<p>Key partitions we will use in this course on Xanadu are <code>general</code> and <code>himem</code>. In the basic <code>sinfo</code> output, you see that some partitions are split across multiple entries according to the <code>STATE</code> field: <strong>alloc</strong> = allocated, i.e.&nbsp;all resources on these nodes have been assigned; <strong>mix</strong> = some resources on these nodes have been assigned and some remain available; <strong>idle</strong> = these nodes are currently unused; <strong>drain</strong> = these nodes are not accepting new jobs (probably they require maintenance and will be rebooted when currently assigned jobs finish).</p>
+<p>You will frequently want to see more detail than this. The following command will print information for each node individually, formatted according to the obscure syntax found in the <code>sinfo</code> man page.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sinfo</span> <span class="at">--format</span><span class="op">=</span><span class="st">"%10P %6t %15O %15C %15F %10m %10e %15n %30E %10u"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The first few lines of output:</p>
 <pre><code>PARTITION  STATE  CPU_LOAD        CPUS(A/I/O/T)   NODES(A/I/O/T)  MEMORY     FREE_MEM   HOSTNAMES       REASON                         USER      
@@ -523,22 +525,27 @@ general*   mix    0.06            8/32/0/40       1/0/0/1         257914     119
 general*   mix    0.08            8/32/0/40       1/0/0/1         192032     13437      xanadu-51       none                           Unknown   </code></pre>
 <p>Here you get lots of useful information. The column <code>CPUS(A/I/O/T)</code> tells you how many cpus are <strong>allocated</strong>/<strong>idle</strong>/<strong>other</strong>/<strong>total</strong> on each node. You can also see the amount of memory and free memory (in megabytes) on each node. This can give you a pretty fine-grained sense of what resources currently exist in terms of CPU and memory, and how many resources are <strong>idle</strong> on the cluster.</p>
 </section>
-<section id="squeue" class="level4" data-number="5.2.3.2">
-<h4 data-number="5.2.3.2" class="anchored" data-anchor-id="squeue"><span class="header-section-number">5.2.3.2</span> <code>squeue</code></h4>
-<p>The <code>squeue</code> command lets users see what jobs have been submitted to the job queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available, and currently running jobs. Depending on SLURM configuration, this command may show <em>only</em> jobs you have submitted, or it may show <em>every</em> job. At the time of writing, Xanadu was configured to show <em>every</em> job.</p>
-<p>Some example output from <code>squeue</code>:</p>
-<pre><code>  JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-7949897   general nf-MAIN_ ebrannan PD       0:00      1 (QOSMaxMemoryPerUser)
-7949952   general nf-MAIN_ vvuruput PD       0:00      1 (Resources)
-7949954   general nf-MAIN_ vvuruput PD       0:00      1 (Priority)
-7953478   general slow59.s mhossein PD       0:00      1 (Priority)
-7953479   general slow60.s mhossein PD       0:00      1 (Priority)
-7946600   general    busco shillima  R 2-20:56:08      1 xanadu-52
-7945409   general     bash    shird  R 3-01:21:06      1 xanadu-74
-7917445     himem R_divers pmartine  R 6-01:31:02      1 xanadu-40
-7953261 mcbstuden     bash meds5420  R    3:46:07      1 xanadu-68</code></pre>
-<p>The JOBID is a unique numerical identifier assigned by SLURM to <em>every</em> job it runs. This is important information we’ll discuss later. NAME is the name the user gave SLURM for the job (truncated in this view). USER is user who submitted the job. ST is the status: PD = pending; R = running. NODELIST(REASON) is either the list of compute nodes the job was assigned to (e.g.&nbsp;xanadu-52 for job 7946600) or the reason the job is not yet running: “Priority” essentially means the job will start at any moment; “Resources” means the requested resources are busy; “QOSMaxMemoryPerUser” means the running the job would exceed the user’s maximum memory allotment. Individual users have resource limits so that no one person can dominate the system.</p>
-<p>You can use the flag <code>-u &lt;user&gt;</code> to restrict to a given userid. You can try <code>squeue -o "%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R"</code> for a little more spacious formatting.</p>
+<section id="scontrol-show-nodes" class="level4" data-number="5.2.3.2">
+<h4 data-number="5.2.3.2" class="anchored" data-anchor-id="scontrol-show-nodes"><span class="header-section-number">5.2.3.2</span> <code>scontrol show nodes</code></h4>
+<p>To get pretty much ALL the information for each node, try <code>scontrol show nodes</code>, or for a specific node, e.g.&nbsp;<code>xanadu-01</code>, try</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scontrol</span> show node xanadu-01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>NodeName=xanadu-01 Arch=x86_64 CoresPerSocket=18 
+   CPUAlloc=16 CPUTot=36 CPULoad=7.23
+   AvailableFeatures=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+   ActiveFeatures=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+   Gres=(null)
+   NodeAddr=xanadu-01 NodeHostName=xanadu-01 Version=18.08
+   OS=Linux 3.10.0-1160.45.1.el7.x86_64 #1 SMP Wed Oct 13 17:20:51 UTC 2021 
+   RealMemory=338508 AllocMem=102400 FreeMem=40690 Sockets=2 Boards=1
+   State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=1 Owner=N/A MCS_label=N/A
+   Partitions=general,xeon,gpu 
+   BootTime=2025-07-01T17:13:07 SlurmdStartTime=2025-07-01T17:23:26
+   CfgTRES=cpu=36,mem=338508M,billing=36
+   AllocTRES=cpu=16,mem=100G
+   CapWatts=n/a
+   CurrentWatts=0 LowestJoules=0 ConsumedJoules=0
+   ExtSensorsJoules=n/s ExtSensorsWatts=0 ExtSensorsTemp=n/s</code></pre>
+<p>The command <code>scontrol show &lt;entity&gt; &lt;ID&gt;</code> allows you to look at a variety of features of a SLURM cluster.</p>
 </section>
 <section id="etcslurmslurm.conf" class="level4" data-number="5.2.3.3">
 <h4 data-number="5.2.3.3" class="anchored" data-anchor-id="etcslurmslurm.conf"><span class="header-section-number">5.2.3.3</span> <code>/etc/slurm/slurm.conf</code></h4>
@@ -550,6 +557,61 @@ NodeName=xanadu-03 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 
 NodeName=xanadu-04 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257845 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations</code></pre>
 <p>Here you can see that node xanadu-01 has 36 CPUs, ~256G of memory, a Xeon cpu and an NVIDIA A10 GPU.</p>
 </section>
+<section id="squeue" class="level4" data-number="5.2.3.4">
+<h4 data-number="5.2.3.4" class="anchored" data-anchor-id="squeue"><span class="header-section-number">5.2.3.4</span> <code>squeue</code></h4>
+<p>We have seen how you can see the type and availability of compute resources. The <code>squeue</code> command lets users see what jobs have been submitted to the queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available and currently running jobs. Depending on SLURM configuration, this command may show <em>only</em> jobs you have submitted, or it may show <em>every</em> job. At the time of writing, Xanadu was configured to show <em>every</em> job.</p>
+<p>Some example output from <code>squeue</code>:</p>
+<pre><code>  JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+7949897   general nf-MAIN_ ebrannan PD       0:00      1 (QOSMaxMemoryPerUser)
+7949952   general nf-MAIN_ vvuruput PD       0:00      1 (Resources)
+7949954   general nf-MAIN_ vvuruput PD       0:00      1 (Priority)
+7953478   general slow59.s mhossein PD       0:00      1 (Priority)
+7953479   general slow60.s mhossein PD       0:00      1 (Priority)
+7946600   general    busco shillima  R 2-20:56:08      1 xanadu-52
+7945409   general     bash    shird  R 3-01:21:06      1 xanadu-74
+7917445     himem R_divers pmartine  R 6-01:31:02      1 xanadu-40
+7953261 mcbstuden     bash meds5420  R    3:46:07      1 xanadu-68</code></pre>
+<ul>
+<li><code>JOBID</code> is a unique numerical identifier assigned by SLURM to <em>every</em> job it runs. This is important information we’ll discuss later.</li>
+<li><code>NAME</code> is the name the user gave SLURM for the job (truncated in this view).</li>
+<li><code>USER</code> is user who submitted the job.</li>
+<li><code>ST</code> is the status: PD = pending; R = running. NODELIST(REASON) is either the list of compute nodes the job was assigned to (e.g.&nbsp;xanadu-52 for job 7946600) or the reason the job is not yet running: “Priority” essentially means the job will start at any moment; “Resources” means the requested resources are busy; “QOSMaxMemoryPerUser” means the running the job would exceed the the maximum memory allotment. Xanadu has resource limits so that no one person can dominate the system.</li>
+</ul>
+<p>You can use the flag <code>-u &lt;user&gt;</code> to restrict to a given userid. You can try <code>squeue -o "%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R"</code> for a little more spacious formatting.</p>
+</section>
+<section id="scontrol-show-job" class="level4" data-number="5.2.3.5">
+<h4 data-number="5.2.3.5" class="anchored" data-anchor-id="scontrol-show-job"><span class="header-section-number">5.2.3.5</span> <code>scontrol show job</code></h4>
+<p>As we saw above with <code>scontrol show nodes</code> we can also get lots of details about specific jobs, in this example the JOBID <code>9344808</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scontrol</span> show job 9344808</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>JobId=9344808 JobName=featurecounts
+   UserId=svoggu(801460) GroupId=govonilab(10210) MCS_label=N/A
+   Priority=8858 Nice=0 Account=pi-govoni QOS=general
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=16-23:07:52 TimeLimit=21-00:00:00 TimeMin=N/A
+   SubmitTime=2025-08-26T12:29:46 EligibleTime=2025-08-26T12:29:46
+   AccrueTime=2025-08-26T12:29:46
+   StartTime=2025-08-26T12:29:47 EndTime=2025-09-16T12:29:47 Deadline=N/A
+   PreemptTime=None SuspendTime=None SecsPreSuspend=0
+   LastSchedEval=2025-08-26T12:29:47
+   Partition=xeon AllocNode:Sid=xanadu-54:3194841
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=xanadu-70
+   BatchHost=xanadu-70
+   NumNodes=1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:*
+   TRES=cpu=2,mem=20G,node=1,billing=2
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:1 CoreSpec=*
+   MinCPUsNode=2 MinMemoryNode=20G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=/home/FCAM/svoggu/RNA_Seq/gz_files/alignment6.sh
+   WorkDir=/home/FCAM/svoggu/RNA_Seq/gz_files
+   StdErr=/home/FCAM/svoggu/RNA_Seq/gz_files/hello_9344808.err
+   StdIn=/dev/null
+   StdOut=/home/FCAM/svoggu/RNA_Seq/gz_files/hello_9344808.out
+   Power=</code></pre>
+<p>We won’t dig into this now, but once you’re a little further along, it is helpful to remember this exists.</p>
+</section>
 </section>
 <section id="request-resources-and-submit-work" class="level3" data-number="5.2.4">
 <h3 data-number="5.2.4" class="anchored" data-anchor-id="request-resources-and-submit-work"><span class="header-section-number">5.2.4</span> Request resources (and submit work)</h3>
@@ -559,68 +621,83 @@ NodeName=xanadu-04 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 
 <p>When you run a batch job, you write a script that will run all the steps of a given analysis for you, hand that script to SLURM, and wait for it to complete (or fail). Using one command (or one script) you tell SLURM which resources you need, and what you want it to do. The command we use for this is <code>sbatch</code>.</p>
 <p>Running <code>sbatch</code> is in essence, just like running a script as we did in the previous chapter, except that instead of the script being run by the current shell, you hand it to SLURM with your resource request, SLURM puts it in the job queue, and when a node (or nodes) with enough resources becomes available, assigns the job there and runs it for you.</p>
 <p>Let’s look at the most basic usage using our fully defined script from the previous chapter:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Save it to <code>commonWords.sh</code>. Note that because we are passing this file to SLURM, not directly to bash, we <em>definitely</em> need the shebang at the top.</p>
-<p>On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and its associated quality of service (or QOS). Not all SLURM clusters require a QOS to be specified, but Xanadu does.</p>
+<p>On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and a quality of service (or QOS). Not all SLURM clusters require a QOS to be specified, but Xanadu does.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Quality of Service (QOS)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In SLURM, “Quality of Service” categories allow different jobs to be subject to different policies. Those policies may include access to hardware, resource limitations, or changes to job prioritization in the queue. On Xanadu, the two QOS’es you are likely to use are <code>general</code> and <code>himem</code>. To get access to high-memory nodes (1-2TB) you must request the QOS <code>himem</code>. Jobs with that QOS can use up to 2TB of memory, but users can only have jobs on two nodes at a time. Jobs submitted with the <code>general</code> QOS cannot access the high memory nodes, but users can run up to 100 jobs simultaneously, using up to a total of 400 CPUs and 1TB of memory.</p>
+<p><code>sacctmgr show qos</code> will list each QOS and its policies. <code>sacctmgr show assoc user=$USER</code> will show QOS access for <code>$USER</code>.</p>
+</div>
+</div>
 <p>To submit the script to be run on the general partition you can do:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Our script writes to stdout. Where did the results go? By default, to a file named <code>slurm-JOBID.out</code>. In my case at the time of writing <code>slurm-7953521.out</code>. You can inspect this file and the results should be there.</p>
-<p>This basic approach will request a minimal amount of memory and number of CPUs which will be too little for most real data analysis. We can request more with some options:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 12 <span class="at">--mem</span><span class="op">=</span>10G commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Now we’re asking for 12 CPUs with <code>-c</code> and 10 gigabytes of memory with <code>--mem=10G</code>. Far more than is needed for this tiny job. What happens if you request more memory than is available on general partition?</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 12 <span class="at">--mem</span><span class="op">=</span>1000G commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>An error!</p>
-<pre><code>sbatch: earror: Memory specification can not be satisfied
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Try that now.</p>
+<p>Our script wrote to stdout when we ran it interactively. Where did the results go this time? By default, they were written to a file named <code>slurm-JOBID.out</code> which you can find in the directory where you launched the script. In my case at the time of writing <code>slurm-7953521.out</code>. You can inspect this file and the results should be there.</p>
+<p>This basic <code>sbatch</code> command will request a minimal amount of memory (256mb) and number of CPUs (1) which will be too little for most real data analysis. We can request more with some options:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 12 <span class="at">--mem</span><span class="op">=</span>10G commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we’re asking for 12 CPUs with <code>-c</code> and 10 gigabytes of memory with <code>--mem=10G</code>. Far more than is needed for this tiny job. What happens if you request more memory than is available on any node in <code>general</code> partition?</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 12 <span class="at">--mem</span><span class="op">=</span>1000G commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>An error which is pretty straightforward to interpret:</p>
+<pre><code>sbatch: error: Memory specification can not be satisfied
 sbatch: error: Batch job submission failed: Requested node configuration is not available</code></pre>
-<p>This is relatively straightforward. But where does stderr go? Can we direct that to a file? Can we name the jobs so we can see them in the queue? Or rename these slurm-JOBID files so that they are a little easier to sort through when we run are running lots of jobs?</p>
-<p>The answer is yes, but you can imagine our command-line is going to start getting very long and cumbersome. To solve this, we typically specify SLURM options in a <strong>header</strong> at the top of our script.</p>
+<p>We saw that our script’s stdout was written to the log file. Where would output from stderr go? Can we direct that to a file? Can we name the jobs so we can identify them in the queue? Or rename these slurm-JOBID files so that they are a little easier to sort through when we run are running lots of jobs?</p>
+<p>The answer is yes. But you can imagine if we do this using command-line flags our command-line is going to start getting very long and cumbersome. To solve this, we typically specify SLURM options in a <strong>header</strong> at the top of our script.</p>
 <p>Let’s put one in our script:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=commonWords</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 10</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=20G</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=MY_EMAIL@uconn.edu</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=commonWords</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 10</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=20G</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=MY_EMAIL@uconn.edu</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># this script will print the 10 most common words found in a text file and their frequencies</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co"># this line specifies the text file</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGIN</span><span class="op">=</span>darwin1859.txt</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Any command-line option we can pass to <code>sbatch</code> can also be placed in a header that immediately follows the shebang. Each header line begins with <code>#SBATCH</code> and a command-line flag follows. If we need to, we can override any of these header lines with new values on the command-line, without altering the script.</p>
 <p>Here we name the job <code>commonWords</code>, request 10 cpus and 20G of memory. The mail options are optional, but if you provide an e-mail, then SLURM will let you know when your job starts and ends. The last two options specify the file name format for any output written to stdout or stderr. The format is <code>jobname_jobid{.out,.err}</code></p>
-<p>We also specify a few other options that aren’t necessary and that we rarely change: <code>-n 1</code>, saying that we want SLURM to launch 1 task, and <code>-N 1</code> saying that we want the resources for the task to be on a single node. These will suit all of our work in this course.</p>
-<p>You may also notice we added two extra lines to the top of the script <code>hostname</code> and <code>date</code>. These will write out which compute node the job ran on, and the date it began to the stdout. This can be helpful information if you need to seek help when troubleshooting. Sometimes individual nodes on the cluster, rather than user errors, can the source of problems.</p>
+<p>We also specify a few other options that aren’t necessary and that we rarely change: <code>-n 1</code>, saying that we want SLURM to launch 1 task, and <code>-N 1</code> saying that we want the resources for the task to be on a single node. We won’t get into applications where a single job needs multiple SLURM tasks, or jobs that require communication between nodes in this course.</p>
+<p>You may also notice we added two extra lines to the top of the script <code>hostname</code> and <code>date</code>. These will write out which compute node the job ran on, and the date it began to the stdout. This can be helpful information if you need to seek help when troubleshooting. Sometimes individual nodes on the cluster, rather than user errors, can be the source of problems.</p>
 <p>Update <code>commonWords.sh</code> with this header and run it again. Now you can simply enter:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Now, instead of seeing a single file <code>slurm-&lt;JOBID&gt;.out</code>, you should see a pair of files: <code>commonWords_&lt;JOBID&gt;.out</code> and <code>commonWords_&lt;JOBID&gt;.err</code>. The <code>.out</code> file should contain the output from our script, along with the results of <code>hostname</code> and <code>date</code>, and <code>.err</code> should be empty (unless there were any errors).</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> commonWords.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now, instead of seeing a single file <code>slurm-&lt;JOBID&gt;.out</code>, you should see a pair of files corresponding to our two potential output streams: <code>commonWords_&lt;JOBID&gt;.out</code> and <code>commonWords_&lt;JOBID&gt;.err</code>. The <code>.out</code> file should contain the output from our script, along with the results of <code>hostname</code> and <code>date</code>, and <code>.err</code> should be empty (unless there were any errors).</p>
 <p>So, to sum up we request resources and submit work to be run on the cluster by SLURM. Putting SLURM options in the script header is extremely useful, as it keeps a record of <em>how</em> we ran our code, not just what code we ran.</p>
 </section>
 <section id="starting-interactive-sessions-with-srun." class="level4" data-number="5.2.4.2">
 <h4 data-number="5.2.4.2" class="anchored" data-anchor-id="starting-interactive-sessions-with-srun."><span class="header-section-number">5.2.4.2</span> Starting interactive sessions with <code>srun</code>.</h4>
-<p>It is sometimes the case that we want to do analysis on the cluster that is more intensive than what is permissible on the login nodes, but we are unable to write all the steps into a batch script. This might be an exploratory analysis, where we don’t know what the steps are yet, or we might be putting together a complicated set of piped commands and we want to test that the pipe is doing what we expect before we run the entire job.</p>
+<p>It is sometimes the case that we want to do analysis on the cluster that is more intensive than what is permissible on the login nodes, but we don’t want, or are unable to write all the steps into a batch script. This might be an exploratory analysis, where we don’t know what the steps are yet, or we might be putting together a complicated set of piped commands and we want to test that the pipe is doing what we expect before we run the entire job.</p>
 <p>For this we use an <strong>interactive session</strong>. In an interactive session, we request resources on a compute node, and SLURM drops us into a bash session on that node, rather than a login node. On the compute node we no longer have to worry about gumming things up for everyone else. SLURM will not let us exceed our CPU request, and if we run a program that attempts to exceed the memory request, the session will simply be canceled.</p>
 <p>We use the <code>srun</code> command for this. The syntax for requesting an interactive session is:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 2 <span class="at">--mem</span><span class="op">=</span>10G <span class="at">--pty</span> bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 2 <span class="at">--mem</span><span class="op">=</span>10G <span class="at">--pty</span> bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Try it. To ensure that you have successfully started an interactive session, type <code>hostname</code> at the prompt. You should see the name of a compute node that can be found in <code>sinfo</code>, something like <code>xanadu-01</code>, rather than a login host name like <code>hpc-ext-1</code>.</p>
 <p>You can exit back to the login node with <code>exit</code></p>
 </section>
@@ -635,11 +712,11 @@ sbatch: error: Batch job submission failed: Requested node configuration is not 
 </ol>
 <section id="squeue-again" class="level4" data-number="5.2.5.1">
 <h4 data-number="5.2.5.1" class="anchored" data-anchor-id="squeue-again"><span class="header-section-number">5.2.5.1</span> <code>squeue</code> again</h4>
-<p>When the cluster is busy and jobs are large enough that they wait in the queue for a while before resources are available, you can use squeue as we did above to see what their status is. If they are running, you’ll also be able to see how long they’ve been running. Jobs that complete too quickly or too slowly are sometimes a sign that something isn’t right (or that your expectations aren’t right).</p>
+<p>When the cluster is busy and jobs are large enough that they wait in the queue for a while before resources are available, you can use squeue as we did above to see what their status is. If they are running, you’ll also be able to see how long they’ve been running. Jobs that complete too quickly or too slowly are sometimes a sign that something isn’t right (or that your expectations aren’t right). Remember that <code>scontrol show job &lt;jobid&gt;</code> will also give you a bunch of details, including the files stdout and stderr are written to.</p>
 </section>
 <section id="monitor-output-files" class="level4" data-number="5.2.5.2">
 <h4 data-number="5.2.5.2" class="anchored" data-anchor-id="monitor-output-files"><span class="header-section-number">5.2.5.2</span> Monitor output files</h4>
-<p>You can monitor the <code>.out</code> and <code>.err</code> files, and output or log files produced by your script or the program you’re running. In all of these cases, the first thing you can do is simply use <code>ls -l</code> and look at the time stamps. Are any of these files being updated?</p>
+<p>You can monitor the <code>.out</code> and <code>.err</code> files, and any output or log files produced by the stuff you’re running. In all of these cases, the first thing you can do is simply use <code>ls -l</code> in the relevant directories and look at the time stamps and file sizes. Are any of the expected files being updated? Many applications in genomics have steps where more or less continuous output is expected, so time stamps should be constantly updated, and file sizes should grow.</p>
 <p>Depending on the program or the nature of your script, the <code>.err</code>, or <code>.out</code> files are going to be key files to check. These are updated in real time. If there are errors, warnings, or progress messages, they are likely to be in one of these two files. Some programs will write helpful, succinct messages, and some will write an endless alphabet soup that makes it hard to distinguish normal progress from problems. It will all depend on the program.</p>
 <p>When it comes to program- or script-specific files, you’ll have to understand a little about the output you’re expecting. Some programs write no output until they’re complete, others write out results nearly as fast as they read data in. In the latter case, be sure to check on these files at least once and ensure that they’re growing as the program is running.</p>
 </section>
@@ -647,12 +724,14 @@ sbatch: error: Batch job submission failed: Requested node configuration is not 
 <h4 data-number="5.2.5.3" class="anchored" data-anchor-id="log-in-to-your-compute-node"><span class="header-section-number">5.2.5.3</span> Log in to your compute node</h4>
 <p>There are lots of cases where you might want to get a more direct look at how your job is going. SLURM doesn’t have good tools for this. The solution here is to actually log directly in to the compute node and have a look. First, check which node your job is running on using <code>squeue</code>. Then you have two options to get into the node.</p>
 <p>First, you can use <code>srun</code> and request the node with, e.g.&nbsp;<code>-w xanadu-01</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">-w</span> xanadu-01 <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 1 <span class="at">--mem</span><span class="op">=</span>500G <span class="at">--pty</span> bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">-w</span> xanadu-01 <span class="at">-p</span> general <span class="at">--qos</span><span class="op">=</span>general <span class="at">-c</span> 1 <span class="at">--mem</span><span class="op">=</span>500M <span class="at">--pty</span> bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Here we request minimal resources so that we are more likely to quickly get the session started.</p>
-<p>Second, if the node is fully subscribed and you can’t get an interactive session, you can still get in from the login node with:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> xanadu-01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Second, if the node is fully subscribed and you can’t get an interactive session, you can still get in from a login node with <code>ssh</code>:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> xanadu-01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If you go this route, you should not do <strong>anything</strong> else other than check on your job. If you couldn’t get an interactive session on your node, then all CPU or all memory has been requested, and you are essentially oversubscribing the node by logging in this way. You should check on your job quickly and type <code>exit</code> to log out.</p>
-<p>With either method, once you’re on the compute node, you can use the program <code>top</code> to see running processes. You will see ALL running processes on the node in a constantly updating list, including user and system processes. To see your own processes type <code>u</code> and then your username followed by <code>enter</code>. To sort processes by memory usage, type <code>shift-m</code> and by processor usage <code>shift-p</code>. <code>%CPU</code> refers to the percentage of a single CPU, so if you requested 10 cpus, you may see up to %1000 CPU usage. <code>%MEM</code> refers to the percentage of the total memory on the node. The <code>S</code> column indicates whether your process is running (R) or sleeping (S). In an ideal world, whatever you’re running would be using all the CPU and all the memory you requested. In reality this is rarely the case. Resource usage often fluctuates. If you see that your processes are often sleeping, that can be a sign they aren’t running efficiently and that something may be wrong. If you see that processes you are running never seem to be using as much CPU or memory as you requested, it may be that you requested too much, or that you forgot to tell the actual program you’re running how many CPUs to use, for example.</p>
+<p>With either method, once you’re on the compute node, you can use the program <code>top</code> to see running processes. You will see ALL running processes on the node in a constantly updating list, including user and system processes. To see your own processes type <code>u</code> and then your username followed by <code>enter</code>. To sort processes by memory usage, type <code>shift-m</code> and by processor usage <code>shift-p</code>. <code>%CPU</code> refers to the percentage of a single CPU, so if you requested 10 cpus, you may see up to %1000 CPU usage. <code>%MEM</code> refers to the percentage of the total memory on the node. The <code>S</code> column indicates whether your process is running (R) or sleeping (S).</p>
+<p>In an ideal world, whatever you’re running would be using all the CPU and all the memory you requested. In reality this is rarely the case. - Resource usage often fluctuates. Some stages of an analysis may require the full allocation, while others do not. - You may have requested too many resources. This is often a matter of experience. Especially with memory, it can be hard to know exactly how much software will need, especially when you first start using a given package. - You may have forgotten to tell your software how many CPUs to use. For almost all analysis software capable of using more than one CPU, you will need to tell the software how many to use. If you request 10 cpus with <code>-c 10</code>, then you probably also have to use a command line option telling the software to use those 10 CPUs, other wise it will likely just use 1.</p>
+<p>In <code>top</code>, if you see that your processes are often sleeping, that can be a sign they aren’t running efficiently and that something may be wrong.</p>
 <p>Type <code>q</code> to quit <code>top</code>.</p>
 </section>
 </section>
@@ -673,9 +752,9 @@ CPU Efficiency: 10.00% of 00:00:10 core-walltime
 Job Wall-clock time: 00:00:01
 Memory Utilized: 1.56 MB
 Memory Efficiency: 0.01% of 20.00 GB</code></pre>
-<p>Some of this is self-explanatory at this point. <code>CPU Utilized</code> is the sum of the CPU-hours used by the job. <code>Wall-clock time</code> means the actual time span over which the job ran. <code>CPU Efficiency</code> is <code>CPU Utilized</code> / (<code>cores per node</code> * <code>wall-clock time</code>), so the average rate of CPU usage. <code>Memory Efficiency</code> is the <strong>peak</strong> memory usage divided by the memory requested. This job was very simple and used virtually none of the resources we requested. This is <em>not</em> what you generally want to see, but because our job only took 1 second, it’s not that big of a deal. If every job on the cluster had efficiencies ranging from 1-10%, it would be a pretty big waste.</p>
+<p>Some of this is self-explanatory at this point. <code>CPU Utilized</code> is the sum of the CPU-hours used by the job. <code>Wall-clock time</code> means the actual time span over which the job ran. <code>CPU Efficiency</code> is <code>CPU Utilized</code> / (<code>cores per node</code> * <code>wall-clock time</code>), the average rate of CPU usage. <code>Memory Efficiency</code> is the <strong>peak</strong> memory usage divided by the memory requested. This job was very simple and used virtually none of the resources we requested. This is <em>not</em> what you generally want to see, but because our job only took 1 second, it’s not that big of a deal. If every job on the cluster had efficiencies ranging from 1-10%, it would be a pretty big waste. If your jobs hit 80% efficiency, you’re doing pretty good.</p>
 <p><code>sacct</code> is pretty large and complicated SLURM function that can extract all kinds of job information. We won’t get into it too much here except to say this command can provide some detail on a job:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacct</span> <span class="at">-o</span> jobid%-11,jobname%30,nodelist%15,user%12,group%15,partition,state,ReqMem,MaxRSS,ReqCPUS,elapsed,Timelimit,submit <span class="at">-j</span> <span class="op">&lt;</span>JOBID<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacct</span> <span class="at">-o</span> jobid%-11,jobname%30,nodelist%15,user%12,group%15,partition,state,ReqMem,MaxRSS,ReqCPUS,elapsed,Timelimit,submit <span class="at">-j</span> <span class="op">&lt;</span>JOBID<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For this job we get this output:</p>
 <pre><code>      JobID                        JobName        NodeList         User           Group  Partition      State     ReqMem     MaxRSS  ReqCPUS    Elapsed  Timelimit              Submit 
 ----------- ------------------------------ --------------- ------------ --------------- ---------- ---------- ---------- ---------- -------- ---------- ---------- ------------------- 
