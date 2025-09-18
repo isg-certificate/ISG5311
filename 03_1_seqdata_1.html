@@ -471,11 +471,12 @@ window.Quarto = {
 </section>
 <section id="file-formats" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="file-formats"><span class="header-section-number">9.2</span> File formats</h2>
-<p>Sequence data are relatively straightforward. Nucleotide sequence data are typically stored as character strings consisting primarily of A (adenine), G (guanine), C (cytosine), or T (thymine). Even when we sequence RNA, we typically represent the uracil’s as T instead of U. There are cases where sequences are stored with ambiguities, in which case <a href="https://genome.ucsc.edu/goldenPath/help/iupac.html">IUPAC ambiguity codes</a> are used (e.g.&nbsp;“R” for “G or A”, or “N” for any nucleotide). Amino acid sequence data are similarly stored as character strings using single-letter abbreviations, also <a href="https://iupac.qmul.ac.uk/AminoAcid/AA1n2.html">per IUPAC</a>.</p>
+<p>Sequence data are relatively straightforward. Nucleotide sequence data are typically stored as character strings consisting primarily of A (adenine), G (guanine), C (cytosine), or T (thymine). RNA does not use thymine, but uracil, so sometimes, but not always, when we determine RNA sequences, we represent uracil as U. There are cases where sequences are are written down with ambiguous bases. This may be because there is uncertainty about what the true base is at a given position, or because you want to indicate that the true base varies. In these cases, <a href="https://genome.ucsc.edu/goldenPath/help/iupac.html">IUPAC ambiguity codes</a> are used. There are ambiguity codes for all possible combinations of bases. One example is “R”, meaning “G or A”. Probably the one you’ll see the most is “N” which means “A, C, G, or T”.</p>
+<p>Amino acid sequence data are similarly stored as character strings using single-letter abbreviations, also <a href="https://iupac.qmul.ac.uk/AminoAcid/AA1n2.html">per IUPAC</a>.</p>
 <section id="fasta" class="level3" data-number="9.2.1">
 <h3 data-number="9.2.1" class="anchored" data-anchor-id="fasta"><span class="header-section-number">9.2.1</span> <code>FASTA</code></h3>
-<p>In the case of both nucleotide and amino acid sequences, the most basic file format is known as <a href="https://en.wikipedia.org/wiki/FASTA_format"><code>FASTA</code></a>. It is pronounced variously as “fast-ay”, “fast-uh”, or if maybe if you’re from the UK “fahstuh”.</p>
-<p>FASTA format is very simple. A sequence record consists of a header line, beginning with a <code>&gt;</code> and immediately followed by a sequence name, and one or more following lines containing a sequence. This can be as simple as:</p>
+<p>In the case of both nucleotide and amino acid sequences, the most basic file format is known as <a href="https://en.wikipedia.org/wiki/FASTA_format"><code>FASTA</code></a>. It is pronounced variously as “fast-A”, “fast-uh”, or if you’re from the UK, possibly “fahstuh”.</p>
+<p>FASTA format is very simple. A sequence record consists of a header line, beginning with a <code>&gt;</code> and immediately followed by a sequence name. Following the header line, there are one or more lines containing a sequence. This can be as simple as:</p>
 <pre><code>&gt;Sequence1
 aaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaccctaaaaccctaaaccctaa</code></pre>
 <p>A sequence can also be broken up across multiple lines, which can be helpful for very long sequences like chromosomes.</p>
@@ -489,16 +490,16 @@ taaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaacccta
 accctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaac
 cctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccc</code></pre>
 <p>In this case, the name <code>CM042378.1</code> is an accession number for the sequence at <a href="https://www.ncbi.nlm.nih.gov">NCBI</a>. Everything starting with the first space is extra information and is <strong>usually ignored</strong> by programs that accept FASTA sequences. Only the text after <code>&gt;</code> and before the first space should be considered the sequence name.</p>
-<p>FASTA files can contain multiple sequences like so:</p>
+<p>FASTA files can contain multiple sequences like so (in this case, amino acids):</p>
 <pre><code>&gt;101020_0:000000
 MALLRLPYLFSSSTPNQSSLITCQTHPFSSVRTKKREVSRLYASSSGGKSDPYLMDSEERREWRDKIRQVLDKNPDLEEELDP
 &gt;101020_0:000001
 MCPRNADINILKLKAFPFSLEDRAKSWLIDLPTGHIDSWEKMMSEFLTKYFPASKITVMRKQITGIQQGPEETFCAYYERFKALVATCPSHGF
 &gt;101020_0:000002
 MEACNCIEPQWPADELLIKYQYISDFFIAIAYFSIPLELIYFVKKSAVFPYRWVL</code></pre>
-<p>You may notice that in above sequences we have a mix of upper and lower-case letters. These do not change the meaning of the sequence itself, but are a form of sequence <strong>annotation</strong>. In nucleotide sequences, we typically use lower-case letters to indicate that sequences have been identified by some algorithm as <strong>repetitive</strong> or <strong>low-complexity</strong>. This is referred to as “soft-masking” because some algorithms will take this as a signal to ignore the bases, without our having to change them to <code>N</code> (referred to as “hard-masking”).</p>
-<p>Because telomeric sequences at chromosome ends are typically highly repetitive, when a whole chromosome has been assembled and annotated, a large fraction of the first few kilobases is often soft-masked.</p>
-<p><code>FASTA</code> format contains only sequences. Because of this, it’s only really suitable for sequences we are pretty confident in. That is to say, we believe that each of the bases or amino acids in the sequence has been correctly determined. In the case of high-throughput sequencing data, however, it’s not always the case that each base is known with a high degree of confidence. That leads us to our second file format…</p>
+<p>You may notice that in above sequences we have a mix of upper and lower-case letters. These do not change the meaning of the sequence itself, but are a form of sequence <strong>annotation</strong>. In nucleotide sequences, we typically use lower-case letters to indicate that sequences have been identified by some algorithm as <strong>repetitive</strong> or <strong>low-complexity</strong>. This is referred to as <strong>soft-masking</strong>. The bases are “masked” because some algorithms will take this as a signal to ignore the bases. They are “soft-masked” because we didn’t actually remove any information from the file. It is also possible to <strong>hard-mask</strong> bases, in which case we change masked bases to <code>N</code>.</p>
+<p>A common place to observe masked bases is in telomeres (at chromosome ends). Telomeric sequences are typically highly repetitive, so a large fraction of the first few kilobases is often soft-masked (as with <code>CM042378.1</code> above).</p>
+<p><code>FASTA</code> format contains only sequences. Because of this, it’s only really suitable for sequences we are pretty confident in. That is to say, we should believe that each of the bases or amino acids in the sequence has been correctly determined. In the case of high-throughput sequencing data, however, it’s not always the case that each base is known with a high degree of confidence. That leads us to our second file format…</p>
 </section>
 <section id="fastq" class="level3" data-number="9.2.2">
 <h3 data-number="9.2.2" class="anchored" data-anchor-id="fastq"><span class="header-section-number">9.2.2</span> <code>FASTQ</code></h3>
@@ -507,17 +508,19 @@ MEACNCIEPQWPADELLIKYQYISDFFIAIAYFSIPLELIYFVKKSAVFPYRWVL</code></pre>
 <li>A header line starting with <code>@</code> (instead of <code>&gt;</code>) immediately followed by a sequence identifier.</li>
 <li>A sequence (usually a nucleotide sequence). Unlike <code>FASTA</code>, all on a single line.</li>
 <li>A line beginning with <code>+</code>, typically followed either by nothing, or the sequence name repeated.</li>
-<li>A line containing ASCII-character-encoded, PHRED-scaled base qualities.</li>
+<li>A line containing ASCII-character-encoded, Phred-scaled base qualities.</li>
 </ol>
-<p>A single <code>FASTQ</code> record looks like this, but as with <code>FASTA</code>, many records can be put in a single file:</p>
+<p>A single <code>FASTQ</code> record looks like this:</p>
 <pre><code>@A01010:43:H2YNYDSXY:1:1101:1108:1000 1:N:0:GCGTATTAAT+TGCGGTGTTG
 NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGGATTGTTTCTCCACTACTTTTGGAGCTGCTTTATCTTCACTTGTTCAATAACAGGAGAGTCCCTTATTTATA
 +
 #FFF:FFFFFFFFFF::FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFF::FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FF,FF</code></pre>
-<p>This sequence was generated by an Illumina sequencer (more on that later). The sequence identifier contains lots of <a href="https://help.basespace.illumina.com/files-used-by-basespace/fastq-files">information about the sequencing run</a>, but we rarely, if ever, need to parse that ourselves, so we won’t break it down here.</p>
+<p>As with <code>FASTA</code>, many records can be put in a single file.</p>
+<p>The sequence above was generated by an Illumina sequencer (more on that later). The sequence identifier contains lots of <a href="https://help.basespace.illumina.com/files-used-by-basespace/fastq-files">information about the sequencing run</a>, but we rarely, if ever, need to parse that ourselves, so we won’t break it down here.</p>
 <p>The next two lines are pretty straightforward. The final line requires some explanation. To repeat, it contains <em>ASCII-character-encoded, Phred-scaled base qualities</em>.</p>
-<p>ASCII-encoded refers to the fact that each <a href="https://en.wikipedia.org/wiki/ASCII">ASCII character</a> in the string codes a quality score. The standard translation for data produced from the early 2010s on is referred to as <a href="https://en.wikipedia.org/wiki/FASTQ_format#Encoding"><code>Sanger</code> encoding</a>, which means that quality scores from 0-93 are encoded by characters 33-126 in the ASCII table. For an easy translation see <a href="https://broadinstitute.github.io/picard/explain-qualities.html">this website</a> and enter the quality string above.</p>
-<p>The quality scores themselves are <a href="https://en.wikipedia.org/wiki/Phred_quality_score">Phred-scaled</a>. They have a log-scaled relationship with the probability that a base has been called in error. The quality score <strong>Q</strong> is related to the error probability <strong>P</strong> by the following equations:</p>
+<p>ASCII-encoded refers to the fact that each <a href="https://en.wikipedia.org/wiki/ASCII">ASCII character</a> in the string codes a quality score. The standard translation for data produced from the early 2010s on is referred to as <a href="https://en.wikipedia.org/wiki/FASTQ_format#Encoding"><code>Sanger</code> encoding</a>, which means that quality scores from 0-93 are encoded by characters 33-126 in the ASCII table. For an easy translation see <a href="https://broadinstitute.github.io/picard/explain-qualities.html">this website</a> and enter the quality string above. You should get this:</p>
+<pre><code> 2,37,37,37,25,37,37,37,37,37,37,37,37,37,37,25,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,11,37,37</code></pre>
+<p>The numeric quality scores themselves are <a href="https://en.wikipedia.org/wiki/Phred_quality_score">Phred-scaled</a>. They have a log-scaled relationship with the probability that a base has been called in error. The quality score <strong>Q</strong> is related to the error probability <strong>P</strong> by the following equations:</p>
 <p><span class="math display">\[ Q = -10 log_{10} P\]</span> <span class="math display">\[ P = 10^{-Q/10} \]</span></p>
 <p>So:</p>
 <table class="caption-top table">
@@ -566,28 +569,29 @@ NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGG
 </tr>
 </tbody>
 </table>
-<p>Phred-scaled error probabilities crop up repeatedly in genomics, so it’s a good idea to get a handle on them now.</p>
+<p>The higher the Phred score, the lower the probability of error. For every increase of 10 in the Phred score, the probability decreases by a factor of 1/10.</p>
+<p>Phred-scaled error probabilities crop up repeatedly in genomics (though base qualities are the only time you’ll see them ASCII-encoded), so it’s a good idea to get a handle on them now.</p>
 </section>
 </section>
 <section id="manipulating-fasta-and-fastq" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="manipulating-fasta-and-fastq"><span class="header-section-number">9.3</span> Manipulating <code>FASTA</code> and <code>FASTQ</code></h2>
 <p>In this section we’re going to introduce some approaches for manipulating fasta and fastq files. We’ll start simple, with tools we have already seen, and then introduce some pieces of software that will be faster and suitable for more complex tasks.</p>
-<p>Let’s start by downloading two versions of the human genome: GRCh38, which has been in use for many years (with occasional patches and updates), but has some unfinished gaps, and CHM13, a telomere-to-telomere assembly of a human genome. We’re going to get them from <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/">NCBI</a>, a US government organization that houses a staggering amount of sequence data, both raw output from sequencers, and finished genome and gene sequences. We’re going to use a tool developed by NCBI to download data called <code>datasets</code>. If you visit <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/">this page</a> and <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/">this page</a> you’ll see that they provide you with a datasets command to run that will download several files for each genome (we’ll modify it slightly to get a gtf annotation in addition to gff2):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load datasets/16.13.0</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># T2T</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">datasets</span> download genome accession GCF_009914755.1 <span class="at">--include</span> gtf,gff3,rna,cds,protein,genome,seq-report <span class="at">--filename</span> T2T.zip</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-d</span> T2T T2T.zip</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># GRCh38</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">datasets</span> download genome accession GCF_000001405.40 <span class="at">--include</span> gtf,gff3,rna,cds,protein,genome,seq-report <span class="at">--filename</span> GRCh38.zip</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-d</span> GRCh38 GRCh38.zip</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> GRCh38.zip T2T.zip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s start by downloading two versions of the human genome: GRCh38, which has been in use for many years (with occasional patches and updates), but has some unfinished gaps, and CHM13, a telomere-to-telomere assembly of a human genome. We’re going to get them from <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/">NCBI</a>, a US government organization that houses a staggering amount of sequence data, both raw output from sequencers, and finished genome and gene sequences. We’re going to use a tool developed by NCBI to download data called <code>datasets</code>. If you visit <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/">this page</a> and <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/">this page</a> you’ll see that they provide you with a <code>datasets</code> command to run that will download several files for each genome (we’ll modify it slightly to get a gtf annotation in addition to gff3):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load datasets/16.13.0</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># T2T</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">datasets</span> download genome accession GCF_009914755.1 <span class="at">--include</span> gtf,gff3,rna,cds,protein,genome,seq-report <span class="at">--filename</span> T2T.zip</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-d</span> T2T T2T.zip</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># GRCh38</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">datasets</span> download genome accession GCF_000001405.40 <span class="at">--include</span> gtf,gff3,rna,cds,protein,genome,seq-report <span class="at">--filename</span> GRCh38.zip</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-d</span> GRCh38 GRCh38.zip</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> GRCh38.zip T2T.zip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This is a bit of a mess, so let’s move things around a little:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> genomes</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> T2T/ncbi_dataset/data/GCF_009914755.1 genomes/</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> GRCh38/ncbi_dataset/data/GCF_000001405.40 genomes/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> genomes</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> T2T/ncbi_dataset/data/GCF_009914755.1 genomes/</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> GRCh38/ncbi_dataset/data/GCF_000001405.40 genomes/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Try</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> genomes/<span class="pp">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> genomes/<span class="pp">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You should see that each directory contains a number of files:</p>
 <ul>
 <li><code>*genomic.fna</code>: the genome sequence in fasta format.</li>
@@ -600,10 +604,10 @@ NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGG
 <section id="basic-linux-tools" class="level3" data-number="9.3.1">
 <h3 data-number="9.3.1" class="anchored" data-anchor-id="basic-linux-tools"><span class="header-section-number">9.3.1</span> Basic Linux tools</h3>
 <p>Let’s explore the genome sequences a bit with some commands we already know:</p>
-<p>How many sequences are in each genome fasta? The regular expression <code>^&gt;" matches only lines that begin with</code>&gt;`, which is every header line, and no sequence lines.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"^&gt;"</span> genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"^&gt;"</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>There are so many sequences GRCh38 because it has some alternate haplotypes and unplaced sequences. T2T does not have those. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?</p>
+<p>How many sequences are in each genome fasta? The regular expression <code>^&gt;</code> matches only lines that begin with <code>&gt;</code>, which is every header line, and no sequence lines.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"^&gt;"</span> genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"^&gt;"</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>There are so many sequences in GRCh38 because it has some alternate haplotypes and unplaced sequences. The T2T genome does not have those.</p>
 <p>We can’t count fastq records this way because “@” and “+” can both be present in the quality string.</p>
 </section>
 <section id="bioawk" class="level3" data-number="9.3.2">
@@ -611,19 +615,33 @@ NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGG
 <p>Using standard Linux command-line tools to manipulate files in this way is fairly limited (though we did do it a little more in depth with our RADseq exercise).</p>
 <p>We can take things a little further with <code>bioawk</code>, a modification of <code>awk</code> to deal with genomic data formats that adds a few nice functions. <code>bioawk</code> is suitable for quick data exploration and validation tasks.</p>
 <p>Let’s look at the length and GC composition of sequences in our genomes:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load bioawk/1.0</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq), length($seq), $comment}'</span> genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq),length($seq), $comment}'</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>bioawk</code> has built in functions, like <code>gc()</code> and built-in variables like <code>$seq</code>, <code>$name</code>, and <code>$comment</code> that allow you to access different parts of a sequence record. <code>-c fastx</code> indicates that we’re giving it a fasta or fastq file.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load bioawk/1.0</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq), length($seq), $comment}'</span> genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq),length($seq), $comment}'</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>bioawk</code> has built in functions, like <code>gc()</code> and built-in variables like <code>$seq</code>, <code>$name</code>, and <code>$comment</code> that allow you to access different parts of a sequence record. <code>-c fastx</code> indicates that we’re giving it a fasta or fastq file. Note that for this fasta file <code>$comment</code> refers to the text after the first space in the sequence identifier.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>GRCh38 has some alternate haplotypes and unplaced sequences. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?</p>
+<p>Should there actually be 25 sequences?</p>
+</div>
+</div>
 <p>As in <code>awk</code> you can use <code>BEGIN</code> and <code>END</code> blocks to execute code before and after processing a file. To get the mean GC content in the entire T2T genome:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{tl+=length($seq); gcl+=length($seq) * gc($seq)}END{print gcl / tl}'</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With fastq files we can do something similar (here we pass the stdout to <code>head</code> because there are millions of sequences in that fastq file):</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="va">FQ</span><span class="op">=</span>/core/cbc/tutorials/workshopdirs/RNA-seq-with-reference-genome-and-annotation/01_raw_data/SRR12475447_1.fastq.gz</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq),length($seq), meanqual($qual)}'</span> <span class="va">$FQ</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 100</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Note that for fastq files, bioawk has a <code>$qual</code> variable for the quality scores.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{tl+=length($seq); gcl+=length($seq) * gc($seq)}END{print gcl / tl}'</span> genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that above we are weighting the gc content of each chromosome by its length to get the correct GC content genome-wide.</p>
+<p>With fastq files we can do something similar (in this example we pass the stdout to <code>head</code> because there are millions of sequences in that fastq file and it would take a while to process):</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="va">FQ</span><span class="op">=</span>/archive/labs/wegrzyn/HeidiGolden_ddRAD_April2022/raw_fastq/Golden-Pool_R1_001.fastq.gz </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">bioawk</span> <span class="at">-c</span> fastx <span class="st">'{print $name, gc($seq),length($seq), meanqual($qual)}'</span> <span class="va">$FQ</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 100</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that for fastq files, bioawk has a <code>$qual</code> variable for the quality scores. Unfortunately the <code>meanqual</code> function just takes the mean of the Phred-scaled quality scores. This gives the geometric mean of the error probabilities. The arithmetic mean, which when multiplied by the sequence length gives the expected number of errors, would be a much more useful and intuitive output.</p>
 <p>In principle, you could use bioawk and Linux tools piped together to do all kinds of manipulation and filtering. We usually just use them for quick inspection and summarization though, as we have faster purpose-built tools we can use for large datasets.</p>
 </section>
 <section id="seqkit" class="level3" data-number="9.3.3">
@@ -639,15 +657,15 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note that the model of developing a “toolkit” containing many individual tools (invoked commonly with the syntax <code>&lt;toolkit&gt; &lt;tool&gt; --options</code> is a common one in bioinformatics (see also samtools, bcftools, vcftools, bedtools, gatk, kat, and others). In this course we’ll typically only be working through a handful of tools in any given toolkit, but the above advice usually holds, that it can be well worth your time to acquaint yourself with other features by skimming the documentation.</p>
+<p>Note that the model of developing a “toolkit” containing many individual tools (invoked commonly with the syntax <code>&lt;toolkit&gt; &lt;tool&gt; &lt;arguments&gt;</code> is a common one in bioinformatics (see also samtools, bcftools, vcftools, bedtools, gatk, kat, and others). In this course we’ll typically only be working through a handful of tools in any given toolkit, but the above advice usually holds: it can be well worth your time to acquaint yourself with other features by skimming the documentation.</p>
 </div>
 </div>
 <section id="summarizing-files" class="level4" data-number="9.3.3.1">
 <h4 data-number="9.3.3.1" class="anchored" data-anchor-id="summarizing-files"><span class="header-section-number">9.3.3.1</span> Summarizing files</h4>
 <p>We can start out by calculating some basic stats on all of our fasta files:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load seqkit/2.8.1</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats genomes/GCF_00<span class="pp">*</span>/<span class="pp">*</span>f<span class="dt">{n</span><span class="op">,</span><span class="dt">a}</span>a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load seqkit/2.8.1</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> stats genomes/GCF_00<span class="pp">*</span>/<span class="pp">*</span>f<span class="dt">{n</span><span class="op">,</span><span class="dt">a}</span>a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Which will print this output table:</p>
 <pre><code>file                                                               format  type     num_seqs        sum_len     min_len        avg_len      max_len
 genomes/GCF_000001405.40/cds_from_genomic.fna                      FASTA   DNA       145,346    296,946,179           8          2,043      107,976
@@ -662,11 +680,11 @@ genomes/GCF_009914755.1/protein.faa                                FASTA   Prote
 <section id="extracting-sequences" class="level4" data-number="9.3.3.2">
 <h4 data-number="9.3.3.2" class="anchored" data-anchor-id="extracting-sequences"><span class="header-section-number">9.3.3.2</span> Extracting sequences</h4>
 <p>Let’s extract every exon from the T2T genome using the GTF file:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="va">GTF</span><span class="op">=</span>genomes/GCF_009914755.1/genomic.gtf</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="va">EXONS</span><span class="op">=</span>genomes/GCF_009914755.1/exons.fna</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> subseq <span class="at">--gtf</span> <span class="va">${GTF}</span> <span class="at">--feature</span> exon <span class="va">${GENOME}</span> <span class="op">&gt;</span><span class="va">${EXONS}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="va">GTF</span><span class="op">=</span>genomes/GCF_009914755.1/genomic.gtf</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="va">EXONS</span><span class="op">=</span>genomes/GCF_009914755.1/exons.fna</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> subseq <span class="at">--gtf</span> <span class="va">${GTF}</span> <span class="at">--feature</span> exon <span class="va">${GENOME}</span> <span class="op">&gt;</span><span class="va">${EXONS}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this case we’re using the GTF file, restricted only to exon features (column 3), to extract all exonic sequence from the genome into a fasta file.</p>
 <p>The first two records:</p>
 <pre><code>&gt;NC_060931.1_59220-59296:- LOC124906657
@@ -677,18 +695,18 @@ TAACAATTTGGACAAGACAGCAAATGCTATTGTCCAAGTTTTCTAAAGAAGAATCTGAAG
 TGAAATGACATCAAGAGACCTATCAAGACCTGTATCCAGGAAAAG</code></pre>
 <p>In this case, <code>seqkit</code> has given a sequence identifier corresponding to the location and strand of the feature in the format <code>SEQUENCE_START-STOP:STRAND</code>, and added the contents of the <code>gene_id</code> tag from the feature following a space. In this case an NCBI gene identifier <code>LOC124906657</code>.</p>
 <p>We can also extract arbitrary sequence ranges from fastx files. First we need to <strong>index</strong> the file we want to extract sequence from. Indexes play a big role in ’omics. Just like in a book, an index allows us to rapidly skip to a particular region of interest without scanning the entire volume. Indexes can be content based (as in books), as we’ll see when we get to sequencing mapping, or they can be positional (more like a table of contents). Here we’ll make a positional index.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> faidx <span class="va">$GENOME</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> faidx <span class="va">$GENOME</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This creates the file <code>GCF_009914755.1_T2T-CHM13v2.0_genomic.fna.fai</code>. It has a pretty simple format. Five tab-separated columns giving the sequence ID, how long it is, where it starts in the file, how many bases are on each line, and the length of each line in bytes.</p>
 <pre><code>NC_060925.1 248387328   87  80  81
 NC_060926.1 242696752   251492344   80  81
 NC_060927.1 201105948   497222893   80  81
 ...</code></pre>
 <p>To extract after indexing:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> faidx <span class="va">$GENOME</span> NC_060927.1:10000000-10000200</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> faidx <span class="va">$GENOME</span> NC_060927.1:10000000-10000200</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Produces:</p>
 <pre><code>&gt;NC_060927.1:10000000-10000200
 GAGCTGCTGTCCTTTAAATCCACATTGGGGATGAAGGTCCCTCAGGTGTCAATACTGGAT
@@ -696,13 +714,13 @@ GTCCCTCCACCCAATGCCAGTTTGTACCCCCAGAAAGAGGGCCCCTGTGGGTTCTGCTTG
 AGCTCCCCAAGGGCCCATCAGAGTCTGTCCCTCCACCTTGCTGCTGTGCCCCCTCTGGAA
 GTGCTGTCCTGTGAGAGGGCA</code></pre>
 <p>You can also extract sequences using a list of sequence identifiers, or by matching identifiers (or by matching the sequences themselves) with a regular expression. Our RNA file has gene names in the comment section of the header. We can search those like this:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="va">RNA</span><span class="op">=</span>genomes/GCF_009914755.1/rna.fna</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> grep <span class="at">-n</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">".ryl .ydrocarbon"</span> <span class="va">$RNA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="va">RNA</span><span class="op">=</span>genomes/GCF_009914755.1/rna.fna</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> grep <span class="at">-n</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">".ryl .ydrocarbon"</span> <span class="va">$RNA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This will return sequences with headers like:</p>
 <pre><code>&gt;NM_001033054.3 Homo sapiens aryl hydrocarbon receptor interacting protein like 1 (AIPL1), transcript variant 2, mRNA
 &gt;XM_054336619.1 PREDICTED: Homo sapiens aryl hydrocarbon receptor nuclear translocator (ARNT), transcript variant X25, mRNA</code></pre>
-<p>There are many, many more things you can do with seqkit, but we’re going to move on to another tool.</p>
+<p>There are many, many more things you can do with seqkit, but we’re going to move on for now.</p>
 
 
 </section>
