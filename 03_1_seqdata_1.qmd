@@ -15,13 +15,16 @@ Now that we've covered the basics of Linux, BASH, SLURM and HPC topics in genera
 
 ## File formats
 
-Sequence data are relatively straightforward. Nucleotide sequence data are typically stored as character strings consisting primarily of A (adenine), G (guanine), C (cytosine), or T (thymine). Even when we sequence RNA, we typically represent the uracil's as T instead of U. There are cases where sequences are stored with ambiguities, in which case [IUPAC ambiguity codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) are used (e.g. "R" for "G or A", or "N" for any nucleotide). Amino acid sequence data are similarly stored as character strings using single-letter abbreviations, also [per IUPAC](https://iupac.qmul.ac.uk/AminoAcid/AA1n2.html). 
+Sequence data are relatively straightforward. Nucleotide sequence data are typically stored as character strings consisting primarily of A (adenine), G (guanine), C (cytosine), or T (thymine). RNA does not use thymine, but uracil, so sometimes, but not always, when we determine RNA sequences, we represent uracil as U. 
+There are cases where sequences are are written down with ambiguous bases. This may be because there is uncertainty about what the true base is at a given position, or because you want to indicate that the true base varies. In these cases, [IUPAC ambiguity codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) are used. There are ambiguity codes for all possible combinations of bases. One example is "R", meaning "G or A". Probably the one you'll see the most is "N" which means "A, C, G, or T". 
+
+Amino acid sequence data are similarly stored as character strings using single-letter abbreviations, also [per IUPAC](https://iupac.qmul.ac.uk/AminoAcid/AA1n2.html). 
 
 ### `FASTA`
 
-In the case of both nucleotide and amino acid sequences, the most basic file format is known as [`FASTA`](https://en.wikipedia.org/wiki/FASTA_format). It is pronounced variously as "fast-ay", "fast-uh", or if maybe if you're from the UK "fahstuh". 
+In the case of both nucleotide and amino acid sequences, the most basic file format is known as [`FASTA`](https://en.wikipedia.org/wiki/FASTA_format). It is pronounced variously as "fast-A", "fast-uh", or if you're from the UK, possibly "fahstuh". 
 
-FASTA format is very simple. A sequence record consists of a header line, beginning with a `>` and immediately followed by a sequence name, and one or more following lines containing a sequence. This can be as simple as:
+FASTA format is very simple. A sequence record consists of a header line, beginning with a `>` and immediately followed by a sequence name. Following the header line, there are one or more lines containing a sequence. This can be as simple as:
 
 ```
 >Sequence1
@@ -48,7 +51,7 @@ cctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccctaaccc
 
 In this case, the name `CM042378.1` is an accession number for the sequence at [NCBI](https://www.ncbi.nlm.nih.gov). Everything starting with the first space is extra information and is **usually ignored** by programs that accept FASTA sequences. Only the text after `>` and before the first space should be considered the sequence name. 
 
-FASTA files can contain multiple sequences like so:
+FASTA files can contain multiple sequences like so (in this case, amino acids):
 
 ```
 >101020_0:000000
@@ -59,11 +62,11 @@ MCPRNADINILKLKAFPFSLEDRAKSWLIDLPTGHIDSWEKMMSEFLTKYFPASKITVMRKQITGIQQGPEETFCAYYER
 MEACNCIEPQWPADELLIKYQYISDFFIAIAYFSIPLELIYFVKKSAVFPYRWVL
 ```
 
-You may notice that in above sequences we have a mix of upper and lower-case letters. These do not change the meaning of the sequence itself, but are a form of sequence **annotation**. In nucleotide sequences, we typically use lower-case letters to indicate that sequences have been identified by some algorithm as **repetitive** or **low-complexity**. This is referred to as "soft-masking" because some algorithms will take this as a signal to ignore the bases, without our having to change them to `N` (referred to as "hard-masking"). 
+You may notice that in above sequences we have a mix of upper and lower-case letters. These do not change the meaning of the sequence itself, but are a form of sequence **annotation**. In nucleotide sequences, we typically use lower-case letters to indicate that sequences have been identified by some algorithm as **repetitive** or **low-complexity**. This is referred to as **soft-masking**. The bases are "masked" because some algorithms will take this as a signal to ignore the bases. They are "soft-masked" because we didn't actually remove any information from the file. It is also possible to **hard-mask** bases, in which case we change masked bases to `N`. 
 
-Because telomeric sequences at chromosome ends are typically highly repetitive, when a whole chromosome has been assembled and annotated, a large fraction of the first few kilobases is often soft-masked. 
+A common place to observe masked bases is in telomeres (at chromosome ends). Telomeric sequences are typically highly repetitive, so a large fraction of the first few kilobases is often soft-masked (as with `CM042378.1` above). 
 
-`FASTA` format contains only sequences. Because of this, it's only really suitable for sequences we are pretty confident in. That is to say, we believe that each of the bases or amino acids in the sequence has been correctly determined. In the case of high-throughput sequencing data, however, it's not always the case that each base is known with a high degree of confidence. That leads us to our second file format...
+`FASTA` format contains only sequences. Because of this, it's only really suitable for sequences we are pretty confident in. That is to say, we should believe that each of the bases or amino acids in the sequence has been correctly determined. In the case of high-throughput sequencing data, however, it's not always the case that each base is known with a high degree of confidence. That leads us to our second file format...
 
 ### `FASTQ`
 
@@ -72,9 +75,9 @@ Because telomeric sequences at chromosome ends are typically highly repetitive, 
 1. A header line starting with `@` (instead of `>`) immediately followed by a sequence identifier. 
 2. A sequence (usually a nucleotide sequence). Unlike `FASTA`, all on a single line. 
 3. A line beginning with `+`, typically followed either by nothing, or the sequence name repeated. 
-4. A line containing ASCII-character-encoded, PHRED-scaled base qualities. 
+4. A line containing ASCII-character-encoded, Phred-scaled base qualities. 
 
-A single `FASTQ` record looks like this, but as with `FASTA`, many records can be put in a single file:
+A single `FASTQ` record looks like this:
 
 ```
 @A01010:43:H2YNYDSXY:1:1101:1108:1000 1:N:0:GCGTATTAAT+TGCGGTGTTG
@@ -83,13 +86,19 @@ NGTCACTCTATGAGTTTTTACTTCCTCCTTATCAACAGTGCCGGCCACGTTTGTTAAAAATGTTTATTTCTTAACTTGGG
 #FFF:FFFFFFFFFF::FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFF::FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FF,FF
 ```
 
-This sequence was generated by an Illumina sequencer (more on that later). The sequence identifier contains lots of [information about the sequencing run](https://help.basespace.illumina.com/files-used-by-basespace/fastq-files), but we rarely, if ever, need to parse that ourselves, so we won't break it down here. 
+As with `FASTA`, many records can be put in a single file.
+
+The sequence above was generated by an Illumina sequencer (more on that later). The sequence identifier contains lots of [information about the sequencing run](https://help.basespace.illumina.com/files-used-by-basespace/fastq-files), but we rarely, if ever, need to parse that ourselves, so we won't break it down here. 
 
 The next two lines are pretty straightforward. The final line requires some explanation. To repeat, it contains *ASCII-character-encoded, Phred-scaled base qualities*. 
 
-ASCII-encoded refers to the fact that each [ASCII character](https://en.wikipedia.org/wiki/ASCII) in the string codes a quality score. The standard translation for data produced from the early 2010s on is referred to as [`Sanger` encoding](https://en.wikipedia.org/wiki/FASTQ_format#Encoding), which means that quality scores from 0-93 are encoded by characters 33-126 in the ASCII table. For an easy translation see [this website](https://broadinstitute.github.io/picard/explain-qualities.html) and enter the quality string above. 
+ASCII-encoded refers to the fact that each [ASCII character](https://en.wikipedia.org/wiki/ASCII) in the string codes a quality score. The standard translation for data produced from the early 2010s on is referred to as [`Sanger` encoding](https://en.wikipedia.org/wiki/FASTQ_format#Encoding), which means that quality scores from 0-93 are encoded by characters 33-126 in the ASCII table. For an easy translation see [this website](https://broadinstitute.github.io/picard/explain-qualities.html) and enter the quality string above. You should get this:
 
-The quality scores themselves are [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score). They have a log-scaled relationship with the probability that a base has been called in error. The quality score **Q** is related to the error probability **P** by the following equations:
+```
+ 2,37,37,37,25,37,37,37,37,37,37,37,37,37,37,25,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,25,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,25,37,37,11,37,37
+ ```
+
+The numeric quality scores themselves are [Phred-scaled](https://en.wikipedia.org/wiki/Phred_quality_score). They have a log-scaled relationship with the probability that a base has been called in error. The quality score **Q** is related to the error probability **P** by the following equations:
 
 $$ Q = -10 log_{10} P$$
 $$ P = 10^{-Q/10} $$
@@ -105,13 +114,15 @@ So:
 | 50                  | 1 in 100,000                      | 99.999%             |
 | 60                  | 1 in 1,000,000                    | 99.9999%      
 
-Phred-scaled error probabilities crop up repeatedly in genomics, so it's a good idea to get a handle on them now. 
+The higher the Phred score, the lower the probability of error. For every increase of 10 in the Phred score, the probability decreases by a factor of 1/10. 
+
+Phred-scaled error probabilities crop up repeatedly in genomics (though base qualities are the only time you'll see them ASCII-encoded), so it's a good idea to get a handle on them now. 
 
 ## Manipulating `FASTA` and `FASTQ`
 
 In this section we're going to introduce some approaches for manipulating fasta and fastq files. We'll start simple, with tools we have already seen, and then introduce some pieces of software that will be faster and suitable for more complex tasks. 
 
-Let's start by downloading two versions of the human genome: GRCh38, which has been in use for many years (with occasional patches and updates), but has some unfinished gaps, and CHM13, a telomere-to-telomere assembly of a human genome. We're going to get them from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), a US government organization that houses a staggering amount of sequence data, both raw output from sequencers, and finished genome and gene sequences. We're going to use a tool developed by NCBI to download data called `datasets`. If you visit [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/) and [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/) you'll see that they provide you with a datasets command to run that will download several files for each genome (we'll modify it slightly to get a gtf annotation in addition to gff2):
+Let's start by downloading two versions of the human genome: GRCh38, which has been in use for many years (with occasional patches and updates), but has some unfinished gaps, and CHM13, a telomere-to-telomere assembly of a human genome. We're going to get them from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), a US government organization that houses a staggering amount of sequence data, both raw output from sequencers, and finished genome and gene sequences. We're going to use a tool developed by NCBI to download data called `datasets`. If you visit [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/) and [this page](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/) you'll see that they provide you with a `datasets` command to run that will download several files for each genome (we'll modify it slightly to get a gtf annotation in addition to gff3):
 
 ```bash
 module load datasets/16.13.0
@@ -152,14 +163,14 @@ You should see that each directory contains a number of files:
 
 Let's explore the genome sequences a bit with some commands we already know:
 
-How many sequences are in each genome fasta? The regular expression `^>" matches only lines that begin with `>`, which is every header line, and no sequence lines. 
+How many sequences are in each genome fasta? The regular expression `^>` matches only lines that begin with `>`, which is every header line, and no sequence lines. 
 
 ```bash
 grep -c "^>" genomes/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna 
 grep -c "^>" genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
 ```
 
-There are so many sequences GRCh38 because it has some alternate haplotypes and unplaced sequences. T2T does not have those. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?
+There are so many sequences in GRCh38 because it has some alternate haplotypes and unplaced sequences. The T2T genome does not have those. 
 
 We can't count fastq records this way because "@" and "+" can both be present in the quality string. 
 
@@ -178,24 +189,32 @@ bioawk -c fastx '{print $name, gc($seq), length($seq), $comment}' genomes/GCF_00
 bioawk -c fastx '{print $name, gc($seq),length($seq), $comment}' genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
 ```
 
-`bioawk` has built in functions, like `gc()` and built-in variables like `$seq`, `$name`, and `$comment` that allow you to access different parts of a sequence record. `-c fastx` indicates that we're giving it a fasta or fastq file. 
+`bioawk` has built in functions, like `gc()` and built-in variables like `$seq`, `$name`, and `$comment` that allow you to access different parts of a sequence record. `-c fastx` indicates that we're giving it a fasta or fastq file. Note that for this fasta file `$comment` refers to the text after the first space in the sequence identifier. 
 
+::: {.callout-tip}
+### Question
 GRCh38 has some alternate haplotypes and unplaced sequences. Why are there 24 sequences in the T2T genome when there are only 23 pairs of chromosomes in the human genome?
+
+Should there actually be 25 sequences?
+:::
 
 As in `awk` you can use `BEGIN` and `END` blocks to execute code before and after processing a file. To get the mean GC content in the entire T2T genome:
 
 ```bash
 bioawk -c fastx '{tl+=length($seq); gcl+=length($seq) * gc($seq)}END{print gcl / tl}' genomes/GCF_009914755.1/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna
 ```
-With fastq files we can do something similar (here we pass the stdout to `head` because there are millions of sequences in that fastq file):
+
+Note that above we are weighting the gc content of each chromosome by its length to get the correct GC content genome-wide. 
+
+With fastq files we can do something similar (in this example we pass the stdout to `head` because there are millions of sequences in that fastq file and it would take a while to process):
 
 ```bash
-FQ=/core/cbc/tutorials/workshopdirs/RNA-seq-with-reference-genome-and-annotation/01_raw_data/SRR12475447_1.fastq.gz
+FQ=/archive/labs/wegrzyn/HeidiGolden_ddRAD_April2022/raw_fastq/Golden-Pool_R1_001.fastq.gz 
 
 bioawk -c fastx '{print $name, gc($seq),length($seq), meanqual($qual)}' $FQ | head -n 100
 ```
 
-Note that for fastq files, bioawk has a `$qual` variable for the quality scores. 
+Note that for fastq files, bioawk has a `$qual` variable for the quality scores. Unfortunately the `meanqual` function just takes the mean of the Phred-scaled quality scores. This gives the geometric mean of the error probabilities. The arithmetic mean, which when multiplied by the sequence length gives the expected number of errors, would be a much more useful and intuitive output. 
 
 In principle, you could use bioawk and Linux tools piped together to do all kinds of manipulation and filtering. We usually just use them for quick inspection and summarization though, as we have faster purpose-built tools we can use for large datasets. 
 
@@ -204,7 +223,7 @@ In principle, you could use bioawk and Linux tools piped together to do all kind
 [`seqkit`](https://bioinf.shenwei.me/seqkit/) is one such fast, purpose-built tool for manipulating fastx files. It has tons of features, and skimming through the documentation is worth your time. It may take a minute, because at the time of writing, `seqkit` had 38 subcommands to accomplish various tasks. We'll look at just a couple here. 
 
 ::: {.callout-note}
-Note that the model of developing a "toolkit" containing many individual tools (invoked commonly with the syntax `<toolkit> <tool> --options` is a common one in bioinformatics (see also samtools, bcftools, vcftools, bedtools, gatk, kat, and others). In this course we'll typically only be working through a handful of tools in any given toolkit, but the above advice usually holds, that it can be well worth your time to acquaint yourself with other features by skimming the documentation. 
+Note that the model of developing a "toolkit" containing many individual tools (invoked commonly with the syntax `<toolkit> <tool> <arguments>` is a common one in bioinformatics (see also samtools, bcftools, vcftools, bedtools, gatk, kat, and others). In this course we'll typically only be working through a handful of tools in any given toolkit, but the above advice usually holds: it can be well worth your time to acquaint yourself with other features by skimming the documentation. 
 :::
 
 #### Summarizing files
@@ -308,5 +327,5 @@ This will return sequences with headers like:
 >XM_054336619.1 PREDICTED: Homo sapiens aryl hydrocarbon receptor nuclear translocator (ARNT), transcript variant X25, mRNA
 ```
 
-There are many, many more things you can do with seqkit, but we're going to move on to another tool. 
+There are many, many more things you can do with seqkit, but we're going to move on for now. 
 
