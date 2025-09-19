@@ -390,37 +390,39 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<p>In this chapter we cover three major sources of high-throughput sequencing data. Each has different characteristics and hence different applications. We will cover these basic characteristics before moving on to quality control analyses in the next chapter. There is <a href="https://sandiegomics.com/ngs_companies/">innovation</a> and <a href="https://www.nature.com/articles/d41586-023-00512-4">competition</a> in this space, so things may change.</p>
+<p>In this chapter we cover three major sources of high-throughput sequencing data. Each has different characteristics and hence different applications. We will cover these basic characteristics before moving on to quality control analyses in the next chapter. There is <a href="https://sandiegomics.com/ngs_companies/">innovation</a> and <a href="https://www.nature.com/articles/d41586-023-00512-4">competition</a> in this space, so expect things to change.</p>
 <p>A few terms:</p>
 <ul>
 <li><strong>sequence read</strong> or <strong>sequence</strong> or <strong>read</strong>: a nucleotide sequence produced by a DNA sequencer.</li>
-<li><strong>paired-end sequencing</strong>: the practice of determining short nucleotide sequences from each end of a single DNA fragment.</li>
-<li><strong>sequence library</strong>: a set of DNA fragments that have been prepared for sequencing.</li>
-<li><strong>flow cell</strong>: for most platforms, a single consumable sequencing unit.</li>
+<li><strong>paired-end sequencing</strong>: a sequencing method that determines short nucleotide sequences from each end of a single sequence fragment.</li>
+<li><strong>sequence library</strong>: a set of sequence fragments that have been prepared for sequencing.</li>
+<li><strong>flow cell</strong>: for most platforms, the basic consumable sequencing unit.</li>
 </ul>
+<p>It’s important to know that to a large extent, the explosive growth of genomics and bioinformatics has been due to dramatically declining sequencing costs. Check out this page <a href="https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data">showing declining sequencing</a> costs over time, and this page <a href="https://www.jefftk.com/p/growth-of-publicly-available-genetic-sequencing-data">showing the explosive growth in sequence data deposition in the SRA</a>, a public archive of raw sequence data we will learn more about later.</p>
 <section id="illumina" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="illumina"><span class="header-section-number">10.1</span> Illumina</h2>
-<p><a href="https://www.illumina.com">Illumina</a> is a company whose name is virtually synonymous with its sequencing format. Data produced by Illumina has the following characteristics:</p>
+<p><a href="https://www.illumina.com">Illumina</a> is a company whose name is virtually synonymous with its sequencing format. Most data produced by Illumina has the following characteristics:</p>
 <ul>
 <li>Reads are short. Typically 100-300bp.</li>
 <li>Reads are usually paired end, though single-end reads are possible.</li>
 <li>Reads are accurate. Mean raw sequence quality of around Q35 (0.03% error rate).</li>
-<li>Throughput is high. The smaller MiSeq instrument can produce 15Gb of data per flow cell. The NovaSeq X can produce 8Tb (these stats subject to constant change).</li>
-<li>Sequencing is done by synthesis. This means many mostly identical copies of a single molecular are created to generate the signal that is read by the instrument.</li>
-<li>Per-base cost is low.</li>
+<li>Throughput is high. The smaller MiSeq instrument can produce 15Gb of data per flow cell. The NovaSeq X can produce 8Tb (these stats subject to change).</li>
+<li>Sequencing is done by synthesis. This means many mostly identical copies of a single molecule are created to generate the signal that is read by the instrument.</li>
+<li>Per-base cost is very low.</li>
 </ul>
-<p>Illumina is the workhorse of high-throughput sequencing. Any application that requires lots of sequence data will use Illumina. Expression profiling (as we are about to do) and small variant genotyping are classic applications of Illumina. Repetitive and low-complexity genomic regions common to many organisms make it difficult to use Illumina data for genome or transcriptome assembly, to detect structural variants accurately, or to detect small variants in such regions.</p>
+<p>Illumina is the workhorse of high-throughput sequencing. Any application that requires lots of sequence data will use Illumina. Expression profiling (as we are about to get into this semester) and small variant genotyping are classic applications of Illumina data. Repetitive and low-complexity genomic regions common to many organisms make it difficult to use Illumina data for genome or transcriptome assembly, to detect structural variants accurately, or to detect small variants in such regions (some of these issues will be covered in ISG5302 and ISG5312).</p>
 <p>Illumina sequence is typically paired end, which means any given fragment of DNA is sequenced from either end, yielding two sequence reads. These “forward” and “reverse” reads are typically delivered in two separate files <code>sample_R1.fastq.gz</code> and <code>sample_R2.fastq.gz</code>. Mate pairs are in the same order in each file, so you should never do anything to disrupt that order. All commonly used tools for filtering or trimming Illumina data are aware of this.</p>
-<p>DNA fragments put on the sequencer vary in length, but unless you are sequencing short RNAs, they are typically 200-600bp long. Many fragments are longer than the sum of the two read lengths, so for many fragments, a segment in the middle remains unsequenced, while for others, there is a region of overlap between the two reads. For some short fragments, the read length is longer than the fragment, so sequence reads will pass through the template fragment and into sequencing adapter. This is referred to as “read-through” adapter contamination and it should be trimmed (see the next section).</p>
+<p>DNA fragments put on the sequencer vary in length, but unless you are sequencing short RNAs (miRNA, snoRNA, etc), they are typically 100-600bp long. Many fragments are longer than the sum of the two read lengths, and in those cases a segment in the middle remains unsequenced. Fragments shorter than the sum of the two read lengths have a region of overlap between the two reads. For some short fragments, the read length is longer than the fragment, so sequence reads will pass through the template fragment and into sequencing adapter. This is referred to as “read-through” adapter contamination and it should be trimmed (see the next section).</p>
+<p>Competitors have recently emerged in the high-throughput, short read space including <a href="https://en.mgitech.cn/">MGI</a>, <a href="https://www.elementbiosciences.com/">Element Biosciences</a> and <a href="https://www.ultimagenomics.com/">Ultima Genomics</a>.</p>
 </section>
 <section id="pacbio" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="pacbio"><span class="header-section-number">10.2</span> Pacbio</h2>
 <p><a href="https://www.pacb.com">PacBio</a> is another important platform. Their most successful product is “HiFi” sequencing. HiFi data has the following characteristics:</p>
 <ul>
 <li>Reads are long. Typically 10-20kb.</li>
-<li>Reads are accurate, though not quite as good as Illumina at around Q30.</li>
+<li>Reads are accurate, though not quite as good as Illumina at around Q30 (error rate ~ 0.001).</li>
 <li>Reads are NOT paired.</li>
-<li>Single molecules are sequenced (sort of!). For HiFi, reads are the consensus of many copies of a single molecule (you will learn more details in ISG5301).</li>
+<li>Single molecules are sequenced (sort of!). For HiFi, reads are the consensus of many reads derived from a single double-stranded molecule (you will learn more details in ISG5301).</li>
 <li>Throughput is moderately high, with around 90Gb of data per flow cell on the Revio instrument.</li>
 <li>Per-base cost is high compared to Illumina. On par with long-read competitor Oxford Nanopore.</li>
 </ul>
@@ -430,16 +432,17 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="10.3" class="anchored" data-anchor-id="oxford-nanopore-technologies"><span class="header-section-number">10.3</span> Oxford Nanopore Technologies</h2>
 <p><a href="https://nanoporetech.com">ONT</a> is the last platform we’ll cover. They have a range of products with diverse uses, but the key characteristics are:</p>
 <ul>
-<li>Reads can be <strong>very</strong> long. Up to 4 megabases with an ultra-long library prep. Standard preps are more like 15-40 kilobases with a fat tail of much longer reads into the 100’s of kb.<br>
+<li>Reads can be <strong>very</strong> long. Up to 4 megabases with an ultra-long library prep. Standard preps are more like 15-40 kilobases with a tail of much longer reads into the 100’s of kb.<br>
 </li>
-<li>Reads have variable accuracy. Current chemistry and base callers can produce around Q20 reads with the standard approach. “Duplex” sequencing can yield higher accuracy, but lower throughput. Older data is more like Q13.</li>
-<li>Raw signal data is produced, which can be reinterpreted when new base-calling software is released, improving accuracy.</li>
+<li>Reads have variable accuracy. Current chemistry and base callers can produce around Q20 reads with the standard approach. Older data is more like Q13.</li>
+<li>Raw signal data is delivered, rather than base calls. This data can be reinterpreted, potentially with higher accuracy, when new base-calling software is released.</li>
 <li>Single molecules are sequenced.</li>
-<li>Methylation can be detected as part of the base-calling process.</li>
+<li>Methylation can be detected as part of the base-calling process without any special library preparation.</li>
+<li>RNA can be directly sequenced (without conversion to cDNA).</li>
 <li>Throughput can be highly variable depending on organism, instrument, and library prep. The extremely tiny, portable MinION: 48Gb. 60-200Gb per flow cell on the production instrument PromethION.</li>
 <li>Per-base cost on par with PacBio.</li>
 </ul>
-<p>ONT produces by far the longest reads. At the moment, these are required to produce genuinely complete, unfragmented chromosome-scale assemblies of larger eukaryotic genomes. The very long reads are necessary to resolve messy arrays of tandem repeats, though PacBio is often used in these assemblies as well, because the lower error rate yields a lower error rate in the final assembly, and allows assembly of phased diploid genomes. ONT is also good for resolving transcript isoforms. Detecting modified (i.e.&nbsp;methylated) bases is also an important application of ONT data.</p>
+<p>ONT produces by far the longest reads. At the moment, these are required to produce genuinely complete, unfragmented chromosome-scale assemblies of larger eukaryotic genomes. The very long reads are necessary to resolve messy arrays of tandem repeats, though PacBio is often used in these assemblies as well because the lower error rate in the reads yields a lower error rate in the final assembly, and allows assembly of phased diploid genomes. ONT is also good for resolving transcript isoforms through sequencing cDNA or directly sequencing RNA. Detecting modified (i.e.&nbsp;methylated) bases is also an important application of ONT data.</p>
 <p>Raw signal data is in fast5 (now deprecated) or pod5 formats. These files are needed if re-basecalling or calling modified bases is desired.</p>
 
 

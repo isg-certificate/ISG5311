@@ -390,7 +390,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#detecting-mixtures-and-contamination" id="toc-detecting-mixtures-and-contamination" class="nav-link" data-scroll-target="#detecting-mixtures-and-contamination"><span class="header-section-number">11.1.3</span> Detecting mixtures and contamination</a></li>
   </ul></li>
   <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc"><span class="header-section-number">11.2</span> MultiQC</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">11.3</span> Exercises:</a></li>
   </ul>
 </nav>
     </div>
@@ -437,12 +436,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Trimming</li>
 <li>Contamination detection</li>
 </ol>
-<p>The only one that is absolutely required across all data types and experiments is the collection of basic summaries. Your sequencing center may be lovely and your lab scientists ultra-competent, but you can’t just trust that you’ve got the data you expect, you have to actually look at it. There is no worse feeling than troubleshooting a pipeline step-by-step backward from the final products, only to discover if you had just taken a few minutes to scrutinize the data before you got started, the last many hours (days? weeks?) of your work would not have been wasted. Once you look at summary data, you can decide whether you can proceed, or if further action is required.</p>
+<p>The only one that is absolutely required across all data types and experiments is the collection of basic summaries. Your sequencing center may be lovely and your lab scientists ultra-competent, but you can’t just trust that you’ve got the data you expect, you have to actually look at it. There is no worse feeling than troubleshooting a pipeline step-by-step backward from the final products, only to discover the problem is the data and if you had just taken a few minutes to scrutinize it before you got started, the last many hours (days? weeks?) of your work would not have been wasted. Not every problem will be apparent with standard QC, but many common ones will. Once you look at summary data, you can decide whether you can proceed, or if further action is required.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Unlike previous chapters, these sections contain dummy code that does not refer to real files on Xanadu. The exercise for this chapter will ask you to run this software and examine the output.</p>
+</div>
+</div>
 <section id="collecting-basic-summaries" class="level3" data-number="11.1.1">
 <h3 data-number="11.1.1" class="anchored" data-anchor-id="collecting-basic-summaries"><span class="header-section-number">11.1.1</span> Collecting basic summaries</h3>
 <section id="illumina-data" class="level4" data-number="11.1.1.1">
 <h4 data-number="11.1.1.1" class="anchored" data-anchor-id="illumina-data"><span class="header-section-number">11.1.1.1</span> Illumina data</h4>
-<p>We typically use <code>fastqc</code> to characterize Illumina data. It’s been around a long time, and it does a fine job of covering summaries we want to look at for most applications. It flags statistics when they are worrisome, but this is less useful, because these flags are tuned to apply to whole genome sequencing data (WGS), so if you have a sequencing library that has different characteristics (e.g.&nbsp;RNA-seq), fastqc will often flag it as problematic though it may not be.</p>
+<p>We typically use <code>fastqc</code> to characterize Illumina data. It’s been around a long time, and it does a fine job of covering summaries we want to look at for most applications. It flags statistics when they are worrisome, but this flagging is not always useful, because it is tuned to apply to whole genome sequencing data (WGS). If you have a sequencing library that has different characteristics (e.g.&nbsp;RNA-seq), fastqc will often flag it as problematic though it may not be.</p>
 <p>Paired-end sequence is typically delivered in two separate files, which we analyze separately with fastqc.</p>
 <p>The usage for fastqc is very simple:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.11.7</span>
@@ -450,24 +462,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-o</span> output_dir input_dir/mysequences.fastq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can glob the command like this and it will churn through all the files matching the glob pattern:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-o</span> output_dir input_dir/<span class="pp">*</span>.fastq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The main output from fastqc is an HTML file which is viewed in a web browser. You can also aggregate many of these HTML files into a single report using multiqc (see below).</p>
+<p>The main output from fastqc is an HTML file which is viewed in a web browser. You can also aggregate many of these HTML files into a single report using <code>multiqc</code> (see below).</p>
 <p>For an explanation of fastqc output, please watch <a href="https://www.youtube.com/watch?v=bz93ReOv87Y">this video</a> created by the developers, look at their example reports <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">here</a> and read the brief descriptions of the analysis modules <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/">here</a>.</p>
 </section>
 <section id="oxford-nanopore-technologies-data" class="level4" data-number="11.1.1.2">
 <h4 data-number="11.1.1.2" class="anchored" data-anchor-id="oxford-nanopore-technologies-data"><span class="header-section-number">11.1.1.2</span> Oxford Nanopore Technologies data</h4>
 <p>ONT data straight from the sequencer is a bit more complex than Illumina data. The raw signal data is often delivered alongside fastq files (or sometimes BAM alignment files - more on that later). Furthermore, the data are often chunked up into many smaller files that you may need to concatenate together for further analysis.</p>
-<p>The signal data is delivered in fast5 (deprecated) or pod5 format. You will need the signal data if you want to re-basecall, or do modified basecalling (i.e identify methylated bases). We won’t cover that this semester.</p>
+<p>The signal data is delivered in fast5 (deprecated) or pod5 format. You will need the signal data if you want to re-basecall, or do modified basecalling (i.e identify methylated bases). We won’t cover basecalling this semester.</p>
 <p>When basecalling is complete, a file, usually named <code>sequencing_summary.txt</code> is produced. This file can be used to quickly generate summaries of the quality and length distribution of the reads. This information can be generated directly from the reads themselves, but it’s slower. While there can’t be much length variation in Illumina data (even if you quality trim it, every read is going to be &lt;= 300bp), for Nanopore data the length distribution can be very wide and highly variable among runs and so it’s a key variable for understanding your data.</p>
 <p>Worth noting is that after basecalling a <code>report.html</code> file is also generated. This is worth looking at.</p>
 <p>If you download Nanopore sequence data from a public archive, the raw signal data, sequencing_summary.txt, and report.html are unlikely to have been archived alongside the basecalls.</p>
-<p>For Nanopore data, we typically use either <a href="https://github.com/a-slide/pycoQC">pycoQC</a> or <a href="https://github.com/wdecoster/NanoPlot">NanoPlot</a> to summarize.</p>
-<p>To run NanoPlot on fastq data (<code>-t 4</code> for 4 cpus):</p>
+<p>For Nanopore data, we typically use either <a href="https://github.com/a-slide/pycoQC">pycoQC</a> or <a href="https://github.com/wdecoster/NanoPlot">NanoPlot</a> to summarize because they emphasize length variation and show its relationship to sequence quality.</p>
+<p>To run NanoPlot on fastq files:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load NanoPlot/1.41.6</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">NanoPlot</span> <span class="at">--fastq</span> input_dir/mysample.fastq.gz <span class="at">-o</span> output_dir <span class="at">-p</span> mysample <span class="at">-t</span> 4 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Or on <code>sequencing_summary.txt</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">NanoPlot</span> <span class="at">--summary</span> input_dir/sequencing_summary.txt <span class="at">-o</span> output_dir <span class="at">-p</span> mysample <span class="at">-t</span> 4 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>pycoQC can only accept the summary file like this:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here we use <code>-t 4</code> to specify 4 cpus. Remember:</p>
+<ul>
+<li>Most software that can use multiple CPUs needs to be <em>told</em> how many CPUs it can use.</li>
+<li>When you tell a piece of software it can use <code>n</code> cpus, you need to request <code>n</code> CPUS (or possibly more, if you are piping commands together) from SLURM with <code>--cpus-per-task n</code> in your header or on the command line.</li>
+</ul>
+</div>
+</div>
+<p><code>pycoQC</code> can only accept the summary file like this:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load pycoQC/2.5.2</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pycoQC</span> <span class="at">-f</span> sequencing_summary.txt <span class="at">-o</span> pycoQC_output.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -483,14 +512,22 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>ONT’s technologies have been changing more rapidly than other major platforms over the last several years. On both the instrument side (nanopores, chemistry) and the processing side (basecalling from raw signal) there have been substantial improvements in recent years. Because of this it is very important to keep track of the instrument, nanopore version, kit, basecalling software version, and the basecalling model selected in the software when dealing with nanopore data. Some downstream applications will want this information, as the implied error profiles can be different. Unfortunately it is not always provided by researchers who upload data to public repositories.</p>
+<p>ONT’s technologies have been changing more rapidly than other major platforms over the last several years. On both the instrument side (nanopores, chemistry) and the processing side (basecalling from raw signal) there have been substantial improvements in recent years. Because of this it is very important to keep track of the following:</p>
+<ul>
+<li>The instrument</li>
+<li>Nanopore version</li>
+<li>Sequencing kit</li>
+<li>Basecalling software version</li>
+<li>Basecalling model</li>
+</ul>
+<p>Some downstream applications will want this information, as the implied error profiles can be different. Unfortunately this information is not always provided by researchers who upload data to public repositories.</p>
 </div>
 </div>
 </section>
 <section id="pacbio" class="level4" data-number="11.1.1.3">
 <h4 data-number="11.1.1.3" class="anchored" data-anchor-id="pacbio"><span class="header-section-number">11.1.1.3</span> PacBio</h4>
-<p>PacBio HiFi data is nice and simple. It’s not paired-end, and since we don’t usually look at the “subreads” that make up the HiFi consensus sequences, we are usually only concerned with a single fastq file.</p>
-<p>To summarize, you can use PacBio’s proprietary smrtlink software and feed it an XML formatted file produced by the sequencer. Like the helper files from ONT, though, these are not typically available in public databases, so we recommend just using NanoPlot on the fastq file, as above.</p>
+<p>PacBio HiFi data is nice and simple. It’s not paired-end, and since we typically only look at the final base calls, and don’t usually scrutinize the raw “subreads” that went into them, we are usually only concerned with a single fastq file.</p>
+<p>PacBio sequencers produce an XML formatted file containing similar data to the ONT <code>sequencing_summary.txt</code> file. PacBio has proprietary software (<a href="https://www.pacb.com/smrt-link/">SMRT LINK</a>) that can read this file and produce a summary. Like the helper files from ONT, though, these are not typically available in public databases so we recommend just using NanoPlot on the fastq file, as above.</p>
 </section>
 </section>
 <section id="trimming" class="level3" data-number="11.1.2">
@@ -501,39 +538,48 @@ Note
 <li>Trimming low quality ends from sequences.</li>
 <li>Removing sequences that have been trimmed too short to be useful in steps 1 and 2.</li>
 </ol>
-<p>As you will note in fastqc outputs, it is not uncommon to get adapter read-through in Illumina data. It’s good to remove this. In many applications a small amount can be tolerated, however. Reference mapping programs mostly do “local” rather than “global” alignment these days, so they are capable of leaving some bases at the end of as sequence unmapped if they don’t seem to fit.</p>
+<p>As you will note in fastqc outputs, it is not uncommon to get adapter read-through in Illumina data. It’s good to remove this. In many applications, however, a small amount can be tolerated. Reference mapping programs mostly do “local” rather than “global” alignment, so they are capable of leaving some bases at the end of a sequence unmapped if they don’t seem to fit.</p>
 <p>To trim adapter contamination, software needs to know what adapters to look for. For some software you will need to provide a fasta file with the specific adapters used in your study. Other software comes pre-loaded with common adapter sequences and you only need to provide them if you’re using something unusual.</p>
-<p>Sequence qualities often decline towards the 3’ ends of sequence fragments in Illumina data. The longer the read, the worse the decline. For most common applications of Illumina data, we don’t need to be extremely stringent with the quality trimming. The Phred-scaled base qualities capture the uncertainty in the base calls reasonably well and are used by many downstream applications. For this reason, unless we have a specific need to tightly control potential base calling errors, we just try to trim out the worst bits.</p>
-<p>Finally, if after trimming adapters and low quality sequence, we wind up with very short sequences (perhaps &lt; 50bp), we typically remove them. This often leaves “orphaned” mate sequences that are long enough and high enough quality to be retained, which are directed to a separate file. Since there usually not that many of these, we often ignore them downstream as they introduce more complexity in handling data for not much benefit.</p>
-<p>Here we’ll use <a href="http://www.usadellab.org/cms/?page=trimmomatic"><code>Trimmomatic</code></a>, a venerable and widely used piece of software. One downside of using it is that it requires that you know what adapter sequences were used to generate the library and provide them. When that information is not available (sometimes published data do not state it) FastQC usually infers it for you (when there is detectable adapter contamination that is). Also, Trimmomatic comes packaged with fasta files for the most common adapters, so this is not really a large barrier.</p>
-<p>There are many other similar useful tools for trimming, such as <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a>, <a href="https://github.com/najoshi/sickle"><code>sickle</code></a> and <a href="https://cutadapt.readthedocs.io/en/stable/"><code>cutadapt</code></a>.</p>
+<p>We usually trim low quality ends from sequences because quality often declines towards the 3’ end on the Illumina platform. The longer the read, the worse the decline. For most common applications of Illumina data, however, we don’t need to be extremely stringent with the quality trimming. The Phred-scaled base qualities capture the uncertainty in the base calls reasonably well and are used by many downstream applications. For this reason, unless we have a specific need to tightly control potential base calling errors, we just try to trim out the worst bits.</p>
+<p>Finally, if after trimming adapters and low quality sequence, we wind up with very short sequences (perhaps &lt; 50bp), we typically remove them because they are of limited utility. This often leaves “orphaned” mate sequences that are long enough and high enough quality to be retained, which are directed to a separate file. Since there usually not that many of these, we often ignore them downstream as they introduce more complexity in handling data for not much benefit.</p>
+<p>Here we’ll use <a href="http://www.usadellab.org/cms/?page=trimmomatic"><code>Trimmomatic</code></a>, a venerable and widely used piece of software. It requires that you know what adapter sequences were used to generate the library and provide them. When that information is not available (sometimes published data do not state it) FastQC usually infers it for you (when there is detectable adapter contamination from commonly used adapter sequence that is). Trimmomatic comes packaged with fasta files for the most common adapters, so this is not really a large barrier.</p>
+<p>There are many other similar useful tools for trimming, such as <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a>, <a href="https://github.com/najoshi/sickle"><code>sickle</code></a>, <a href="https://cutadapt.readthedocs.io/en/stable/"><code>cutadapt</code></a>. <a href="https://github.com/FelixKrueger/TrimGalore"><code>TrimGalore</code></a>, and <a href="https://archive.jgi.doe.gov/data-and-tools/software-tools/bbtools/">BBTools</a>.</p>
 <p>For bioinformatics workflows, we do not typically modify our raw data files in any way (rather, we set permissions to read-only). This means that some steps, like trimming, more or less double the size of our data during the course of analysis. Once you’re fairly certain you’re done with intermediate analysis products like trimmed reads, it’s a good idea to go back and remove them to save storage space.</p>
 <p>To run <code>Trimmomatic</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load Trimmomatic/0.39</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="va">ADAPTERS</span><span class="op">=</span>/isg/shared/apps/Trimmomatic/0.39/adapters/NexteraPE-PE.fa</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-jar</span> <span class="va">$Trimmomatic</span> PE <span class="at">-threads</span> 4 <span class="dt">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-jar</span> <span class="va">${Trimmomatic}</span> PE <span class="at">-threads</span> 4 <span class="dt">\</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        indir/mysample_R1.fastq.gz <span class="dt">\</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        indir/mysample_R2.fastq.gz <span class="dt">\</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        trimdir/mysample_trimmed_R1.fastq.gz trimdir/mysample_trimmed_orphans_R1.fastq.gz <span class="dt">\</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        trimdir/mysample_trimmed_R2.fastq.gz trimdir/mysample_trimmed_orphans_R2.fastq.gz <span class="dt">\</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        ILLUMINACLIP:<span class="st">"</span><span class="va">${ADAPTERS}</span><span class="st">"</span>:2:30:10 <span class="dt">\</span></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        SLIDINGWINDOW:4:25 MINLEN:45</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>A couple of notes: - <code>\</code> at the end of each line tells the bash interpreter to ignore the line break so that all 7 lines above are treated as a single continuous line. This simply allows more clarity with long command lines. - <code>java -jar program.jar &lt;options&gt;</code> is a common way to run programs written in Java. In the module system we usually have the module create an environment variable upon loading that contains the path to the jarfile. Try loading Trimmomatic and doing <code>echo $Trimmomatic</code> now. You can see how it is set by doing <code>module display Trimmomatic/0.39</code> and looking at the <code>setenv</code> line. - <code>ILLUMINACLIP</code> provides the parameters needed to search for adapters. Read through the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">documentation</a> to understand it better. - <code>SLIDINGWINDOW</code> gives parameters for sliding window quality trimming (if any 4 bases drop below a mean Q of 25, the rest of the read is trimmed) - <code>MINLEN</code> should be self-explanatory.</p>
+<p>A couple of notes:</p>
+<ul>
+<li>A bit of BASH usage: <code>\</code> at the end of each line tells the bash interpreter to ignore the line break. All 7 lines above are treated as a single continuous line. The <code>\</code> simply allows more clarity with long command lines.</li>
+<li>Java programs are often distributed as <strong>JAR</strong> files. <code>java -jar myprogram.jar &lt;options&gt;</code> is the command for executing a JAR file. In the module system we usually have the module create an environment variable that contains the path to the JAR file. Try loading Trimmomatic and doing <code>echo $Trimmomatic</code> now. You can see how it is set by doing <code>module display Trimmomatic/0.39</code> and looking at the <code>setenv</code> line.</li>
+<li>Because it’s brief, you might overlook the <code>PE</code> in there, but it’s telling Trimmomatic you’re giving it paired end data. If you had single end data it would be <code>SE</code>.</li>
+<li><code>ILLUMINACLIP</code> provides the parameters needed to search for adapters. Read through the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf">documentation</a> to understand it better.</li>
+<li><code>SLIDINGWINDOW</code> gives parameters for sliding window quality trimming (if any 4 bases drop below a mean Q of 25, the rest of the read is trimmed)</li>
+<li><code>MINLEN</code> should be self-explanatory.</li>
+</ul>
 <p>We may do other quality filtering for ONT and PacBio data, depending on application, but that is typically length and/or mean quality filtering, which can be easily accomplished using <code>seqkit</code>, which we demonstrated previously, or taxonomy-based filtering which we will cover in the next section. For more in depth filtering of long reads by quality and length you can also try <a href="https://github.com/rrwick/Filtlong"><code>filtlong</code></a>, but we won’t cover it here.</p>
 </section>
 <section id="detecting-mixtures-and-contamination" class="level3" data-number="11.1.3">
 <h3 data-number="11.1.3" class="anchored" data-anchor-id="detecting-mixtures-and-contamination"><span class="header-section-number">11.1.3</span> Detecting mixtures and contamination</h3>
-<p>Sometimes our sequence data is a mixture of DNA or RNA from different organisms. This may be a result of biology. That is, for some organisms, tissues, or data types, we may be unable to completely separate our focal organism’s DNA or RNA from one or more other organisms. In this case, non-target DNA is usually derived from a taxonomically distant organism.</p>
+<p>Sometimes our sequence data is a mixture of DNA or RNA from different organisms. This may be a result of biology. That is, for some organisms, tissues, or data types, we may be unable to completely separate our focal organism’s DNA or RNA from one or more other organisms. In these cases, mixtures are usually derived from a taxonomically distant organisms.</p>
 <p>Mixtures may also be a result of inadvertent contamination in the field or laboratory. Depending on the context, mixtures may be of distant or closely related organisms.</p>
-<p>When we are concerned this may be the case, there are QC steps we can take. When it is detected, what we decide to do depends on our downstream application. We may want to remove non-target reads at this stage, or we may want to retain them and manage their influence on our analysis later.</p>
-<p>In this section we’ll talk about how to use metagenomic classification software to try to identify the extent of mixing of more distantly related species (note that software such as <a href="https://gatk.broadinstitute.org/hc/en-us/articles/360036433632-CalculateContamination"><code>CalculateContamination</code></a> exists for the cross-contamination case).</p>
-<p>Metagenomic classification essentially takes “query” sequences of interest and maps them to a database of “target” sequences. When matches are found, they are reported. In the software we use, both detailed match information for each sequence (which can be quite a large file) and summary information about the taxonomic distribution of matches is produced. The key element in all classification analyses is the database. A match can only be identified if it is present in the database. There are publicly available standard databases for the software we recommend, but users can also build their own composed of potential contaminants.</p>
-<p>For Illumina short-read data we recommend using <a href="https://ccb.jhu.edu/software/kraken2/"><code>kraken2</code></a>. Databases can be obtained <a href="https://benlangmead.github.io/aws-indexes/">here</a>, but the standard database is already available on the Xanadu cluster here: <code>/isg/shared/databases/kraken2/Standard</code>. This database contains bacterial, viral, archaeal and human sequences.</p>
+<p>There are also applications where you deliberately sequence mixtures, such as <a href="https://en.wikipedia.org/wiki/Environmental_DNA">eDNA</a> sequencing.</p>
+<p>When mixtures or contamination are possible and unwanted, there are QC steps we can take to detect it. If it is detected, what we decide to do will depend on our downstream application. We may want to remove unwanted reads at a very early stage, or we may want to retain them and manage their influence on our analysis later.</p>
+<p>In this section we’ll talk about how to use metagenomic classification software to try to identify the extent of mixing of more distantly related species. For the case of cross-contaminationm, there is a wide variety of software for different use cases. <a href="https://www.sciencedirect.com/science/article/pii/S1532046424000431"><code>CalculateContamination</code></a> and <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7050530/">verifyBamId</a> are a couple examples.</p>
+<p>Metagenomic classification essentially takes “query” sequences of interest and maps them to a database of “target” sequences. When matches are found, they are reported. In the software we use, both detailed match information for each sequence (which can be quite a large file) and summary information about the taxonomic distribution of matches is produced. The key element in all classification analyses is the database. A match can only be identified if it is present in the database. There are publicly available databases for the software we recommend, but they won’t apply to all use cases, so users can also build their own composed of potential contaminants.</p>
+<p>For Illumina short-read data we recommend using <a href="https://ccb.jhu.edu/software/kraken2/"><code>kraken2</code></a>. Databases can be obtained <a href="https://benlangmead.github.io/aws-indexes/">here</a>, but the standard database is already available on the Xanadu cluster here: <code>/isg/shared/databases/kraken/v06.2025/standard</code>. This database contains bacterial, viral, archaeal and human sequences. There are several other databases in the parent directory.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load kraken/2.1.2 </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kraken2</span> <span class="at">-db</span> /isg/shared/databases/kraken2/Standard <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kraken2</span> <span class="at">-db</span> /isg/shared/databases/kraken/v06.2025/standard <span class="dt">\</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">--paired</span> indir/mysample_R1.fq.gz indir/mysample_R2.fq.gz <span class="dt">\</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">--use-names</span> <span class="dt">\</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">--threads</span> 16 <span class="dt">\</span></span>
@@ -566,60 +612,6 @@ Note
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> multiqc_out input_dir</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>-o</code> specifies an output directory. <code>-f</code> means “force-overwrite” if the directory already exists and contains results (handy when re-running or testing scripts). MultiQC will search <code>input_dir</code> and subdirectories for summary files it recognizes.</p>
-</section>
-<section id="exercises" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">11.3</span> Exercises:</h2>
-<p>In the directory <code>/core/cbc/gdafiles/ISG5311/data/sequence_examples/</code> we have 6 sequencing data from our three focal platforms. You will run various QC steps on each.</p>
-<p>In the <code>Illumina</code> subdirectory, we have three datasets:</p>
-<ol type="1">
-<li>Paired-end WGS data for a fish, <em>Fundulus grandis</em> (<code>BU18FLFB002</code>).</li>
-<li>Paired-end RAD-seq data for an ash tree in the genus <em>Fraxinus</em> (<code>Plate1_pool1</code>).</li>
-<li>Paired-end RNA-seq data for a deciduous conifer <em>Larix laricina</em> (<code>K31</code>).</li>
-</ol>
-<p>Important note about the RAD-seq data: R1s begin with a variable length sample barcode sequence (5-8 bases, 16 samples in the pool) followed by 6 bases of the SbfI restriction enzyme recognition site. R2s begin with a 10 base unique molecular identifier (“UMI”; the first 5 bases are completely random) followed by 3 bases of the MseI restriction enzyme recognition site.</p>
-<p>In the <code>pacbio</code> subdirectory, we have only one dataset.</p>
-<ol type="1">
-<li><code>SRR15654800</code>, whole genome HiFi data from a caddisfly.</li>
-</ol>
-<p>In the <code>ONT</code> subdirectory we have two datasets (information about basecalling is provided in the README.md file):</p>
-<ol type="1">
-<li>A fastq file (<code>SRR28295757</code>). This is newer ONT duplex data from a human sample, HG002. A sample widely used in benchmarking studies for sequencing technologies.</li>
-<li>We also have a nanopore <code>sequencing_summary.txt</code> file from a fish, again <em>Fundulus grandis</em>. These data are older and will have a much higher error rate.</li>
-</ol>
-<p>Analysis to be done:</p>
-<ol type="1">
-<li><strong>FastQC</strong> - On all fastq files.</li>
-<li><strong>NanoPlot</strong> fastq mode - On ONT human data (<code>SRR28295757</code>) and on PacBio caddisfly data (<code>SRR15654800</code>).</li>
-<li><strong>NanoPlot</strong> sequence summary mode - On <em>Fundulus grandis</em> (<code>sequence_summary.txt</code>)</li>
-<li><strong>pycoQC</strong> - On <em>Fundulus grandis</em> (<code>sequence_summary.txt</code>)</li>
-<li><strong>Trimmomatic</strong> - On only one Illumina dataset: <em>Fundulus grandis</em> (<code>BU18FLFB002</code>).
-<ul>
-<li>Run <code>FastQC</code> again on the trimmed sequences.</li>
-</ul></li>
-<li><strong>Kraken2</strong> - On only <em>Larix laricina</em> (<code>K31</code>).</li>
-<li><strong>Centrifuge</strong> - On ONT human data (<code>SRR28295757</code>).</li>
-<li><strong>MultiQC</strong> - On the directory containing your results for the Illumina data only. This should have fastqc reports for both before and after trimming. Running it for <em>all</em> the data will result in some wonky figures because the ONT and PacBio data are so different in length.</li>
-</ol>
-<p>This is a lot of analysis! The idea is to help you see some of the differences among different types of datasets and how they turn up in standard quality control measures. Put each analysis in a separate script. Use the scripts to organize your output into a single results directory with a subdirectory for data from each platform.</p>
-<p>These are real datasets, and running these programs will take more than a few minutes, some will take several hours. You will need to submit this work via SLURM and monitor the jobs to ensure they complete without error. You should give yourself plenty of time to do this. For all programs, <code>module load</code> them and run <code>&lt;program&gt; --help</code> to look at the usage and basic options.</p>
-<p>Some pointers:</p>
-<ul>
-<li>Kraken2 needs to load the entire database into memory to run, so you will need a large enough memory request (plus a few gigabytes extra) for that. Check the size of the directory containing the database to figure this out.</li>
-<li>For the ONT data in fastqc you will need to change add the flag <code>--memory 2000</code>. This is the amount of memory in megabytes. The default is 512Mb, but the very long reads require more.</li>
-<li>remember to check the stderr and stdout files produced by SLURM for potentially useful summaries.</li>
-<li>This is going to require many scripts (or many lines in a single script). Think about how you’re going to keep scripts, log files and outputs organized for these diverse programs. This may feel like a struggle. I have deliberately not provided a lot of guidance here. We’ll cover project organization in the next module.</li>
-</ul>
-<p>Questions:</p>
-<ol type="1">
-<li>Which of the Illumina datasets has the highest adapter contamination?</li>
-<li>Which of the Illumina datasets has the highest duplication rate?</li>
-<li>Which of the 3 long-read datasets (2 x ONT, 1 x pacbio) has the longest median read length?</li>
-<li>For every 10,000 sequenced bases, you would expect ___ errors in the older killifish ONT data, ___ errors in the newer human ONT duplex data, and ___ errors in the pacbio caddisfly data. This is calculated by multiplying the mean probability (from NanoPlot, <em>not</em> fastqc) by 10,000.</li>
-<li>How many fragments of the Larix dataset were classified as bacteria?</li>
-<li>What percentage of bases were removed from the killifish Illumina data by Trimmomatic?</li>
-<li>Which of the Illumina data sets has the worst (untrimmed) median quality score at the 3’ end of the sequence (use fastqc or multiqc output)</li>
-<li>The R2 sequences for the RAD-seq data <code>Plate1_pool1</code> begin with a <em>unique molecular identifier</em>, or <em>UMI</em>. This is a random nucleotide sequence that can be used to determine when two sequences are clones of the same original biological molecule (for a pair of sequences, if the UMIs are the same, and the sequences are the same for high quality bases, then the sequences derive from the same molecule). Judging from the fastqc output, how many fully random bases (we usually term these <em>4-fold degenerate</em> bases) does the UMI sequence start with?</li>
-</ol>
 
 
 </section>
