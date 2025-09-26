@@ -352,7 +352,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#a-model-workflow" id="toc-a-model-workflow" class="nav-link active" data-scroll-target="#a-model-workflow"><span class="header-section-number">12.1</span> A model workflow</a></li>
   <li><a href="#workflow-steps" id="toc-workflow-steps" class="nav-link" data-scroll-target="#workflow-steps"><span class="header-section-number">12.2</span> Workflow steps</a></li>
   <li><a href="#focal-data" id="toc-focal-data" class="nav-link" data-scroll-target="#focal-data"><span class="header-section-number">12.3</span> Focal data</a></li>
-  <li><a href="#excercises" id="toc-excercises" class="nav-link" data-scroll-target="#excercises"><span class="header-section-number">12.4</span> Excercises</a></li>
+  <li><a href="#excercise" id="toc-excercise" class="nav-link" data-scroll-target="#excercise"><span class="header-section-number">12.4</span> Excercise</a></li>
   </ul>
 </nav>
     </div>
@@ -407,24 +407,24 @@ ul.task-list li input[type="checkbox"] {
 <li>Test for differences in expression among treatment groups.</li>
 <li>Interpret differential expression results via ranking, gene set enrichment, and/or pathway analysis.</li>
 </ol>
-<p>Steps 1 and 2 are typically done using Linux tools on the HPC. Steps 3 and 4 will require us to introduce a new language, <a href="https://www.r-project.org"><code>R</code></a>. Specialized software has been written for differential expression analysis in R, but R is very widely used in statistical analysis, data cleaning, and generating visualizations.</p>
+<p>Steps 1 and 2 are typically done using Linux tools on the HPC, and will require you to apply the skills you’ve been learning. For steps 3 and 4 we will introduce a new language, <a href="https://www.r-project.org"><code>R</code></a>. R is very widely used in data cleaning, statistical analysis, and data visualization. Software for specialized analyses is often written for R as is the case in chapters 20-23, where we will use the package <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html"><code>DESeq2</code></a> for differential expression analysis.</p>
 </section>
 <section id="focal-data" class="level2" data-number="12.3">
 <h2 data-number="12.3" class="anchored" data-anchor-id="focal-data"><span class="header-section-number">12.3</span> Focal data</h2>
 <p>We’re going to walk through the workflow using a real dataset from <a href="https://www.science.org/doi/10.1126/science.aah4993">this paper</a>:</p>
 <blockquote class="blockquote">
-<p>Reid, Noah M., et al.&nbsp;“The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish.” Science 354.6317 (2016): 1305-1308.</p>
+<p>Reid, NM., et al.&nbsp;“The genomic landscape of rapid repeated evolutionary adaptation to toxic pollution in wild fish.” Science 354.6317 (2016): 1305-1308.</p>
 </blockquote>
-<p>The Atlantic killifish (also known as the mummichog, <em>Fundulus heteroclitus</em>) is an abundant inhabitant of estuaries along the Atlantic coast of North America. Some of these estuaries were intensely polluted by heavy industry in the middle of the 20th century. Pollutants are diverse, but include highly toxic polychlorinated biphenyls (PCBs), polycyclic aromatic hydrocarbons (PAHs) and dioxins. These pollutants cause adverse effects in nearly all vertebrates, but exposure is particularly damaging during early development.</p>
-<p>In several distinct heavily polluted estuaries, killifish persist. These fish show extremely high resistance to these pollutants compared to fish from nearby sites with minimal pollution. The resistance is heritable across many generations in fish bred in the lab, indicating it has a genetic basis.</p>
-<p>The authors of this study wanted to determine the genomic basis of adaptation to toxic pollution in these fish, and learn whether it differed among populations at different polluted sites. They collected population genomic and gene expression data from 4 pairs of populations (one sensitive, one tolerant) to address this question. The population genomic data were generated from wild-caught fish. The expression data were the result of an experiment conducted with lab-bred fish from each population. See the paper for details, but in brief: embryos were exposed to either a DMSO control, or PCB-126. RNA from whole embryos was extracted to measure gene expression, with 4-6 replicates per treatment group.</p>
+<p>The Atlantic killifish (also known as the mummichog, <em>Fundulus heteroclitus</em>) is an abundant inhabitant of estuaries along the Atlantic coast of North America. Some of these estuaries were intensely polluted by heavy industry in the middle of the 20th century. The pollutants are diverse, but include highly toxic polychlorinated biphenyls (PCBs), polycyclic aromatic hydrocarbons (PAHs) and dioxins, sometimes collectively referred to as “dioxin-like compounds” (DLCs). These pollutants cause adverse effects in nearly all vertebrates, but exposure is particularly damaging during early development.</p>
+<p>In several distinct heavily polluted estuaries, killifish persist. These fish show extremely high resistance to DLCs compared to fish from nearby sites with minimal pollution. The resistance is heritable across many generations in fish bred in the lab, indicating it has a genetic basis.</p>
+<p>The authors of this study wanted to determine the genomic basis of resistance to toxic pollution in these fish, and learn whether it differed among populations at different polluted sites. They collected population genomic and gene expression data from 4 pairs of populations (one sensitive, one tolerant) to address this question. The population genomic data were generated from wild-caught fish. The expression data were the result of an experiment conducted with lab-bred fish from each population. See the paper for details, but in brief: embryos were exposed to either a DMSO control, or PCB-126. RNA from whole embryos was extracted to measure gene expression, with 4-6 replicates per treatment group.</p>
 <p>The authors measured gene expression with RNA-seq. RNA-seq will be covered in more detail in ISG5301, but briefly: RNA-seq is a catchall term that refers to RNA that has been extracted from a tissue or organism, reverse-transcribed into cDNA, and then fragmented and sequenced on the Illumina platform. We frequently use RNA-seq to quantify transcript or gene expression. To do this we make the assumption that the number of fragments of a given transcript or gene found in our sequencing library is roughly proportional to the frequency of that transcript in the cell population we extracted the RNA from.</p>
 <p>There are <em>lots</em> of caveats here, which we will cover in due time. At any rate, our goal in the first half of this workflow is to generate counts of RNA fragments attributable to a given gene or transcript to use as a measurement of expression.</p>
-<p>The RNA-seq data is what we’ll use here. In the chapters that follow, we’ll use data from the Elizabeth River/King’s Creek pair of populations, and exercises will require you to expand the analysis to include more populations.</p>
+<p>In the chapters that follow, we’ll use RNA-seq data from the Elizabeth River/King’s Creek pair of populations, and exercises will require you to expand the analysis to include more populations.</p>
 </section>
-<section id="excercises" class="level2" data-number="12.4">
-<h2 data-number="12.4" class="anchored" data-anchor-id="excercises"><span class="header-section-number">12.4</span> Excercises</h2>
-<p>Read the paper linked above and answer the following questions:</p>
+<section id="excercise" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="excercise"><span class="header-section-number">12.4</span> Excercise</h2>
+<p>Read the paper and answer quiz questions about it!</p>
 
 
 </section>
