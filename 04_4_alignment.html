@@ -446,11 +446,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Now that we’ve got our genome, our annotation, and we’ve downloaded our sequence data and QC’ed it, we’re ready to begin the process of quantifying gene expression. Remember that the measurement we are making is <strong>a count of fragments of RNA derived from a given gene</strong>. In this chapter we will quantify gene expression by mapping our RNA fragments against a reference genome. We’ll use the annotation of the reference genome to determine which fragments originated from which genes. We’ll cover each of the steps needed for this analysis, and talk about the relevant file formats in depth.</p>
 <section id="indexing-the-reference-genome" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="indexing-the-reference-genome"><span class="header-section-number">15.1</span> Indexing the reference genome</h2>
-<p>The process of alignment to a reference genome requires identifying possible mapping locations for each read pair, scoring them, and then choosing the one with the best score (or possibly randomly selecting from among ties).</p>
-<p>It goes without saying that even small genomes are pretty large (at least among eurkaryotes), so the process of finding initial candidate matches would be quite time-consuming if you had to check every location in the genome for every read. To get around this, all commonly used reference alignment software creates an <strong>index</strong>. Indexes function much like they do in large texts: interesting topics (in this case short genomic subsequences) and their page numbers (genomic locations) are stored. When you want to find locations of interest, you find them quickly through the index, rather than scanning through the entire text.</p>
-<p>Variations on the genome index and the way it is searched have been a main target for innovation among different read aligners, so each one will require you to create a particular index.</p>
-<p>When aligning RNA-seq data to a reference genome, we have a particular challenge: most (but typically not all) reads have been derived from mature mRNAs with introns spliced out. That means the aligner needs to be able to identify when reads (or read pairs) span splice junctions and accurately align across them. When aligning RNA-seq data, we typically use <strong>spliced aligners</strong> designed to deal with this issue.</p>
-<p>Here we are going to use <a href="http://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a>. Creating an index with hisat2 is pretty simple. We’ll use script <code>scripts/03_align/01_index.sh</code>. It looks like this:</p>
+<p>The process of alignment to a reference genome requires identifying possible mapping locations for each read pair, scoring them, and then choosing the one with the best score (or in the event of ties either randomly selecting from among ties, or outputting multiple mapping locations).</p>
+<p>It goes without saying that even small genomes are pretty large (at least among eurkaryotes), so the process of finding initial candidate matches would be quite time-consuming if you had to take every one of your millions of reads and check for possible matches at every location in the genome. To get around this, all commonly used reference alignment packages create an <strong>index</strong>. Indexes function much like they do in large texts: interesting topics (in this case short genomic subsequences) and their page numbers (genomic locations) are stored. When you want to find a topic of interest, you can quickly find all mentions of it through the index, rather than scanning through the entire text.</p>
+<p>Variations on the genome index and the way it is searched have been a main target for innovation among different read aligners, so each software package will require you to create an index specific to it.</p>
+<p>When aligning RNA-seq data to a reference genome, we have a particular challenge (again, in eukaryotes): most (but typically not all) reads have been derived from mature mRNAs with introns spliced out. That means the aligner needs to be able to identify when reads (or read pairs) span splice junctions and accurately align across them. When aligning RNA-seq data, we need to use a <strong>spliced aligner</strong> designed to deal with this issue. Not all read aligners can handle spliced alignment.</p>
+<p>Here we are going to use <a href="http://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a>. Our first step is to create an index. As with most aligners, creating an index with hisat2 is pretty simple. We’ll use script <code>scripts/03_align/01_index.sh</code>. It looks like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=hisat2_index</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
@@ -481,18 +481,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="va">GENOME</span><span class="op">=</span>../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna_sm.toplevel.fa</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">hisat2-build</span> <span class="at">-p</span> 16 <span class="va">$GENOME</span> <span class="va">$OUTDIR</span>/Fhet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We should be getting pretty familiar with the general organization of our scripts now, so go ahead and run this with <code>sbatch 01_index.sh</code>. When it completes, it should have created an index, which is actually a series of files, with the path/prefix <code>$OUTDIR/Fhet</code>. When aligning reads, you’ll specify that path/prefix, not the reference genome itself. We don’t need to be concerned with what’s in these index files, as we will never need to parse or modify them.</p>
+<p>We should be getting pretty familiar with the general organization of our scripts now, so go ahead and run this with <code>sbatch 01_index.sh</code>. When it completes, it should have created an index, which is actually a series of files, with the path/prefix <code>$OUTDIR/Fhet</code>. When aligning reads, you’ll specify that path/prefix, not the reference genome itself. As end-users of this software, we don’t need to be concerned with what’s in these index files, as we will never need to parse or modify them. If you are interested in algorithmic details <a href="https://www.nature.com/articles/s41587-019-0201-4">the publication</a> is a good place to start.</p>
 </section>
 <section id="aligning-to-the-reference" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="aligning-to-the-reference"><span class="header-section-number">15.2</span> Aligning to the reference</h2>
-<p>Now we have our index ready to go, we’re ready to align reads to the reference genome (again using <code>HISAT2</code>). Producing a usable alignment file requires a few steps:</p>
+<p>Now we have our index created, we’re ready to align reads to the reference genome (again using <code>HISAT2</code>). Producing alignments we can use downstream requires a few steps:</p>
 <ol type="1">
-<li>Alignment. Read pairs are passed to the aligner, and alignments information produced. Reads come out in the order they went in, but as a single file this time (more on the format below).</li>
+<li>Alignment. Read pairs are passed to the aligner, and alignment information produced. Reads come out in the order they went in, but as a single file this time instead of a pair (more on the format below).</li>
 <li>Position-sorting. For the alignment file to be useful, reads need to be sorted by their mapping position in the genome. This allows us to index the file and quickly access all the reads from a given genomic region.</li>
 <li>Compressing. Alignment records contain all the same information as a fastq file PLUS the alignment information, so we want to keep these files compressed (more on the format below, we don’t use gzip for this one).</li>
-<li>Indexing. Just like with the genome, we index the alignment files for rapid access to data from particular genomic regions.</li>
+<li>Indexing. Just like with the genome, we index the alignment files for rapid access to data from particular genomic regions. This index is MUCH simpler than an aligner index.</li>
 </ol>
-<p>You can do steps 1-3 one by one, producing intermediate alignment files each time, but this will cause your data to balloon and require you to clean up intermediate files. We’re going to take care of it in a pipe.</p>
+<p>You can do steps 1-3 one by one, producing intermediate alignment files each time, but this will cause your data to balloon and require you to clean up intermediate files. We’re going to take care of it with a pipe.</p>
 <p>Our script is another array script: <code>scripts/03_align/02_align.sh</code>. It looks like this:</p>
 <div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
 <span id="annotated-cell-2-2"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=align</span></span>
@@ -583,22 +583,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 83.13% overall alignment rate</code></pre>
 <p>Ideally, reads will map exactly one time. When reads map zero times, there isn’t a good match in the reference genome. If they map more than once, a very similar sequence occurs multiple times in the reference.</p>
 <p>Concordant alignment means the pairs of sequences have an orientation and distance between them consistent with expectations. The expected orientation is for pairs to be on opposite strands, (they were generated from opposite ends of a single fragment of DNA) and “inward” facing. The expected distance is often calculated from the library itself (the fragment size distribution is library specific), but generally read pairs ought not be mapped to separate contigs or chromosomes. When any of these expectations are violated, pairs are marked as discordantly mapping.</p>
-<p>Ideally we would see a concordant alignment rate higher than 67%, but this genome is an older assembly. It is highly fragmented and probably missing some sequences. That would contribute to cases where reads map discordantly (across contigs, particularly) or one or both reads in a pair fails to map. An overall alignment rate of 83% is not stellar, but not terrible either. For a good library on a highly contiguous and complete genome the overall mapping percentage could be expected to be in the high 80s to 90s.</p>
+<p>Ideally we would see a concordant alignment rate higher than 67%, but this genome is an older assembly. It is highly fragmented and probably missing some sequences. That would contribute to cases where reads map discordantly (across contigs, particularly, because chromosomes have not been completely assembled into single sequences) or one or both reads in a pair fails to map. An overall alignment rate of 83% is not stellar, but not terrible either. For a good library on a highly contiguous and complete genome the overall mapping percentage could be expected to be in the high 80s to 90s.</p>
 </section>
 <section id="sambam-format" class="level2" data-number="15.3">
 <h2 data-number="15.3" class="anchored" data-anchor-id="sambam-format"><span class="header-section-number">15.3</span> SAM/BAM format</h2>
 <p>Now we have our alignments in <code>.bam</code> files. <code>BAM</code> stands for <strong>binary alignment/map</strong> It is (barring some minor differences) the compressed, binary version of <code>SAM</code>, or <strong>sequence alignment/map</strong> format. Even though we always store our files in BAM, we are going to cover <code>SAM</code> format here in some detail, as it is the plain-text, human-readable format, and as you will see, it is trivial to convert between them as necessary.</p>
-<p>You can find the official specification with lots of detail and definitions <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">here</a>. We’re going to go over the basics here. As with many formats in bioinformatics,</p>
+<p>You can find the official specification with lots of detail and definitions <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">here</a>. We’re going to go over the basics here.</p>
 <section id="the-header" class="level3" data-number="15.3.1">
 <h3 data-number="15.3.1" class="anchored" data-anchor-id="the-header"><span class="header-section-number">15.3.1</span> The header</h3>
 <p><code>SAM</code> files begin with a <strong>header</strong>. All header lines start with <code>@</code> and a tag indicating the contents. The first line gives the SAM version and the sort order, e.g.:</p>
 <pre><code>@HD VN:1.0  SO:coordinate</code></pre>
-<p>Next comes a sequence dictionary (<code>@SQ</code>), which lists the names and lengths of sequences in the reference genome:</p>
+<p>This means the alignments are sorted by genomic coordinate. Next comes a sequence dictionary (<code>@SQ</code>), which lists the names and lengths of sequences in the reference genome:</p>
 <pre><code>@SQ SN:KN805525.1   LN:6356336
 @SQ SN:KN805526.1   LN:6250690
 @SQ SN:KN811289.1   LN:6115441
 ...</code></pre>
-<p>There may be some others for some types of alignment, but the last lines in our files contain program calls (<code>@PG</code>) used to produce the file:</p>
+<p>There may be some other tags for some types of alignment, but the last lines in our files contain program calls (<code>@PG</code>) used to produce the file:</p>
 <pre><code>@PG ID:hisat2   PN:hisat2   VN:2.2.1    CL:"/isg/shared/apps/hisat2/2.2.1/hisat2-align-s --wrapper basic-0 -p 2 -x ../../genome/hisat2_index/Fhet --read-lengths 101,100,98,99,97,96,95,86,93,92,91,59,87,63,55,90,75,68,85,83,78,77,76,74,73,70,65,94,89,88,82,81,67,66,52,45,79,64,50,80,72,71,69,54,51,84,61,56,53,48,47,60,57,46,62,58,49 -1 /tmp/1614887.inpipe1 -2 /tmp/1614887.inpipe2"
 @PG ID:samtools.1   PN:samtools PP:samtools VN:1.16.1   CL:samtools sort -@ 1 -T ../../results/03_align/alignments/SRR12475447 -</code></pre>
 <p>Note that the hisat2 call is different from our actual command line. The <code>hisat2</code> program we used is a wrapper script that called a separate program to do the alignments.</p>
@@ -684,14 +684,14 @@ SRR12475447.2726    83  KN805525.1  223729  60  101M    =   223510  -335    GGAA
 SRR12475447.2727    83  KN805525.1  223743  60  101M    =   223469  -375    TATGGTCCCTGTGCATTTTATCCAACCCTCAAATGACAACGCACGGACAGTTTTATGCTTTAGCTGTAACAGTGATACTAGTCTTCCCCTGACGACAGCTG   &lt;070BBB0BB&lt;&lt;77&lt;&lt;B&lt;BB&lt;77&lt;0&lt;BFFFBBB&lt;&lt;&lt;FB&lt;BBFBB&lt;BIFFFFBFFFF&lt;BBBBFBBFIIFBFIFB&lt;FFBFF&lt;BBFFBBFBBBFFFFFFFB&lt;&lt;B   AS:i:-5 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:80T20  YS:i:-15    YT:Z:CP NH:i:1</code></pre>
 <p>Some of the columns are straightforward, but others bear some explanation.</p>
 <p><code>FLAG</code> contains a fair bit of information encoded in a single integer. We have four different values of FLAG in the above example: 164,147 and 83 (x2). The easiest way to understand what these flags mean is to visit <a href="https://broadinstitute.github.io/picard/explain-flags.html">Decoding SAM flags</a>. If you go there and enter <code>147</code>, you’ll see boxes checked for “read paired”, “read mapped in proper pair”, “read reverse strand”, and “second in pair”. This indicates this read is R2, mapped in a proper pair and on the reverse strand. You can infer that its mate will be on the forward strand. <code>163</code> only differs in that the <em>mate</em> is on the reverse strand. <code>83</code> indicates the read is properly paired, on the reverse strand and <em>first</em> in the pair. You can filter on these flags, or any combination of them, as we will see below.</p>
-<p><code>MAPQ</code> contains a Phred-scaled probability that the read mapping is in error. This is a function of whether or not there are other locations in the genome with competitive alignment scores. If there are multiple equally plausible mapping locations, this number will be 0. The lowest probability of error hisat2 will assign is 60 (or 10<sup>-6</sup>). Unmapped reads will have <code>*</code>.</p>
-<p><code>CIGAR</code> gives the base-level alignment of the read to the reference. It’s formatted as <number><letter>, where “number” is a number of bases and “letter” is indicates if the bases are aligned 1-1 to the reference, or something else is going on (an insertion, deletion, splice, or unaligned bases). The specification gives all the details, but in our examples <code>101M</code> indicates 101 bases of this read are aligned to the genome. They don’t have to have identical nucleotides, just be aligned one-to-one. <code>10M2350N43M</code> indicates 10 bases are aligned (<code>10M</code>), followed by a 2,350 “skipped bases” (<code>2350N</code>) then 43 more mapped bases (<code>43M</code>). The skipped bases are how hisat2 indicates a splice junction.</letter></number></p>
+<p><code>MAPQ</code> contains a Phred-scaled probability that the read mapping is in error. You will undoubtedly remember the Phred scale from the module on sequencing data. This value is a function of whether or not there are other locations in the genome with competitive alignment scores. If there are multiple equally plausible mapping locations, this number will be 0. The lowest probability of error hisat2 will assign is 60 (or 10<sup>-6</sup>). Unmapped reads will have <code>*</code>.</p>
+<p><code>CIGAR</code> gives the base-level alignment of the read to the reference. It’s formatted as a series of <code>&lt;number&gt;&lt;letter&gt;</code> pairs, where “number” is a number of bases and “letter” is indicates if the bases are aligned 1-1 to the reference, or something else is going on (an insertion, deletion, splice, or unaligned bases). The specification gives all the details, but in our examples <code>101M</code> indicates 101 bases of this read are aligned to the genome. They don’t have to have identical nucleotides, they just need to be aligned one-to-one. <code>10M2350N43M</code> indicates 10 bases are aligned (<code>10M</code>), followed by a 2,350 “skipped bases” (<code>2350N</code>) then 43 more mapped bases (<code>43M</code>). The skipped bases are how hisat2 indicates a splice. In this case there is an intron 2,350bp long.</p>
 <p><code>TLEN</code> gives the template length implied by genomic span of the mapped reads (the spec says “observed template length”, but I don’t like this term because it does not incorporate insertions/deletions, some of which may occur in the gap between reads when they don’t overlap). This number is positive for the left-most mapping fragment and negative for the rightmost mapping fragment.</p>
 <p>Files that are taken straight from the aligner, or deliberately sorted by query name will have mate pairs on adjacent lines. This is not true of coordinate-sorted reads, for which mates may be quite some distance away in the file.</p>
 <p>A pair of reads will look like this:</p>
 <pre><code>SRR12475447.2735    99  KN805525.1  221834  60  101M    =   223716  1935    GGGTCATCTTTGTAAGGAGAGAGCCTCTCATAAAGTCTCTCTCATAGCTCATTAGATTCAGGACTGTAGCCGAGTCCCCATCCTCTTGGTGCTCTGTTGAA   &lt;BBFFFFFFFFF&lt;BBBFF&lt;BB&lt;BFFFFBFFF'&lt;&lt;BFFFFBBFFFFBFFFIIIIBF&lt;B&lt;BBBFB7&lt;BBB&lt;FFFBFB&lt;&lt;BBB&lt;BBBBB'7&lt;&lt;B&lt;BBBBBBBBB   AS:i:-7 XN:i:0  XM:i:2  XO:i:0  XG:i:0  NM:i:2  MD:Z:69T16C14   YS:i:-2 YT:Z:CP NH:i:1
 SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   CAAGATGAACATTGCTGTTGTACGGTCCGTTTGTAGCGTTCTCTAGCGTGAAC   700B&lt;7B&lt;7BB&lt;FFFBBBF7700B'FB7F&lt;0007B'7&lt;&lt;&lt;FFFBBBB&lt;B&lt;&lt;0B   AS:i:-2 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:35A17  YS:i:-7 YT:Z:CP XS:A:-  NH:i:1</code></pre>
-<p>Note the opposite-signed and very long TLEN. Presumably the length is due to the gap between the reads spanning an exon (in addition to the splice in one of the reads). Most sequenced fragments from Illumina will actually be between 200-600bp.</p>
+<p>Note the opposite-signed and very long TLEN (1,935bp). Presumably the length is due to the gap between the reads spanning an intron. Most sequenced fragments from Illumina will actually be between 200-600bp.</p>
 </section>
 <section id="manipulating-alignments" class="level3" data-number="15.3.3">
 <h3 data-number="15.3.3" class="anchored" data-anchor-id="manipulating-alignments"><span class="header-section-number">15.3.3</span> Manipulating alignments</h3>
@@ -705,12 +705,12 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view SRR12475447.bam <span class="kw">|</span> <span class="fu">head</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We can print <em>only</em> the header with:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-H</span> SRR12475447.bam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>A shockingly common problem people run into is aligning their sequences to one reference genome and then downloading an annotation for a different version of the genome. You might want to spot check your gff/gtf file against the sequence dictionary in the BAM header. If the sequence names are accession numbers (vs names like <code>chr1</code>) then this issue will jump right out.</p>
+<p>A shockingly common problem people run into is aligning their sequences to one reference genome and then downloading an annotation for a different version of the genome. You need to be careful about this. As assurance, you might want to spot check your gff/gtf file against the sequence dictionary in the BAM header and make sure the annotation sequence names are found in the dictionary. This isn’t a guarantee the versions are the same (two different genome versions can use the names <code>chr1</code>, <code>chr2</code> etc), but it is a quick and easy check to do, and if they don’t match, then this issue will jump right out.</p>
 <p>We can print the header AND the SAM records (thus converting BAM to SAM) with the following, but don’t execute it, or it will try to print the <em>entire</em> SAM file to the standard out:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-h</span> SRR12475447.bam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can convert SAM to bam with:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-S</span> <span class="at">-b</span> myfile.sam <span class="op">&gt;</span>myfile.bam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We can extract specific genomic regions by supplying a region in the format <code>CHR:START-STOP</code>. This is a 1-based closed interval, meaning START and STOP are included in the interval (remember from a previous chapter that BED format is 0-based and half-open!). To print all alignments from the region <code>KN811289.1:1050000-1100000</code> try:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-Sh</span> <span class="at">-b</span> myfile.sam <span class="op">&gt;</span>myfile.bam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can extract specific genomic regions by supplying a region in the format <code>CHR:START-STOP</code>. This is a 1-based closed interval, meaning START and STOP are included in the interval (remember from a previous chapter that BED format is 0-based and half-open!). To print all alignments touching the region <code>KN811289.1:1050000-1100000</code> try:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view SRR12475447.bam KN811289.1:1050000-1100000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Count the number of alignments by piping to <code>wc -l</code>.</p>
 <p>What is the distribution of mapping quality scores here?</p>
@@ -718,28 +718,30 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <pre><code>    496 0
       3 1
    7956 60</code></pre>
-<p>Most reads have the highest mapping quality. We can filter out reads with low mapping quality below <code>Q</code> with <code>-q Q</code> if we wish:</p>
+<p>Most reads have the highest mapping quality. It’s common to see this sort of bimodal distribution, where reads tend to either have very high or very low mapping quality.</p>
+<p>We can filter out reads with low mapping quality below <code>Q</code> with <code>-q Q</code> if we wish:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>What SAM flags are present?</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 2 <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You can check the <a href="https://broadinstitute.github.io/picard/explain-flags.html">Explain SAM Flags</a> website to see what some of these flags are, or you can plug them in to <code>samtools flags</code> e.g.:</p>
+<p>You can check the <a href="https://broadinstitute.github.io/picard/explain-flags.html">Decoding SAM flags</a> website to see what some of these flags are, or you can plug them in to <code>samtools flags</code> e.g.:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> flags 83</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>0x53    83  PAIRED,PROPER_PAIR,REVERSE,READ1</code></pre>
 <p>You can also get an overall summary of the flag information with <code>samtools flagstats</code>. You can run it on the whole file, or just pipe in our subset or reads like this (remember to pass <code>-h</code> to include the header):</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-h</span> <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span> <span class="ex">samtools</span> flagstats <span class="at">-</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Running it with no arguments will explain what the abbreviations mean. You’ll see that the four most common flags refer to read pairs mapping to opposite strands that are properly paired. The next most common ones are all reads with unmapped mates.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-h</span> <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span> <span class="ex">samtools</span> flagstats <span class="at">-</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running it with no arguments will explain what the abbreviations mean. You’ll see that the four most common flags refer to read pairs mapping to opposite strands that are properly paired. The next most common ones are all reads with unmapped mates (again, most likely an issue with this genome being fragmented and incomplete).</p>
 <p>We can filter on SAM flags with these options:</p>
 <pre><code>  -f, --require-flags FLAG   ...have all of the FLAGs present
   -F, --excl[ude]-flags FLAG ...have none of the FLAGs present</code></pre>
 <p>Let’s include only reads that are properly paired:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Let’s summarize the template lengths:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 9 <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s summarize the template lengths for properly paired reads in our region:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 9 <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That’s not super helpful. As you would expect with randomly sheared sequence, there are many, many different values.</p>
 <p>Splices should be pretty consistent though. Maybe we can extract all the splices HISAT2 created and look at their distributions? They’re encoded in the CIGAR string.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 6 <span class="kw">|</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-oP</span> <span class="st">"[0-9]+(?=N)"</span> <span class="kw">|</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 6 <span class="kw">|</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-oP</span> <span class="st">"[0-9]+(?=N)"</span> <span class="kw">|</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Splices in the CIGAR string are encoded as a number of bases in the reference genome followed by the letter N. In this example, <code>20M5329N81M</code>, <code>5329N</code> represents a read that is aligned in two pieces 5,329 bases apart. This is probably an intron, though read mappers are not perfect. So to extract that pattern from CIGAR, we use the following options in grep: <code>-o</code> extracts the regex match. <code>-P</code> uses “perl-style” regular expressions. The “perl-style” regular expressions are required in grep to use the “positive lookbehind” <code>(?=N)</code>, which means the match string must be followed by an <code>N</code>, but <code>N</code> is not included in the match. So the regex <code>"[0-9]+(?=N)"</code> matches one or more numbers followed by an <code>N</code>. In total, our “one-liner” (broken up across multiple lines here!) extracts splice lengths from each CIGAR, counts them up and sorts them by frequency.</p>
 <p>We have a number of splices supported by many reads, so in the 50kb region we are looking at, there are probably one ore more genes with reasonably high expression levels.</p>
 </section>
@@ -747,23 +749,23 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <h4 data-number="15.3.3.2" class="anchored" data-anchor-id="other-modules-in-samtools"><span class="header-section-number">15.3.3.2</span> Other modules in <code>samtools</code></h4>
 <p>To get an overall summary of your alignment, there are two tools: <code>samtools stats</code> and <code>samtools flagstats</code>. We saw <code>flagstats</code> above. <code>stats</code> provides lots of useful summaries, and we’ll cover it in more detail below.</p>
 <p>We used <code>samtools sort</code> above to position sort our BAM files.</p>
-<p>We saw an <code>faidx</code> command as part of <code>seqkit</code>, and it does the same thing here: creates a simple fasta index and allows you to extract sequence from it. Usually used on reference genomes.</p>
+<p>We saw an <code>faidx</code> command as part of <code>seqkit</code>, and it does the same thing here: creates a simple fasta index and allows you to extract sequence from it. It’s usually used on reference genomes.</p>
 <p><code>samtools depth</code> can also occasionally be useful to extract per base sequence depths:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-h</span> <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> depth <span class="at">-</span> <span class="kw">|</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-h</span> <span class="at">-f</span> 2 <span class="at">-q</span> 30 SRR12475447.bam KN811289.1:1050000-1100000 <span class="kw">|</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> depth <span class="at">-</span> <span class="kw">|</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Let’s look at the distribution of depths in the region we’ve been looking at:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> depth <span class="at">-a</span> <span class="at">-r</span> KN811289.1:1050000-1100000 SRR12475447.bam <span class="kw">|</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 3 <span class="kw">|</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This is still a tough summary to look at, let’s use awk to discretize the distribution into bins of 10:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> depth <span class="at">-a</span> <span class="at">-r</span> KN811289.1:1050000-1100000 SRR12475447.bam <span class="kw">|</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 3 <span class="kw">|</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'{n=int($1/10) * 10}{print n}'</span> <span class="kw">|</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>As you would expect, out of the 50,001 sites in this window, 41,538 have &lt; 10x coverage (29,124 have exactly 0).</p>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is still a tough summary to look at, let’s use awk to discretize the distribution into bins of 10:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> depth <span class="at">-a</span> <span class="at">-r</span> KN811289.1:1050000-1100000 SRR12475447.bam <span class="kw">|</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-f</span> 3 <span class="kw">|</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'{n=int($1/10) * 10}{print n}'</span> <span class="kw">|</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As you would expect for RNA-seq data, out of the 50,001 sites in this window, 41,538 have low (&lt; 10x) coverage (29,124 have exactly 0). We expect exons to be the source of most sequence data, though immature RNAs with the introns unspliced contribute some sequence to most libraries.</p>
 </section>
 </section>
 <section id="visualizing-alignments" class="level3" data-number="15.3.4">
@@ -771,20 +773,20 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <p>To visualize alignments, samtools has a function called <code>tview</code>, but it’s a pretty miserable experience in general. We usually use a GUI program <a href="https://igv.org"><code>IGV</code></a>, which we will demonstrate here.</p>
 <p>You’ll need to run IGV <strong>locally</strong>, not on Xanadu, so first download it from the link above.</p>
 <p>To view data hosted on Xanadu, you’ll need to either download what you want to view (not ideal), or connect your computer’s file system to Xanadu’s (see Chapter 4.4.4 for instructions on that). Remember, to connect to Xanadu this way you’ll need to be connected to the CAM VPN.</p>
-<p>If you download the data, you’ll want to have:</p>
+<p>To visualize alignments you need:</p>
 <ol type="1">
-<li>One or more BAM files and their <code>.bai</code> indexes</li>
+<li>One or more BAM files and their <code>.bai</code> indexes (if the .bai file is in the same directory IGV will find it automatically).</li>
 <li>The reference genome your BAMs are aligned to.</li>
 <li>A GTF annotation file</li>
 </ol>
 <p>Open IGV and begin loading the files.</p>
-<p>First the genome select the menu <code>Genomes</code> and <code>Load genome from file</code>. If you’ve connected to Xanadu, you’ll navigate to cfs09, then <code>home/FCAM/username/...</code> to get to your RNAseq tutorial directory and the <code>genome</code> subdirectory. Load the <code>.fa</code> reference genome file.</p>
+<p>First the genome. Select the menu <code>Genomes</code> and <code>Load genome from file</code>. If you’re connecting to Xanadu, you’ll connect to the appropriate file system: cfs09 for your home directory, cfs10 for <code>/sandbox</code>, cfs08 for <code>/scratch</code>, then the desired path <code>home/FCAM/username/...</code> to get to your RNAseq tutorial directory and the <code>genome</code> subdirectory. Load the <code>.fa</code> reference genome file.</p>
 <p>Next select <code>File</code> and <code>Load from file</code> and load the <code>gtf</code> annotation file you downloaded. If IGV complains that this file needs to be indexed and/or sorted, it will tell you the menu options in IGV to accomplish this. Do that, then load the sorted, indexed GTF file. ENSEMBL really should sort these.</p>
 <p>Finally, select <code>File</code> and <code>Load from file</code> and load a bam file. We’ll go with <code>SRR12475447.bam</code> because that’ what we’ve been using (definitely don’t select <code>...446.bam</code>, as it has almost no reads).</p>
 <p>After all this is done, you won’t see much because we’ll be too zoomed out. Put our focal region <code>KN811289.1:1050000-1100000</code> in the navigation bar at the top.</p>
 <p>The very top panel should orient you to where you are in the genome.</p>
 <p>The next panel down will give sequencing depth per base across the region. The third panel is called a <em>sashimi plot</em>. The ribbons show inferred splice junctions and their relative frequency. Red ribbons above the axis are on the forward strand, blue below are on the reverse. If you click anywhere on the panel, a window should open telling you the span and frequency of splices that overlap that point.</p>
-<p>The next panel contains the actual alignments. Left click here and select <code>collapsed</code>, then left click again and select <code>View as pairs</code>. This will connect read pairs. Pairs will be connected by thin gray lines, while spliced chunks of single reads will be connected by light blue lines. If you click on any of the reads, the information from the SAM file should pop up for the read pair.</p>
+<p>The next panel contains the actual alignments. Right click here and select <code>collapsed</code>, then left click again and select <code>View as pairs</code>. This will connect read pairs. Pairs will be connected by thin gray lines, while spliced chunks of single reads will be connected by light blue lines. If you click on any of the reads, the information from the SAM file should pop up for the read pair.</p>
 <p>The next panel down should be the genome itself. If you zoom in close enough it should show the actual sequence.</p>
 <p>The very bottom panel will show the genome annotation. Left click and select “Expanded”, this will break out the annotations for each gene model so they no longer overlap and crowd each other. For the gene <code>septin6</code> in the middle, you’ll see three different transcripts. For <code>septin6</code> you should see pretty good concordance between the blue ribbons in the sashimi plot and the exons in the transcript models (exons are the rectangles).</p>
 <p>IGV is good for spot checking regions of interest in BAM files, and for getting a sense of what alignment data actually look like. Take some time to explore this and get a sense of what’s going on.</p>
@@ -792,13 +794,13 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 </section>
 <section id="alignment-qc" class="level2" data-number="15.4">
 <h2 data-number="15.4" class="anchored" data-anchor-id="alignment-qc"><span class="header-section-number">15.4</span> Alignment QC</h2>
-<p>We’ve now gotten our sequence data aligned to the reference genome, and you’re hopefully coming to grips with SAM formatted alignments and how we can manage them. Now we’re going to cover a couple tools we can use to get high level summaries of our alignments that can help us spot problems, or be assured of the quality of our data and analysis.</p>
+<p>We’ve now gotten our sequence data aligned to the reference genome, and you’re hopefully coming to grips with SAM formatted alignments and how we can manage them. Now we’re going to cover a couple tools we can use to get high level summaries of our alignments that can help us spot problems, or alternatively be assured of the quality of our alignments.</p>
 <section id="samtools-stats" class="level3" data-number="15.4.1">
 <h3 data-number="15.4.1" class="anchored" data-anchor-id="samtools-stats"><span class="header-section-number">15.4.1</span> <code>samtools stats</code></h3>
 <p>The first tool we’re going to use is <code>samtools stats</code>. This tool generates a large variety of summary tables for each bam alignment file. We’re going to focus on just one table it produces, the “summary numbers” table. The usage of <code>stats</code> is simple:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> stats <span class="va">$INDIR</span>/myfile.bam <span class="op">&gt;</span><span class="va">$OUTDIR</span>/myfile.stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> stats <span class="va">$INDIR</span>/myfile.bam <span class="op">&gt;</span><span class="va">$OUTDIR</span>/myfile.stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Many tables are captured in the output file, but they are all prefixed with an abbreviation. To get the summary numbers table we do:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> ^SN myfile.stats <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 2-</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> ^SN myfile.stats <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 2-</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>An output looks like this:</p>
 <pre><code>raw total sequences:    24930228    # excluding supplementary and secondary reads
 filtered sequences: 0
@@ -841,93 +843,93 @@ pairs on different chromosomes: 482537
 percentage of properly paired reads (%):    71.2</code></pre>
 <p>In our script, we’re going to use <code>parallel</code> to run <code>stats</code> on all our bam files, and then extract the summary numbers from each output file and put them in one large table. <code>MultiQC</code> can also parse this output, so we’ll run that as well.</p>
 <p>Our script is <code>scripts/03_align/03_samtools_stats.sh</code>. It looks like this:</p>
-<div class="sourceCode" id="annotated-cell-31"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-31-1"><a href="#annotated-cell-31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash </span></span>
-<span id="annotated-cell-31-2"><a href="#annotated-cell-31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=samstats</span></span>
-<span id="annotated-cell-31-3"><a href="#annotated-cell-31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=</span></span>
-<span id="annotated-cell-31-4"><a href="#annotated-cell-31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
-<span id="annotated-cell-31-5"><a href="#annotated-cell-31-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
-<span id="annotated-cell-31-6"><a href="#annotated-cell-31-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
-<span id="annotated-cell-31-7"><a href="#annotated-cell-31-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
-<span id="annotated-cell-31-8"><a href="#annotated-cell-31-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=10</span></span>
-<span id="annotated-cell-31-9"><a href="#annotated-cell-31-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
-<span id="annotated-cell-31-10"><a href="#annotated-cell-31-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
-<span id="annotated-cell-31-11"><a href="#annotated-cell-31-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
-<span id="annotated-cell-31-12"><a href="#annotated-cell-31-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-13"><a href="#annotated-cell-31-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
-<span id="annotated-cell-31-14"><a href="#annotated-cell-31-14" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
-<span id="annotated-cell-31-15"><a href="#annotated-cell-31-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-16"><a href="#annotated-cell-31-16" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
-<span id="annotated-cell-31-17"><a href="#annotated-cell-31-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate stats on alignments</span></span>
-<span id="annotated-cell-31-18"><a href="#annotated-cell-31-18" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
-<span id="annotated-cell-31-19"><a href="#annotated-cell-31-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-20"><a href="#annotated-cell-31-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate alignment statistics for each bam file using samtools</span></span>
-<span id="annotated-cell-31-21"><a href="#annotated-cell-31-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-22"><a href="#annotated-cell-31-22" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
-<span id="annotated-cell-31-23"><a href="#annotated-cell-31-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span>
-<span id="annotated-cell-31-24"><a href="#annotated-cell-31-24" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
-<span id="annotated-cell-31-25"><a href="#annotated-cell-31-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-26"><a href="#annotated-cell-31-26" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
-<span id="annotated-cell-31-27"><a href="#annotated-cell-31-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-28"><a href="#annotated-cell-31-28" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
-<span id="annotated-cell-31-29"><a href="#annotated-cell-31-29" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/samtools_stats</span>
-<span id="annotated-cell-31-30"><a href="#annotated-cell-31-30" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$OUTDIR</span></span>
-<span id="annotated-cell-31-31"><a href="#annotated-cell-31-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-32"><a href="#annotated-cell-31-32" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
-<span id="annotated-cell-31-33"><a href="#annotated-cell-31-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-34"><a href="#annotated-cell-31-34" aria-hidden="true" tabindex="-1"></a><span class="co"># samtools bam statistics----------------------------------------------------------------</span></span>
-<span id="annotated-cell-31-35"><a href="#annotated-cell-31-35" aria-hidden="true" tabindex="-1"></a></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-31-36" class="code-annotation-target"><a href="#annotated-cell-31-36" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="ex">parallel</span> <span class="at">-j</span> 10 <span class="dt">\</span></span>
-<span id="annotated-cell-31-37"><a href="#annotated-cell-31-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"samtools stats </span><span class="va">$INDIR</span><span class="st">/{}.bam &gt;</span><span class="va">$OUTDIR</span><span class="st">/{}.stats"</span></span>
-<span id="annotated-cell-31-38"><a href="#annotated-cell-31-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-39"><a href="#annotated-cell-31-39" aria-hidden="true" tabindex="-1"></a><span class="co"># put the basic stats all in one file.---------------------------------------------------</span></span>
-<span id="annotated-cell-31-40"><a href="#annotated-cell-31-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-41"><a href="#annotated-cell-31-41" aria-hidden="true" tabindex="-1"></a><span class="co"># bash array containing all stats file names</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-31-42" class="code-annotation-target"><a href="#annotated-cell-31-42" aria-hidden="true" tabindex="-1"></a><span class="va">FILES</span><span class="op">=</span><span class="va">($(</span><span class="fu">find</span> <span class="va">$OUTDIR</span> <span class="at">-name</span> <span class="st">"*.stats"</span> <span class="kw">|</span> <span class="fu">sort</span><span class="va">))</span></span>
-<span id="annotated-cell-31-43"><a href="#annotated-cell-31-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-44"><a href="#annotated-cell-31-44" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize big table for all samples with row names</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-31-45" class="code-annotation-target"><a href="#annotated-cell-31-45" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"^SN"</span> <span class="va">${FILES</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 2 <span class="op">&gt;</span> <span class="va">$OUTDIR</span>/SN.txt</span>
-<span id="annotated-cell-31-46"><a href="#annotated-cell-31-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-47"><a href="#annotated-cell-31-47" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over each stats file, add data column to main table</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-31-48" class="code-annotation-target"><a href="#annotated-cell-31-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="va">${FILES</span><span class="op">[@]</span><span class="va">}</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-31-49" class="code-annotation-target"><a href="#annotated-cell-31-49" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> <span class="fu">paste</span> <span class="va">$OUTDIR</span>/SN.txt <span class="op">&lt;(</span><span class="fu">grep</span> ^SN <span class="va">$file</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 3<span class="op">)</span> <span class="op">&gt;</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-31-50" class="code-annotation-target"><a href="#annotated-cell-31-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mv</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="va">$OUTDIR</span>/SN.txt</span>
-<span id="annotated-cell-31-51"><a href="#annotated-cell-31-51" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="va">$file</span></span>
-<span id="annotated-cell-31-52"><a href="#annotated-cell-31-52" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="annotated-cell-31-53"><a href="#annotated-cell-31-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-31-54"><a href="#annotated-cell-31-54" aria-hidden="true" tabindex="-1"></a><span class="co"># add a header with sample names</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-31" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-31-55" class="code-annotation-target"><a href="#annotated-cell-31-55" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="dt">\</span></span>
-<span id="annotated-cell-31-56"><a href="#annotated-cell-31-56" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;(</span><span class="bu">echo</span> <span class="va">${FILES</span><span class="op">[@]</span><span class="va">}</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s,samtools_stats/,,g'</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/.stats//g'</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/ /\t/g'</span><span class="op">)</span> <span class="dt">\</span></span>
-<span id="annotated-cell-31-57"><a href="#annotated-cell-31-57" aria-hidden="true" tabindex="-1"></a><span class="va">$OUTDIR</span>/SN.txt <span class="dt">\</span></span>
-<span id="annotated-cell-31-58"><a href="#annotated-cell-31-58" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span><span class="va">$OUTDIR</span>/SN2.txt <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
-<span id="annotated-cell-31-59"><a href="#annotated-cell-31-59" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mv</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="va">$OUTDIR</span>/SN.txt</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="annotated-cell-32"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-32-1"><a href="#annotated-cell-32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash </span></span>
+<span id="annotated-cell-32-2"><a href="#annotated-cell-32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=samstats</span></span>
+<span id="annotated-cell-32-3"><a href="#annotated-cell-32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=</span></span>
+<span id="annotated-cell-32-4"><a href="#annotated-cell-32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="annotated-cell-32-5"><a href="#annotated-cell-32-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="annotated-cell-32-6"><a href="#annotated-cell-32-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="annotated-cell-32-7"><a href="#annotated-cell-32-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
+<span id="annotated-cell-32-8"><a href="#annotated-cell-32-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=10</span></span>
+<span id="annotated-cell-32-9"><a href="#annotated-cell-32-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=15G</span></span>
+<span id="annotated-cell-32-10"><a href="#annotated-cell-32-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="annotated-cell-32-11"><a href="#annotated-cell-32-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="annotated-cell-32-12"><a href="#annotated-cell-32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-13"><a href="#annotated-cell-32-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="annotated-cell-32-14"><a href="#annotated-cell-32-14" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="annotated-cell-32-15"><a href="#annotated-cell-32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-16"><a href="#annotated-cell-32-16" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
+<span id="annotated-cell-32-17"><a href="#annotated-cell-32-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate stats on alignments</span></span>
+<span id="annotated-cell-32-18"><a href="#annotated-cell-32-18" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
+<span id="annotated-cell-32-19"><a href="#annotated-cell-32-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-20"><a href="#annotated-cell-32-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate alignment statistics for each bam file using samtools</span></span>
+<span id="annotated-cell-32-21"><a href="#annotated-cell-32-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-22"><a href="#annotated-cell-32-22" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
+<span id="annotated-cell-32-23"><a href="#annotated-cell-32-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span>
+<span id="annotated-cell-32-24"><a href="#annotated-cell-32-24" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="annotated-cell-32-25"><a href="#annotated-cell-32-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-26"><a href="#annotated-cell-32-26" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
+<span id="annotated-cell-32-27"><a href="#annotated-cell-32-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-28"><a href="#annotated-cell-32-28" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
+<span id="annotated-cell-32-29"><a href="#annotated-cell-32-29" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/samtools_stats</span>
+<span id="annotated-cell-32-30"><a href="#annotated-cell-32-30" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$OUTDIR</span></span>
+<span id="annotated-cell-32-31"><a href="#annotated-cell-32-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-32"><a href="#annotated-cell-32-32" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="annotated-cell-32-33"><a href="#annotated-cell-32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-34"><a href="#annotated-cell-32-34" aria-hidden="true" tabindex="-1"></a><span class="co"># samtools bam statistics----------------------------------------------------------------</span></span>
+<span id="annotated-cell-32-35"><a href="#annotated-cell-32-35" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-32-36" class="code-annotation-target"><a href="#annotated-cell-32-36" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="ex">parallel</span> <span class="at">-j</span> 10 <span class="dt">\</span></span>
+<span id="annotated-cell-32-37"><a href="#annotated-cell-32-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"samtools stats </span><span class="va">$INDIR</span><span class="st">/{}.bam &gt;</span><span class="va">$OUTDIR</span><span class="st">/{}.stats"</span></span>
+<span id="annotated-cell-32-38"><a href="#annotated-cell-32-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-39"><a href="#annotated-cell-32-39" aria-hidden="true" tabindex="-1"></a><span class="co"># put the basic stats all in one file.---------------------------------------------------</span></span>
+<span id="annotated-cell-32-40"><a href="#annotated-cell-32-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-41"><a href="#annotated-cell-32-41" aria-hidden="true" tabindex="-1"></a><span class="co"># bash array containing all stats file names</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-32-42" class="code-annotation-target"><a href="#annotated-cell-32-42" aria-hidden="true" tabindex="-1"></a><span class="va">FILES</span><span class="op">=</span><span class="va">($(</span><span class="fu">find</span> <span class="va">$OUTDIR</span> <span class="at">-name</span> <span class="st">"*.stats"</span> <span class="kw">|</span> <span class="fu">sort</span><span class="va">))</span></span>
+<span id="annotated-cell-32-43"><a href="#annotated-cell-32-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-44"><a href="#annotated-cell-32-44" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize big table for all samples with row names</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-32-45" class="code-annotation-target"><a href="#annotated-cell-32-45" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"^SN"</span> <span class="va">${FILES</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 2 <span class="op">&gt;</span> <span class="va">$OUTDIR</span>/SN.txt</span>
+<span id="annotated-cell-32-46"><a href="#annotated-cell-32-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-47"><a href="#annotated-cell-32-47" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over each stats file, add data column to main table</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-32-48" class="code-annotation-target"><a href="#annotated-cell-32-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="va">${FILES</span><span class="op">[@]</span><span class="va">}</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-32-49" class="code-annotation-target"><a href="#annotated-cell-32-49" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> <span class="fu">paste</span> <span class="va">$OUTDIR</span>/SN.txt <span class="op">&lt;(</span><span class="fu">grep</span> ^SN <span class="va">$file</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 3<span class="op">)</span> <span class="op">&gt;</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-32-50" class="code-annotation-target"><a href="#annotated-cell-32-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mv</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="va">$OUTDIR</span>/SN.txt</span>
+<span id="annotated-cell-32-51"><a href="#annotated-cell-32-51" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="va">$file</span></span>
+<span id="annotated-cell-32-52"><a href="#annotated-cell-32-52" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="annotated-cell-32-53"><a href="#annotated-cell-32-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-32-54"><a href="#annotated-cell-32-54" aria-hidden="true" tabindex="-1"></a><span class="co"># add a header with sample names</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-32" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-32-55" class="code-annotation-target"><a href="#annotated-cell-32-55" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="dt">\</span></span>
+<span id="annotated-cell-32-56"><a href="#annotated-cell-32-56" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;(</span><span class="bu">echo</span> <span class="va">${FILES</span><span class="op">[@]</span><span class="va">}</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s,samtools_stats/,,g'</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/.stats//g'</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/ /\t/g'</span><span class="op">)</span> <span class="dt">\</span></span>
+<span id="annotated-cell-32-57"><a href="#annotated-cell-32-57" aria-hidden="true" tabindex="-1"></a><span class="va">$OUTDIR</span>/SN.txt <span class="dt">\</span></span>
+<span id="annotated-cell-32-58"><a href="#annotated-cell-32-58" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span><span class="va">$OUTDIR</span>/SN2.txt <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="annotated-cell-32-59"><a href="#annotated-cell-32-59" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mv</span> <span class="va">$OUTDIR</span>/SN2.txt <span class="va">$OUTDIR</span>/SN.txt</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-31" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="36" data-code-annotation="1">Hopefully this idiom is becoming familiar at this point!</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="36" data-code-annotation="1">Hopefully this idiom is becoming familiar at this point!</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="42" data-code-annotation="2">This is a bash array. We are taking all the stats output files and putting them in a list.</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="42" data-code-annotation="2">This is a bash array. We are taking all the stats output files and putting them in a list.</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="3">3</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="45" data-code-annotation="3">Initialize our table with <em>just</em> the rownames</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="45" data-code-annotation="3">Initialize our table with <em>just</em> the rownames</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="4">4</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="48" data-code-annotation="4">Loop over every stats file.</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="48" data-code-annotation="4">Loop over every stats file.</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="5">5</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="49" data-code-annotation="5">This is a bit new. <code>paste</code> is like the horizontal version of <code>cat</code>. We’re adding new columns to this file. By default they are tab-separated. <code>&lt;(command)</code> is called a “process substitution”. It’s like a pipe inside the command line. Instead of a file, we’re passing the output of <code>grep ^SN $file | cut -f 3</code> as the second argument to <code>paste</code>.</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="49" data-code-annotation="5">This is a bit new. <code>paste</code> is like the horizontal version of <code>cat</code>. We’re adding new columns to this file. By default they are tab-separated. <code>&lt;(command)</code> is called a “process substitution”. It’s like a pipe inside the command line. Instead of a file, we’re passing the output of <code>grep ^SN $file | cut -f 3</code> as the second argument to <code>paste</code>.</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="6">6</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="6">6</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="50" data-code-annotation="6">We redirected the previous line to <code>SN2.txt</code>, which now contains the previous iteration’s version of <code>SN.txt</code> plus the new column. Here we replace <code>SN.txt</code> with <code>SN2.txt</code> and then repeat in the next iteration of the loop, iteratively building the table.</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="50" data-code-annotation="6">We redirected the previous line to <code>SN2.txt</code>, which now contains the previous iteration’s version of <code>SN.txt</code> plus the new column. Here we replace <code>SN.txt</code> with <code>SN2.txt</code> and then repeat in the next iteration of the loop, iteratively building the table.</span>
 </dd>
-<dt data-target-cell="annotated-cell-31" data-target-annotation="7">7</dt>
+<dt data-target-cell="annotated-cell-32" data-target-annotation="7">7</dt>
 <dd>
-<span data-code-cell="annotated-cell-31" data-code-lines="55" data-code-annotation="7">Here we add a header containing sample names to the table.</span>
+<span data-code-cell="annotated-cell-32" data-code-lines="55" data-code-annotation="7">Here we add a header containing sample names to the table.</span>
 </dd>
 </dl>
 <p>This is a bit clunky, but it works. We will also aggregate these stats using multiqc below, but it doesn’t get <em>all</em> the statistics for us, and we’re going to need a nice table like this for downstream analysis in <code>R</code>.</p>
@@ -938,87 +940,87 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <p>samtools gave us some basic summaries of the alignments, but it would also be helpful to get a high level overview of mapping with respect to our annotation. We have RNA-seq data, so most of our reads should map to genes, right? We’re going to use <code>qualimap</code> for this. It will tell us how many reads map to exons, introns, and intergenic regions. It will calculate 5’-3’ bias (where within transcripts reads tend to map) and strand bias (whether more reads map to the forward or reverse strand, but only if you specify a stranded library).</p>
 <p>We have been referring to our annotation file repeatedly, and you are probably wondering about it by now, but we are going to put off an explanation of annotation formats until the next chapter when we cover expression quantification.</p>
 <p>Our script is <code>scripts/03_align/04_qualimap.sh</code>. It looks like this:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash </span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=qualimap</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=5</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=10G</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate stats on alignments</span></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="co"># this time we'll use qualimap</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load qualimap/2.2.1</span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
-<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/qualimap_reports</span>
-<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$OUTDIR</span></span>
-<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a><span class="co"># gtf annotation is required here</span></span>
-<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a><span class="va">GTF</span><span class="op">=</span>../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf </span>
-<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a><span class="co"># accession list</span></span>
-<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
-<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a><span class="co"># run qualimap in parallel</span></span>
-<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 5 <span class="dt">\</span></span>
-<span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a>    qualimap <span class="dt">\</span></span>
-<span id="cb30-41"><a href="#cb30-41" aria-hidden="true" tabindex="-1"></a>        rnaseq <span class="dt">\</span></span>
-<span id="cb30-42"><a href="#cb30-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">-bam</span> <span class="va">$INDIR</span>/{}.bam <span class="dt">\</span></span>
-<span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">-gtf</span> <span class="va">$GTF</span> <span class="dt">\</span></span>
-<span id="cb30-44"><a href="#cb30-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">-outdir</span> <span class="va">$OUTDIR</span>/{} <span class="dt">\</span></span>
-<span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">--java-mem-size</span><span class="op">=</span>2G  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash </span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=qualimap</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=5</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=10G</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate stats on alignments</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co">##################################</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co"># this time we'll use qualimap</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load qualimap/2.2.1</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/qualimap_reports</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$OUTDIR</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="co"># gtf annotation is required here</span></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="va">GTF</span><span class="op">=</span>../../genome/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gtf </span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="co"># accession list</span></span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="co"># run qualimap in parallel</span></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 5 <span class="dt">\</span></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>    qualimap <span class="dt">\</span></span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>        rnaseq <span class="dt">\</span></span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">-bam</span> <span class="va">$INDIR</span>/{}.bam <span class="dt">\</span></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">-gtf</span> <span class="va">$GTF</span> <span class="dt">\</span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">-outdir</span> <span class="va">$OUTDIR</span>/{} <span class="dt">\</span></span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">--java-mem-size</span><span class="op">=</span>2G  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Most of this should look familiar. We are telling <code>qualimap</code> to operate in <code>rnaseq</code> mode. We provide a bam file and a GTF annotation file. It will output an HTML formatted report.</p>
 </section>
 <section id="multiqc" class="level3" data-number="15.4.3">
 <h3 data-number="15.4.3" class="anchored" data-anchor-id="multiqc"><span class="header-section-number">15.4.3</span> MultiQC</h3>
 <p>Finally, run our MultiQC script <code>scripts/03_align/05_multiqc.sh</code>.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=multiqc</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 4</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=5G</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate reports using MultiQC</span></span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.9</span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="va">STATS</span><span class="op">=</span>../../results/03_align/samtools_stats</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a><span class="va">QUALIMAP</span><span class="op">=</span>../../results/03_align/qualimap_reports</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/multiqc</span>
-<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co"># run on samtool stats output</span></span>
-<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> <span class="va">${OUTDIR}</span>/samtools_stats <span class="va">${STATS}</span></span>
-<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="co"># run on qualimap output</span></span>
-<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> <span class="va">${OUTDIR}</span>/qualimap <span class="va">${QUALIMAP}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=multiqc</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -c 4</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=5G</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition=general</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --qos=general</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-type=ALL</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mail-user=first.last@uconn.edu</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o %x_%j.out</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e %x_%j.err</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate reports using MultiQC</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.9</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="va">STATS</span><span class="op">=</span>../../results/03_align/samtools_stats</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a><span class="va">QUALIMAP</span><span class="op">=</span>../../results/03_align/qualimap_reports</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/multiqc</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="co"># run on samtool stats output</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> <span class="va">${OUTDIR}</span>/samtools_stats <span class="va">${STATS}</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="co"># run on qualimap output</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> <span class="va">${OUTDIR}</span>/qualimap <span class="va">${QUALIMAP}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We could run this in one go with the qualimap and stats output in a single report, but here we’re going to produce separate reports.</p>
 </section>
 </section>
