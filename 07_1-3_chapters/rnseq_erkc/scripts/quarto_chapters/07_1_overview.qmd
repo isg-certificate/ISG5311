@@ -9,7 +9,7 @@ format:
 |                                                                       |
 |-----------------------------------------------------------------------|
 | **Learning Objectives:**                                              |
-| Customize your shell |
+| Get set up to analyze expression data in R |
 
 ## Bioconductor
 
@@ -31,7 +31,7 @@ git clone https://github.com/isg-certificate/rnaseq.git
 
 Or you can also download it as a zip file and decompress it using the "code" button on the [repository page itself](https://github.com/isg-certificate/rnaseq/tree/main)
 
-We're suggesting you do this to keep the project organized in a consistent way and so that you can ultimately keep all the code for the entire analysis in one place. This may make some more sense next semester when we start using Git/GitHub formally. Once you have the data downloaded, create the analogous "results" directory, and copy the count directory and the samtools stats output to the same directories as on Xanadu. 
+We're suggesting you do this to keep the project organized in a consistent way and so that you can ultimately keep all the code for the entire analysis in one place. This may make some more sense next semester when we start using Git/GitHub formally. Once you have the scripts downloaded, create the analogous "results" directory, and copy the count directory and the samtools stats output to the same directories as on Xanadu. 
 
 In the end, you should have a directory that looks like this:
 
@@ -178,7 +178,7 @@ Write out `sampleTable` to check that it seems correct (in RStudio you can just 
 sampleTable
 ```
 
-Finally, to read the data in, we'll use a function from DESeq2 that recognizes `htseq-count` input files. It will read them all in and create a DESeq2 data object. Note that here is a critical stage in our analysis: `design = ~ population*dose`. We are specifying our experimental design using columns from `sampleTable`. We'll talk more about it later.
+Finally, to read the data in, we'll use a function from DESeq2 that recognizes `htseq-count` input files. It will read them all in and create a DESeq2 data object. Note that this is a critical stage in our analysis: `design = ~ population*dose`. We are specifying our experimental design using columns from `sampleTable`. We'll talk more about it later.
 
 ```{r}
 ddsHTSeq <- DESeqDataSetFromHTSeqCount(
@@ -188,7 +188,7 @@ ddsHTSeq <- DESeqDataSetFromHTSeqCount(
 )
 ```
 
-Note that DESeq2 produces a warning. Our treatment levels are coded as character vectors, but DESeq2 wants them to be factors, so it converts them. 
+DESeq2 produces a warning. Our treatment levels are coded as character vectors, but DESeq2 wants them to be factors, so it converts them. 
 
 ### Do the statistical analysis
 
