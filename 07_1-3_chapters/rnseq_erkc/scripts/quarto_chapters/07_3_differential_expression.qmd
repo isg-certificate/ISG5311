@@ -9,14 +9,16 @@ format:
 |                                                                       |
 |-----------------------------------------------------------------------|
 | **Learning Objectives:**                                              |
-| Customize your shell | 
+| Create exploratory visualizations of expression data. |
+| Test hypotheses about response of gene expression to treatments. | 
+| Create exploratory visualizations of expression data. |
 
 
 At this stage we have read our count data into R and done some basic preliminary quality checks. We have learned how and where the count data are stored, how to extract, normalize and transform the count data, how to make some plots to visualize it, and how we can filter out problematic individuals. 
 
 We should now be confident that we we have a reasonably solid data set and are ready to jump into statistical analysis. 
 
-In our case, the primary analysis we'll do is differential expression analysis. The essence of this is asking whether or not, for a given gene, different treatments have different levels of expression, or whether changes in expression across a particular treatment vary by some secondary factor. 
+In our case, the primary analysis we'll do is differential expression analysis. The essence of this is asking whether or not, for a given gene, different treatments have different levels of expression (at the level of mRNA), or whether changes in expression across a particular treatment vary by some secondary factor. 
 
 To make this concrete, in this data set, we are primarily interested in two questions: what is the transcriptomic response to toxicant exposure, and does it differ between the two populations? The response, and whether and how it differs between tolerant and sensitive populations may give us some insight into the mechanism of tolerance. 
 
@@ -74,6 +76,12 @@ ddsHTSeq <- DESeqDataSetFromHTSeqCount(
   design = ~ population*dose
 )
 
+# filter genes per previous chapter
+rawcounts <- counts(ddsHTSeq)
+keep <- rowSums(rawcounts == 0) < 15 & rowSums(rawcounts) > 20
+sum(keep)
+ddsHTSeq <- ddsHTSeq[keep,]
+
 # filter out previously identified bad samples
 badSamples <- c("SRR12475446","SRR12475449")
 sn <- sn[!(sn$sampleName %in% badSamples),]
@@ -84,7 +92,7 @@ ddsHTSeq <- ddsHTSeq[,!(colnames(ddsHTSeq) %in% badSamples)]
 
 ## The big picture
 
-As we saw in the first chapter in this module, we can fit DESeq2's model and extract one of our comparison's of interest in a very simple way:
+As we saw in the first chapter in this module, we can fit DESeq2's model and extract one of our comparisons of interest in a very simple way:
 
 ```{r}
 dds <- DESeq(ddsHTSeq)
@@ -106,7 +114,7 @@ counts(dds)[2,1]
 
 Under the fitted model, the count in a given cell is expected to be drawn from a negative binomial distribution with a mean **μ~i,j~**, and a dispersion parameter **α~i~**. That is to say, *each cell* in the matrix has it's own expected mean that is derived from the experimental condition and the sample size factor, and each gene has its own dispersion parameter. 
 
-The negative binomial distribution is used in this case to model random variability in the counts. That is to say, we have an *expected* value for the cell, **μ~i,j~**, but due to sampling variance and real biological variations unrelated to experimental conditions, we expect some noise in our actual observations. The negative binomial accomodates that noise. 
+The negative binomial distribution is used in this case to model random variability in the counts. So we have an *expected* value for the cell, **μ~i,j~**, but due to sampling variance and real biological variations unrelated to experimental conditions, we expect some noise in our actual observations. The negative binomial accommodates that noise. 
 
 So what would that sampling variation look like in the case of count **K~2,1~**? We can extract the dispersion parameter for gene 2 using a helper function `mcols()` like this:
 
@@ -116,12 +124,12 @@ mcols(dds,use.names=TRUE)$dispersion[2]
 
 The value can be directly excavated from here `dds@rowRanges@elementMetadata@listData$dispersion[2]`. 
 
-Let's pretend that 897 is the expected mean (we could figure out the predicted mean from the model 
+Let's pretend that 1983 is the expected mean (we could figure out the predicted mean from the model 
 parameters, but we're not ready for that yet...). Using these numbers we can use the R function `rnbinom()` to generate random numbers from that distribution and see what it looks like. 
 
 ```{r}
 # draw 10000 random deviates
-simvals <- rnbinom(mu=897, size=1/0.0710844, n=10000)
+simvals <- rnbinom(mu=1983, size=1/0.1461952, n=10000)
 # get quantiles
 quantile(simvals, prob=c(0.025,0.975))
 # make a histogram using base R
@@ -129,11 +137,11 @@ hist(simvals, breaks=100)
 ```
 
 
-`rnbinom()` parameterizes the negative binomial slightly differently than DESeq2, using a `size` parameter, which is the inverse of the dispersion. `mu` is our mean, or expected value. We can see that for this gene we would expect quite a lot of variation among biological replicates, with 95% of simulated values falling between about 500 and 1400. You can imagine that for this gene it might be difficult to detect changes in expression without many replicates, or a pretty large treatment effect. 
+`rnbinom()` parameterizes the negative binomial slightly differently than DESeq2, using a `size` parameter, which is the inverse of the dispersion. `mu` is our mean, or expected value. We can see that for this gene we would expect quite a lot of variation among biological replicates, with 95% of simulated values falling between about 910 and 3830. You can imagine that for this gene it might be difficult to detect changes in expression without many replicates, or a pretty large treatment effect. 
 
-To get the precise 0.025 and 0.975 quantiles we could also do `qnbinom(mu=897, size=1/0.0710844, p=c(0.025,0.975))`. R has a standard set of probability functions for different distributions built in. Try `?rnbinom` or `?rnorm`. 
+To get the precise 0.025 and 0.975 quantiles we could also do `qnbinom(mu=1983, size=1/0.1461952, p=c(0.025,0.975))`. As an aside, R has a standard set of functions for different probability distributions built in. Try `?rnbinom` or `?rnorm` to learn more.
 
-Ok, so where do the expected values **μ~i,j~** come from? They are the product of two quantities: 
+Ok, so where do the expected values for each cell in our count matrix, **μ~i,j~** come from? They are the product of two quantities: 
 
 $$ μ_{i,j} = s_{i,j} * q_{i,j}$$
 
@@ -171,8 +179,6 @@ params <- colnames(attr(dds, "modelMatrix"))
 mcols(dds)[1:10,params]
 ```
 
-The `NA` values are for genes that have all zero counts and therefore can't be modeled at all. 
-
 So, for a given gene, for a given sample (say, gene 2, sample 5), we can get the value of **log~2~(q~i,j~)** by multiplying our four predictor variables **x~j~** by our four estimated model parameters **β~r~** and summing them:
 
 ```{r}
@@ -198,7 +204,7 @@ data.frame(
 )
 ```
 
-So this is more or less what we hope to see, a good correspondence of the model with the data, with some noise in the observed values compared to the predicted ones. In the case of this gene, we also see that one of our experimental groups (KC, exposed) has dramatically higher expression for this gene than everyone else (remember, this is log2 scaled. 13 vs 5 is actually a 2^8)
+So this is more or less what we hope to see, a good correspondence of the model with the data, with some noise in the observed values compared to the predicted ones. In the case of this gene, we also see that one of our experimental groups (KC, exposed) has dramatically higher expression for this gene than everyone else (remember, this is log2 scaled. 13 vs 5 is actually a 2^8^ difference.)
 
 So what's happening here? The model matrix **x** shows which parameters are applied to which samples to derive the sample **q** value. We sum the product of the model matrix and the parameters **β** for each sample. Because we're doing this in *log* space, we are actually multiplying these values together. 
 
@@ -222,7 +228,9 @@ ddsHTSeq <- DESeqDataSetFromHTSeqCount(
 )
 ```
 
-That formula follows R's general formula interface. It's basically saying we want to model our count data (implicitly on the left side of `~`) as a function of the factors `population` and `dose`. We are multiplying them together here because we want to include the interaction term. If we wanted to be more explicit in setting the interaction term, we could write `~ population + dose + population:dose`, which is equivalent to just doing `*`. If we felt we didn't need the interaction term because we expected the dose effect to be the same in both populations, we would use the formula `~ dose + population`. That would produce a model matrix with 3 parameters instead of 4:
+That formula follows R's general formula interface. It's basically saying we want to model our count data (implicitly on the left side of `~`) as a function of the factors `population` and `dose`. We are multiplying them together here because we want to include an **interaction term**. An interaction between two factors accounts for the fact that the factors may not act independently. You can have changes in expression due to *population* and changes in expression due to *PCB dose*, but if you want to estimate how the effect of PCB dose *changes across populations*, you need the interaction term. 
+
+If we wanted to be more explicit in setting the interaction term, we could write `~ population + dose + population:dose`, which is equivalent to just doing `population*dose`. If we felt we didn't need the interaction term because we expected the dose effect to be the same in both populations, we would use the formula `~ dose + population`. That would produce a model matrix with 3 parameters instead of 4:
 
 ```{r}
 model.matrix(~ population + dose, sampleTable)
@@ -230,7 +238,7 @@ model.matrix(~ population + dose, sampleTable)
 
 This is emphatically *not* what we want in this experiment, though, because we are specifically interested in the differential response between these populations. In experiments with multiple factors, the interactions between the factors are very often the thing that is of greatest interest. 
 
-Specifying the model for a given experiment can be quite complicated. If you look through the bioconductor help forum posts tagged with DESeq2, you'll see one of the most common questions is about how to specify some particular complex experimental design. For the most common types, [this document is a great reference](https://rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html). 
+Specifying the model for a given experiment can be quite complicated. If you look through the bioconductor help forum posts [tagged with DESeq2](https://support.bioconductor.org/tag/DESeq2/), you'll see one of the most common questions is about how to specify some particular experimental design. For the most common types, [this document is a great reference](https://rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html). 
 
 [This is also a really great general discussion](https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html) of how to create design matrices for potentially complicated experimental designs for gene expression studies. It's focused on edgeR, not DESeq2, but many of the principles apply equally. 
 
@@ -269,7 +277,9 @@ ddsHTSeq$population
 ddsHTSeq$dose
 ```
 
-The vectors in `dds$population` and `dds$dose` are R's **factor** data type. They are displayed as character strings, but the underlying representation is as integers, and each unique value is a "level" in the factor. When we created `sampleTable`, the `dose` and `population` columns were *character* data. When we created the `ddsHTSeq` object, DESeq2 *coerced* the character data to factor data. When it did that, it took all the unique values, sorted them alphanumerically and used those as the factor levels. For DESeq2, the first factor level is treated as the reference level. In the case of `dose`, that level is `control`, which is what we want. For `population`, that level is `ER`, but we want it to be `KC`. 
+The vectors in `dds$population` and `dds$dose` are R's **factor** data type. They are displayed as character strings, but the underlying representation is as integers, and each unique value is a "level" in the factor (e.g. `Levels: ER KC` above). 
+
+When we created `sampleTable`, the `dose` and `population` columns were *character* data. When we created the `ddsHTSeq` object, DESeq2 *coerced* the character data to factor data. When it did that, it took all the unique values, sorted them and used those as the factor levels. For DESeq2, the first factor level is treated as the reference level. In the case of `dose`, that level is `control`, which is what we want. For `population`, that level is `ER`, but we want it to be `KC`. 
 
 We can reset the levels by replacing the population factor with a new factor vector giving with the levels in the desired order. 
 
@@ -294,7 +304,7 @@ We need to cover one last topic that is somewhat unique to RNA-seq analysis. We'
 
 Many RNA-seq data sets suffer from low replication. Considering a single gene in isolation, typical sample sizes of 3-6 would be underpowered for detecting changes in expression for all but the most extreme fold changes. This is in part because having only a handful of replicates make it difficult to estimate the amount of variability expected among replicates. A key innovation in RNA-seq analysis has been the recognition that genes with similar expression levels tend to have similar levels of variability within an experiment. 
 
-Because so many genes have measurements, most software for differential expression analysis "borrows" information across genes with similar expression levels to estimate that variability. This type of information is referred to as an **empirical Bayesian** approach. It's [Bayesian](https://en.wikipedia.org/wiki/Bayes'_theorem) because it relies on information that is not strictly part of the observed data (i.e. the dispersion parameter for one gene is estimated using information from other genes), which is to say, a **prior probability distribution**. and "empirical" refers to the fact the "prior" is drawn from data that are part of the experiment. The empirical Bayesian approach of estimating the prior from the data has occasionally been a point of contention in statistics (strictly speaking the prior is supposed to be *prior* information), but in practice it seems to work very well in RNA-seq studies. 
+Because so many genes have measurements, most software for differential expression analysis "borrows" information across genes with similar expression levels to estimate that variability. This type of information is referred to as an **empirical Bayesian** approach. It's [Bayesian](https://en.wikipedia.org/wiki/Bayes'_theorem) because it relies on information that is not strictly part of the observed data (i.e. the dispersion parameter for one gene is estimated using information from other genes), which is to say, it uses a **prior probability distribution**. and "empirical" refers to the fact the "prior" is drawn from data that are part of the experiment (thus not strictly "prior"). The empirical Bayesian approach of estimating the prior from the data has occasionally been a point of contention in statistics (strictly speaking the prior is supposed to be *prior* information), but in practice it seems to work very well in RNA-seq studies. 
 
 So how does this work in DESeq2? When we run the `DESeq()` wrapper function, it printed these messages:
 
@@ -316,14 +326,13 @@ In this plot, you can see the original gene-wise estimates in black, the mean-di
 
 ## Extracting results
 
-Now that we've fitted the GLM to each gene in our dataset, how do we extract significance tests for hypotheses we're interested in? We saw above the `results()` function. It generates a table. To get the results for "dose_exposed_vs_control" we can do: 
+Now that we've fitted the GLM to each gene in our dataset, how do we evaluate which genes are differentially expressed? We saw above the `results()` function. It generates a table. To get the results for the effect of PCB exposure in we can do: 
 
 ```{r}
 res <- results(dds, name="dose_exposed_vs_control")
-head(res)
+head(res) # print the first 6 lines from the table
 ```
 
-Because we have a model with an interaction term, this gives the results for the exposed vs control comparison for *only* the KC population. The table itself has 6 columns: 
 
 1. **baseMean**: the mean of the normalized counts
 2. **log2FoldChange**:the log2Fold change for the comparison made
@@ -331,18 +340,62 @@ Because we have a model with an interaction term, this gives the results for the
 4. **stat**: By default DESeq2 does a Wald test to ask if the L2FC differs from zero. This is the test statistic. 
 5. **pvalue**: a standard p-value. 
 6. **padj**: an adjusted p-value controlling for false discovery rates. More on this shortly. 
+We will cover some of this in more detail in the following sections. 
 
-Columns 2 and 6 are the most important ones here. The log2FoldChange is, in this case, `log2(KC.exposed / KC.control)`. 
+### More about the log2FoldChange
+
+We somewhat laboriously dissected the components of our model above, but it may still be unclear what we did here and what this means. Bear with me for some further explanation. 
+
+The four parameters in our model...
+
+```{r}
+resultsNames(dds)
+```
+
+can be added together to give us the expected expression values for each of our experimental groups for a given gene on a log2 scale. The `Intercept` parameter can be thought of as `log2(KC_control)`. The other three parameters can be thought of as multipliers. So in linear space:
+
+- KC_control = 2^Intercept^
+- KC_exposed = 2^Intercept^ * 2^dose_exposed_vs_control^
+- ER_control = 2^Intercept^ * 2^population_ER_vs_KC^
+- ER_exposed = 2^Intercept^ * 2^population_ER_vs_KC^ * 2^populationER.doseexposed^
+
+And in log2 space:
+
+- log2(KC_control) = Intercept
+- log2(KC_exposed) = Intercept + dose_exposed_vs_control
+- log2(ER_control) = Intercept + population_ER_vs_KC
+- log2(ER_exposed) = Intercept + population_ER_vs_KC + dose_exposed_vs_control + populationER.doseexposed
+
+We are interested in genes that are *differentially expressed*, so we (usually) look at comparisons such as `KC_exposed / KC_control` and thus think about differential expression in terms of *fold-changes*. We further make things a bit easier on ourselves by thinking of them in terms of *log2 fold changes*. So a log2 fold-change of 1 is a doubling of expression and -1 is a halving. 
+
+As you can see in the table above, the log2 fold-changes are reported. This is our biological effect. These are extracted by combining parameters from the model. 
+
+If you write out the parameter equivalents for various comparisons, you'll see, after cancelling:
+
+- log2(KC_exposed / KC_control) = dose_exposed_vs_control
+- log2(ER_control / KC_control) = population_ER_vs_KC
+- log2(ER_exposed / ER_control) = dose_exposed_vs_control + populationER.doseexposed
+- log2(ER_exposed / KC_exposed) = population_ER_vs_KC + populationER.doseexposed
+
+It should be clear now that `populationER.doseexposed` is how the model allows `ER` to have a different dose response than `KC`. It's the *interaction term*. 
+
+If we want to know specifically how the populations differ in dose response, that would look like this:
+
+- log2( (ER_exposed / ER_control) / (KC_exposed / KC_control) ) = populationER.doseexposed
+
+Using the command `results(dds, name="dose_exposed_vs_control")` above, we therefore extracted `log2(KC_exposed / KC_control)` and tested whether that differed significantly from zero (i.e. no change). 
 
 ### False discovery rate correction 
 
-The interpretation of p-values is typically defined as **the probability of observing a test statistic equal to or more extreme than the one actually observed under the null model**. The test statistic here is the Wald statistic. When considering a single test, scientists often use 0.05 as the significance threshold. It means that you only expect your null hypothesis to produce a test result like the one you've observed 5% of the time, and in many cases, scientists are happy to say a p-value < 0.05 is evidence *against* the null model. 
+The interpretation of p-values is typically defined as **the probability of observing a test statistic equal to or more extreme than the one actually observed under the null model**. The test statistic here is the Wald statistic (in the `stat` column above). Our null model is that the log2 fold change attributable to the test we're doing is zero. When considering a single test, scientists often use 0.05 as the p-value significance threshold. This threshold implies that for cases when the null model is *true*, 5% of the time you will falsely reject it anyway. In many cases, scientists are happy to say a p-value < 0.05 is evidence *against the null model* because they consider it to be sufficiently rare. 
 
-In genomics, however, we often do *many* tests. If we tested, say, 10,000 genes, setting the significance threshold at p <= 0.05, even if there were no biological effect, we would expect around 500 genes to be found significant. All of them would. be false discoveries. If instead in our 10,000 genes there were 1000 genes with biological effects strong enough to pass the significance threshold, then we would expect to find `1000 + 0.05 * 9000 = 1450` genes significant, for a 31% false discovery rate. In practice, we don't know in advance how many of our tests are true discoveries and how many are false, and you can imagine this makes interpreting large collections of p-values quite problematic. 
+In genomics, however, we often do *many* tests. If we tested, say, 10,000 genes and set the significance threshold at 0.05, then even if there were no biological effect, we would expect around 500 genes to be found significant. All of them would be false discoveries. If instead in our 10,000 genes there were 1000 genes with biological effects strong enough to pass the significance threshold, then we would expect to find `1000 + 0.05 * 9000 = 1450` genes significant, for a 31% false discovery rate. In practice, we don't know in advance how many of our tests are true discoveries and how many are false, and you can imagine this makes interpreting large collections of p-values quite problematic. 
 
 To deal with this issue, methods have been developed that *adjust* the p-values to account for false discoveries. The **adjusted p-value**, has a very different interpretation. An adjusted p-value is interpreted as the expected frequency of false positive tests when all tests with that value or lower are taken as significant. If we set our adjusted p-value threshold at 5% and as a result reject the null hypothesis for 100 tests, we predict 5 of those will be false positives. 
 
-There are many methods to produce adjusted p-values, but they all use the observed distribution of p-values to try to estimate the fraction of false positives across the range, and then adjust them accordingly. By default, the `results()` function uses [the Benjamini-Hochberg procedure](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini–Hochberg_procedure). `R` has a function `p.adjust()` that implements many methods for this, including Benjamini-Hochberg, though beware its default method is not an FDR correction, but a family-wise error rate correction, where the adjusted p-value threshold gives the probability that one or more tests have had the null rejected in error. This is much more stringent and usually not what you want in expression analysis. 
+This is a somewhat confusing concept. So to try to clarify a little: the adjusted p-values are *not* telling you the probability that an individual test is a false discovery. The adjusted p-values for individual tests are simply telling you the minimum false discovery rate at which that test could be called significant. 
+
+There are many methods to produce adjusted p-values, but they all use the observed distribution of p-values to try to estimate the fraction of false positives across the range, and then adjust them accordingly. By default, the `results()` function uses [the Benjamini-Hochberg procedure](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini–Hochberg_procedure). `R` has a function `p.adjust()` that implements many methods for this, including Benjamini-Hochberg. Beware, though, its default method is not an FDR correction, but a *family-wise error rate* correction, where the adjusted p-values give the probability that *one or more* tests have had the null rejected in error if the given value is used as a significance threshold. This is much more stringent and usually not what you want in expression analysis. 
 
 ### Looking closer at the results table
 
@@ -360,9 +413,9 @@ DESeq2 attempts to find genes where one or more samples have extreme values that
 
 #### Low Counts
 
-Adjusting p-values is sensitive to the number of tests performed and the fraction that are significant. If you have a "needle in a haystack" problem, where you have a lot of hay and very few needles, sensitivity can be low. Because of this, including lots of tests that are unlikely to be significant is undesirable. To deal with this, DESeq2 does something called "independent filtering". In this procedure, a measure that is expected to be unrelated to the likelihood of having a biologically effect, but which is expected to be related to statistical power, is used to filter out tests that have low power. 
+Adjusting p-values is sensitive to the number of tests performed and the fraction that are significant. If you have a "needle in a haystack" problem, where you have a lot of hay and very few needles, sensitivity can be low. Because of this, including lots of tests that are unlikely to be significant is undesirable. To deal with this, DESeq2 does something called "independent filtering". In this procedure, a measure that is expected to be unrelated to the likelihood of having a biological effect, but which is expected to be related to statistical power, is used to filter out tests that have low power. 
 
-In this case, total counts are used. We already did some light filtering of low count genes, but here we can see DESeq2 filters out 3000 more. How does it arrive at its filtering threshold? It dynamically selects the threshold that optimizes the number of significant tests at a provided adjusted p-value threshold. This threshold is set by default at `alpha = 0.1`, but you can change it if you wish. Filtered genes have p-values, *but their adjusted p-values are set to NA*. 
+In this case, total counts are used. We already did some light filtering of low count genes, but here we can see DESeq2 filters out >1600 more. How does it arrive at its filtering threshold? It dynamically selects the threshold that optimizes the number of significant tests at a provided adjusted p-value threshold. This threshold is set by default at `alpha = 0.1`, but you can change it if you wish. Filtered genes have p-values, *but their adjusted p-values are set to NA*. 
 
 ### Other comparisons
 
@@ -372,21 +425,17 @@ Thus far we've only looked at one comparison, the dose response in KC:
 res <- results(dds, name="dose_exposed_vs_control")
 ```
 
-How can we see the dose response in ER? What about the population x dose interaction (the difference in dose response between KC and ER). To get those we need to think about the meaning of the parameters we've estimated, and which combinations of them will give us the output we want. Once we've figured that out, there are a few ways we can tell the `results()` function to produce them. The easiest is the one we see above, specifying the "name" but it only works when we only need a single parameter. We can extract the names as we've seen above, but also with:
+How can we see the dose response in ER? What about the population x dose interaction (the difference in dose response between KC and ER). Above we used the argument `name` to extract this comparison. That only works because the comparison corresponds to a single parameter rather than a combination. 
 
-```{r}
-resultsNames(dds)
-```
+Besides the `name` argument, we can also use the `contrast`argument, which allows for more complexity. The contrast argument can take three possible inputs. You can read about them in the documentation with `?results()`. 
 
-Besides the `name` argument, we can also use the `contrast`argument. The contrast argument can take three possible inputs. You can read about them with `?results()`. 
-
-You can specify a factor, and two levels to compare in a vector. The first level is the numerator of the log2 fold change. The second is the denominator. As when we provided the `name` argument, this applies only to the reference level of `population`. 
+For the first input you can provide a vector containing three elements: an experimental factor, and two levels to compare. The first level is the numerator of the log2 fold change. The second is the denominator. As when we provided the `name` argument, this applies only to the reference level of `population` (KC). 
 
 ```{r}
 res <- results(dds, contrast=c("dose", "exposed", "control"))
 ```
 
-You can specify a list with two vectors. The first vector is parameters for the numerator, the second is parameters for the denominator. If necessary, the second vector can be absent. Sometimes we only need to *add* log2 fold changes (only use the numerator), rather than subtract them (use the denominator). For the same results as above:
+The second possible input is a list with two vectors. The first vector is parameters for the numerator of the fold change, the second is parameters for the denominator. Think about the section above where we discussed parameter combinations. In many cases, the denominator vector can be absent. For the same results as above:
 
 ```{r}
 res <- results(dds, contrast=list(c("dose_exposed_vs_control")))
@@ -398,7 +447,7 @@ Using the contrast argument we can also extract the dose response for ER:
 res2 <- results(dds, contrast=list(c("dose_exposed_vs_control", "populationER.doseexposed")))
 ```
 
-In this case we're *adding* (in log2 space) the dose response in KC to the difference in the dose response in ER and KC to produce the dose response in ER. Note that we are not including a second vector (i.e. a denominator). 
+In this case we're *adding* (in log2 space) the dose response in KC to the difference in the dose response in ER and KC to produce the dose response in ER. 
 
 ```{r}
 summary(res2)
@@ -415,7 +464,12 @@ resultsNames(dds)
 res2 <- results(dds, contrast=c(0,0,1,1))
 ```
 
-Note that testing the interaction term by itself will be a major focus in this data set, because it tells us which genes show significantly different dose responses in KC and ER. We could specify it using any of our approaches. 
+Note that testing the interaction term by itself will be a major focus in this data set, because it tells us which genes show significantly different dose responses in KC and ER. We could specify it using any of our approaches. For example:
+
+```{r}
+res3 <- results(dds, name="populationER.doseexposed")
+summary(res3)
+```
 
 
 We also had an alternate parameterization of our model. 

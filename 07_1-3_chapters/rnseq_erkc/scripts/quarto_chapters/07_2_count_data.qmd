@@ -11,6 +11,7 @@ format:
 | **Learning Objectives:**                                              |
 | Manipulate count data |
 | Perform basic QC of count data |
+| Create exploratory visualizations of expression data.|
 
 In the previous chapter you cloned the git repository to your local machine, copied the count data into it, and started a new RStudio project. We're going to start with that project now. 
 
