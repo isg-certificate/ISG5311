@@ -425,9 +425,10 @@ window.Quarto = {
   <li><a href="#dispersion-parameter-estimation" id="toc-dispersion-parameter-estimation" class="nav-link" data-scroll-target="#dispersion-parameter-estimation"><span class="header-section-number">22.5</span> Dispersion parameter estimation</a></li>
   <li><a href="#extracting-results" id="toc-extracting-results" class="nav-link" data-scroll-target="#extracting-results"><span class="header-section-number">22.6</span> Extracting results</a>
   <ul class="collapse">
-  <li><a href="#false-discovery-rate-correction" id="toc-false-discovery-rate-correction" class="nav-link" data-scroll-target="#false-discovery-rate-correction"><span class="header-section-number">22.6.1</span> False discovery rate correction</a></li>
-  <li><a href="#looking-closer-at-the-results-table" id="toc-looking-closer-at-the-results-table" class="nav-link" data-scroll-target="#looking-closer-at-the-results-table"><span class="header-section-number">22.6.2</span> Looking closer at the results table</a></li>
-  <li><a href="#other-comparisons" id="toc-other-comparisons" class="nav-link" data-scroll-target="#other-comparisons"><span class="header-section-number">22.6.3</span> Other comparisons</a></li>
+  <li><a href="#more-about-the-log2foldchange" id="toc-more-about-the-log2foldchange" class="nav-link" data-scroll-target="#more-about-the-log2foldchange"><span class="header-section-number">22.6.1</span> More about the log2FoldChange</a></li>
+  <li><a href="#false-discovery-rate-correction" id="toc-false-discovery-rate-correction" class="nav-link" data-scroll-target="#false-discovery-rate-correction"><span class="header-section-number">22.6.2</span> False discovery rate correction</a></li>
+  <li><a href="#looking-closer-at-the-results-table" id="toc-looking-closer-at-the-results-table" class="nav-link" data-scroll-target="#looking-closer-at-the-results-table"><span class="header-section-number">22.6.3</span> Looking closer at the results table</a></li>
+  <li><a href="#other-comparisons" id="toc-other-comparisons" class="nav-link" data-scroll-target="#other-comparisons"><span class="header-section-number">22.6.4</span> Other comparisons</a></li>
   </ul></li>
   <li><a href="#ranking-genes" id="toc-ranking-genes" class="nav-link" data-scroll-target="#ranking-genes"><span class="header-section-number">22.7</span> Ranking genes</a></li>
   <li><a href="#looking-at-the-results" id="toc-looking-at-the-results" class="nav-link" data-scroll-target="#looking-at-the-results"><span class="header-section-number">22.8</span> Looking at the results</a>
@@ -469,13 +470,19 @@ window.Quarto = {
 <td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
-<td>Customize your shell</td>
+<td>Create exploratory visualizations of expression data.</td>
+</tr>
+<tr class="odd">
+<td>Test hypotheses about response of gene expression to treatments.</td>
+</tr>
+<tr class="even">
+<td>Create exploratory visualizations of expression data.</td>
 </tr>
 </tbody>
 </table>
 <p>At this stage we have read our count data into R and done some basic preliminary quality checks. We have learned how and where the count data are stored, how to extract, normalize and transform the count data, how to make some plots to visualize it, and how we can filter out problematic individuals.</p>
 <p>We should now be confident that we we have a reasonably solid data set and are ready to jump into statistical analysis.</p>
-<p>In our case, the primary analysis we’ll do is differential expression analysis. The essence of this is asking whether or not, for a given gene, different treatments have different levels of expression, or whether changes in expression across a particular treatment vary by some secondary factor.</p>
+<p>In our case, the primary analysis we’ll do is differential expression analysis. The essence of this is asking whether or not, for a given gene, different treatments have different levels of expression (at the level of mRNA), or whether changes in expression across a particular treatment vary by some secondary factor.</p>
 <p>To make this concrete, in this data set, we are primarily interested in two questions: what is the transcriptomic response to toxicant exposure, and does it differ between the two populations? The response, and whether and how it differs between tolerant and sensitive populations may give us some insight into the mechanism of tolerance.</p>
 <section id="getting-started" class="level2" data-number="22.1">
 <h2 data-number="22.1" class="anchored" data-anchor-id="getting-started"><span class="header-section-number">22.1</span> Getting started</h2>
@@ -527,17 +534,23 @@ window.Quarto = {
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> <span class="sc">~</span> population<span class="sc">*</span>dose</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># filter out previously identified bad samples</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>badSamples <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"SRR12475446"</span>,<span class="st">"SRR12475449"</span>)</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>sn <span class="ot">&lt;-</span> sn[<span class="sc">!</span>(sn<span class="sc">$</span>sampleName <span class="sc">%in%</span> badSamples),]</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> meta[<span class="sc">!</span>(meta<span class="sc">$</span>Run <span class="sc">%in%</span> badSamples),]</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> sampleTable[<span class="sc">!</span>(sampleTable<span class="sc">$</span>sampleName <span class="sc">%in%</span> badSamples),]</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> ddsHTSeq[,<span class="sc">!</span>(<span class="fu">colnames</span>(ddsHTSeq) <span class="sc">%in%</span> badSamples)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># filter genes per previous chapter</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>rawcounts <span class="ot">&lt;-</span> <span class="fu">counts</span>(ddsHTSeq)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(rawcounts <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">&lt;</span> <span class="dv">15</span> <span class="sc">&amp;</span> <span class="fu">rowSums</span>(rawcounts) <span class="sc">&gt;</span> <span class="dv">20</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> ddsHTSeq[keep,]</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># filter out previously identified bad samples</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>badSamples <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"SRR12475446"</span>,<span class="st">"SRR12475449"</span>)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>sn <span class="ot">&lt;-</span> sn[<span class="sc">!</span>(sn<span class="sc">$</span>sampleName <span class="sc">%in%</span> badSamples),]</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> meta[<span class="sc">!</span>(meta<span class="sc">$</span>Run <span class="sc">%in%</span> badSamples),]</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>sampleTable <span class="ot">&lt;-</span> sampleTable[<span class="sc">!</span>(sampleTable<span class="sc">$</span>sampleName <span class="sc">%in%</span> badSamples),]</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>ddsHTSeq <span class="ot">&lt;-</span> ddsHTSeq[,<span class="sc">!</span>(<span class="fu">colnames</span>(ddsHTSeq) <span class="sc">%in%</span> badSamples)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="the-big-picture" class="level2" data-number="22.2">
 <h2 data-number="22.2" class="anchored" data-anchor-id="the-big-picture"><span class="header-section-number">22.2</span> The big picture</h2>
-<p>As we saw in the first chapter in this module, we can fit DESeq2’s model and extract one of our comparison’s of interest in a very simple way:</p>
+<p>As we saw in the first chapter in this module, we can fit DESeq2’s model and extract one of our comparisons of interest in a very simple way:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(ddsHTSeq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -562,11 +575,11 @@ window.Quarto = {
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-out of 22691 with nonzero total read count
+out of 20810 with nonzero total read count
 adjusted p-value &lt; 0.1
 LFC &gt; 0 (up)       : 0, 0%
-LFC &lt; 0 (down)     : 1, 0.0044%
-outliers [1]       : 10, 0.044%
+LFC &lt; 0 (down)     : 1, 0.0048%
+outliers [1]       : 8, 0.038%
 low counts [2]     : 0, 0%
 (mean count &lt; 0)
 [1] see 'cooksCutoff' argument of ?results
@@ -582,28 +595,28 @@ low counts [2]     : 0, 0%
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">counts</span>(dds)[<span class="dv">2</span>,<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 897</code></pre>
+<pre><code>[1] 1983</code></pre>
 </div>
 </div>
 <p>Under the fitted model, the count in a given cell is expected to be drawn from a negative binomial distribution with a mean <strong>μ<sub>i,j</sub></strong>, and a dispersion parameter <strong>α<sub>i</sub></strong>. That is to say, <em>each cell</em> in the matrix has it’s own expected mean that is derived from the experimental condition and the sample size factor, and each gene has its own dispersion parameter.</p>
-<p>The negative binomial distribution is used in this case to model random variability in the counts. That is to say, we have an <em>expected</em> value for the cell, <strong>μ<sub>i,j</sub></strong>, but due to sampling variance and real biological variations unrelated to experimental conditions, we expect some noise in our actual observations. The negative binomial accomodates that noise.</p>
+<p>The negative binomial distribution is used in this case to model random variability in the counts. So we have an <em>expected</em> value for the cell, <strong>μ<sub>i,j</sub></strong>, but due to sampling variance and real biological variations unrelated to experimental conditions, we expect some noise in our actual observations. The negative binomial accommodates that noise.</p>
 <p>So what would that sampling variation look like in the case of count <strong>K<sub>2,1</sub></strong>? We can extract the dispersion parameter for gene 2 using a helper function <code>mcols()</code> like this:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcols</span>(dds,<span class="at">use.names=</span><span class="cn">TRUE</span>)<span class="sc">$</span>dispersion[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07108442</code></pre>
+<pre><code>[1] 0.1461952</code></pre>
 </div>
 </div>
 <p>The value can be directly excavated from here <code>dds@rowRanges@elementMetadata@listData$dispersion[2]</code>.</p>
-<p>Let’s pretend that 897 is the expected mean (we could figure out the predicted mean from the model parameters, but we’re not ready for that yet…). Using these numbers we can use the R function <code>rnbinom()</code> to generate random numbers from that distribution and see what it looks like.</p>
+<p>Let’s pretend that 1983 is the expected mean (we could figure out the predicted mean from the model parameters, but we’re not ready for that yet…). Using these numbers we can use the R function <code>rnbinom()</code> to generate random numbers from that distribution and see what it looks like.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># draw 10000 random deviates</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>simvals <span class="ot">&lt;-</span> <span class="fu">rnbinom</span>(<span class="at">mu=</span><span class="dv">897</span>, <span class="at">size=</span><span class="dv">1</span><span class="sc">/</span><span class="fl">0.0710844</span>, <span class="at">n=</span><span class="dv">10000</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>simvals <span class="ot">&lt;-</span> <span class="fu">rnbinom</span>(<span class="at">mu=</span><span class="dv">1983</span>, <span class="at">size=</span><span class="dv">1</span><span class="sc">/</span><span class="fl">0.1461952</span>, <span class="at">n=</span><span class="dv">10000</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># get quantiles</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(simvals, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> 2.5% 97.5% 
-  480  1435 </code></pre>
+<pre><code>    2.5%    97.5% 
+ 802.975 3713.000 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a histogram using base R</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(simvals, <span class="at">breaks=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -615,9 +628,9 @@ low counts [2]     : 0, 0%
 </div>
 </div>
 </div>
-<p><code>rnbinom()</code> parameterizes the negative binomial slightly differently than DESeq2, using a <code>size</code> parameter, which is the inverse of the dispersion. <code>mu</code> is our mean, or expected value. We can see that for this gene we would expect quite a lot of variation among biological replicates, with 95% of simulated values falling between about 500 and 1400. You can imagine that for this gene it might be difficult to detect changes in expression without many replicates, or a pretty large treatment effect.</p>
-<p>To get the precise 0.025 and 0.975 quantiles we could also do <code>qnbinom(mu=897, size=1/0.0710844, p=c(0.025,0.975))</code>. R has a standard set of probability functions for different distributions built in. Try <code>?rnbinom</code> or <code>?rnorm</code>.</p>
-<p>Ok, so where do the expected values <strong>μ<sub>i,j</sub></strong> come from? They are the product of two quantities:</p>
+<p><code>rnbinom()</code> parameterizes the negative binomial slightly differently than DESeq2, using a <code>size</code> parameter, which is the inverse of the dispersion. <code>mu</code> is our mean, or expected value. We can see that for this gene we would expect quite a lot of variation among biological replicates, with 95% of simulated values falling between about 910 and 3830. You can imagine that for this gene it might be difficult to detect changes in expression without many replicates, or a pretty large treatment effect.</p>
+<p>To get the precise 0.025 and 0.975 quantiles we could also do <code>qnbinom(mu=1983, size=1/0.1461952, p=c(0.025,0.975))</code>. As an aside, R has a standard set of functions for different probability distributions built in. Try <code>?rnbinom</code> or <code>?rnorm</code> to learn more.</p>
+<p>Ok, so where do the expected values for each cell in our count matrix, <strong>μ<sub>i,j</sub></strong> come from? They are the product of two quantities:</p>
 <p><span class="math display">\[ μ_{i,j} = s_{i,j} * q_{i,j}\]</span></p>
 <p><strong>s<sub>i,j</sub></strong> are the <strong>size factors</strong> we saw how to calculate in the previous chapter. In our analysis, they are the same for all genes, <strong>i</strong> within a sample <strong>j</strong>, so we could just write <strong>s<sub>j</sub></strong> instead.</p>
 <p>That leaves <strong>q<sub>i,j</sub></strong>. This is the <em>expected</em> (not observed) mean of the <em>normalized</em> counts for the group of samples to which <strong>j</strong> belongs (e.g.&nbsp;ER control). The DESeq2 paper describes <strong>q<sub>i,j</sub></strong> as a quantity “proportional to the concentration of cDNA fragments from the gene in the sample”.</p>
@@ -689,31 +702,30 @@ attr(,"contrasts")$dose
 <pre><code>DataFrame with 10 rows and 4 columns
                    Intercept population_KC_vs_ER dose_exposed_vs_control
                    &lt;numeric&gt;           &lt;numeric&gt;               &lt;numeric&gt;
-ENSFHEG00000000002        NA                  NA                      NA
-ENSFHEG00000000003   10.4418            0.603807              0.18111726
-ENSFHEG00000000004        NA                  NA                      NA
-ENSFHEG00000000005   11.3524            0.387069              0.31806952
-ENSFHEG00000000006        NA                  NA                      NA
-ENSFHEG00000000007   11.9504           -0.195433              0.00516279
-ENSFHEG00000000008        NA                  NA                      NA
-ENSFHEG00000000009        NA                  NA                      NA
-ENSFHEG00000000010        NA                  NA                      NA
-ENSFHEG00000000011   11.8532           -0.530119             -0.11887793
+ENSFHEG00000000003  10.44183           0.6038096              0.18111960
+ENSFHEG00000000005  11.35244           0.3870690              0.31806952
+ENSFHEG00000000007  11.95044          -0.1954332              0.00516261
+ENSFHEG00000000011  11.85318          -0.5301183             -0.11887899
+ENSFHEG00000000017  16.17163          -0.0287677             -0.12470472
+ENSFHEG00000000020  14.91863           0.1924651             -0.15784524
+ENSFHEG00000000022   8.01151          -0.2009126             -0.17682411
+ENSFHEG00000000023  12.99925           0.0300059             -0.16666771
+ENSFHEG00000000024  15.00442          -0.0274060             -0.02484868
+ENSFHEG00000000026  11.45701           0.1694410              0.14834140
                    populationKC.doseexposed
                                   &lt;numeric&gt;
-ENSFHEG00000000002                       NA
-ENSFHEG00000000003               -0.4581863
-ENSFHEG00000000004                       NA
-ENSFHEG00000000005               -0.9362239
-ENSFHEG00000000006                       NA
-ENSFHEG00000000007               -0.0771317
-ENSFHEG00000000008                       NA
-ENSFHEG00000000009                       NA
-ENSFHEG00000000010                       NA
-ENSFHEG00000000011                0.0730962</code></pre>
+ENSFHEG00000000003              -0.45818970
+ENSFHEG00000000005              -0.93622391
+ENSFHEG00000000007              -0.07713214
+ENSFHEG00000000011               0.07309311
+ENSFHEG00000000017               0.11470319
+ENSFHEG00000000020              -0.00104489
+ENSFHEG00000000022               0.15326231
+ENSFHEG00000000023               0.13737268
+ENSFHEG00000000024              -0.07878394
+ENSFHEG00000000026              -0.15734483</code></pre>
 </div>
 </div>
-<p>The <code>NA</code> values are for genes that have all zero counts and therefore can’t be modeled at all.</p>
 <p>So, for a given gene, for a given sample (say, gene 2, sample 5), we can get the value of <strong>log<sub>2</sub>(q<sub>i,j</sub>)</strong> by multiplying our four predictor variables <strong>x<sub>j</sub></strong> by our four estimated model parameters <strong>β<sub>r</sub></strong> and summing them:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">attr</span>(dds, <span class="st">"modelMatrix"</span>))</span>
@@ -721,14 +733,14 @@ ENSFHEG00000000011                0.0730962</code></pre>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>br <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">mcols</span>(dds)[<span class="dv">2</span>,params])</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>( xr <span class="sc">*</span> br )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 10.62295</code></pre>
+<pre><code>[1] 11.67051</code></pre>
 </div>
 </div>
 <p>Compare that to the observed value (normalized and in log2 space), which is expected to deviate by some amount, according to the negative binomial distribution:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">counts</span>(dds, <span class="at">normalized=</span><span class="cn">TRUE</span>)[<span class="dv">2</span>,<span class="dv">5</span>], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 10.99801</code></pre>
+<pre><code>[1] 12.25404</code></pre>
 </div>
 </div>
 <p>We can use a little <a href="https://en.wikipedia.org/wiki/Matrix_multiplication">matrix multiplication</a> (the <code>%*%</code> operator) to get the <strong>q</strong> values for all <strong>j</strong> for a single gene, but this time let’s use a gene that your instructors know is going to be important, and compare to the log2-scaled normalized values.</p>
@@ -741,12 +753,12 @@ ENSFHEG00000000011                0.0730962</code></pre>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["predicted"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["observed"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"3.954639","2":"4.3768424","_rn_":"SRR12475447"},{"1":"3.954639","2":"4.1247231","_rn_":"SRR12475448"},{"1":"3.954639","2":"3.2010516","_rn_":"SRR12475450"},{"1":"1.886997","2":"0.1790904","_rn_":"SRR12475451"},{"1":"1.886997","2":"1.0243159","_rn_":"SRR12475452"},{"1":"1.886997","2":"2.5268972","_rn_":"SRR12475453"},{"1":"1.886997","2":"1.0867909","_rn_":"SRR12475454"},{"1":"1.886997","2":"2.7675239","_rn_":"SRR12475455"},{"1":"1.886997","2":"1.5034775","_rn_":"SRR12475456"},{"1":"5.412060","2":"5.4052545","_rn_":"SRR12475468"},{"1":"5.412060","2":"5.3825517","_rn_":"SRR12475469"},{"1":"5.412060","2":"5.3335767","_rn_":"SRR12475470"},{"1":"5.412060","2":"6.0064483","_rn_":"SRR12475471"},{"1":"5.412060","2":"4.5580192","_rn_":"SRR12475472"},{"1":"13.451482","2":"13.1965149","_rn_":"SRR12475473"},{"1":"13.451482","2":"13.8808858","_rn_":"SRR12475474"},{"1":"13.451482","2":"13.0218209","_rn_":"SRR12475475"},{"1":"13.451482","2":"13.5529317","_rn_":"SRR12475476"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["predicted"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["observed"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"3.954776","2":"4.3768424","_rn_":"SRR12475447"},{"1":"3.954776","2":"4.1247231","_rn_":"SRR12475448"},{"1":"3.954776","2":"3.2010516","_rn_":"SRR12475450"},{"1":"1.886795","2":"0.1790904","_rn_":"SRR12475451"},{"1":"1.886795","2":"1.0243159","_rn_":"SRR12475452"},{"1":"1.886795","2":"2.5268972","_rn_":"SRR12475453"},{"1":"1.886795","2":"1.0867909","_rn_":"SRR12475454"},{"1":"1.886795","2":"2.7675239","_rn_":"SRR12475455"},{"1":"1.886795","2":"1.5034775","_rn_":"SRR12475456"},{"1":"5.412031","2":"5.4052545","_rn_":"SRR12475468"},{"1":"5.412031","2":"5.3825517","_rn_":"SRR12475469"},{"1":"5.412031","2":"5.3335767","_rn_":"SRR12475470"},{"1":"5.412031","2":"6.0064483","_rn_":"SRR12475471"},{"1":"5.412031","2":"4.5580192","_rn_":"SRR12475472"},{"1":"13.451482","2":"13.1965149","_rn_":"SRR12475473"},{"1":"13.451482","2":"13.8808858","_rn_":"SRR12475474"},{"1":"13.451482","2":"13.0218209","_rn_":"SRR12475475"},{"1":"13.451482","2":"13.5529317","_rn_":"SRR12475476"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
 </div>
-<p>So this is more or less what we hope to see, a good correspondence of the model with the data, with some noise in the observed values compared to the predicted ones. In the case of this gene, we also see that one of our experimental groups (KC, exposed) has dramatically higher expression for this gene than everyone else (remember, this is log2 scaled. 13 vs 5 is actually a 2^8)</p>
+<p>So this is more or less what we hope to see, a good correspondence of the model with the data, with some noise in the observed values compared to the predicted ones. In the case of this gene, we also see that one of our experimental groups (KC, exposed) has dramatically higher expression for this gene than everyone else (remember, this is log2 scaled. 13 vs 5 is actually a 2<sup>8</sup> difference.)</p>
 <p>So what’s happening here? The model matrix <strong>x</strong> shows which parameters are applied to which samples to derive the sample <strong>q</strong> value. We sum the product of the model matrix and the parameters <strong>β</strong> for each sample. Because we’re doing this in <em>log</em> space, we are actually multiplying these values together.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">log</span>(<span class="dv">4</span>,<span class="at">base=</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">4</span>,<span class="at">base=</span><span class="dv">2</span>)) <span class="sc">==</span> <span class="fu">log</span>( <span class="dv">4</span> <span class="sc">*</span> <span class="dv">4</span>, <span class="at">base=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -765,7 +777,8 @@ ENSFHEG00000000011                0.0730962</code></pre>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">directory =</span> directory, </span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> <span class="sc">~</span> population<span class="sc">*</span>dose</span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>That formula follows R’s general formula interface. It’s basically saying we want to model our count data (implicitly on the left side of <code>~</code>) as a function of the factors <code>population</code> and <code>dose</code>. We are multiplying them together here because we want to include the interaction term. If we wanted to be more explicit in setting the interaction term, we could write <code>~ population + dose + population:dose</code>, which is equivalent to just doing <code>*</code>. If we felt we didn’t need the interaction term because we expected the dose effect to be the same in both populations, we would use the formula <code>~ dose + population</code>. That would produce a model matrix with 3 parameters instead of 4:</p>
+<p>That formula follows R’s general formula interface. It’s basically saying we want to model our count data (implicitly on the left side of <code>~</code>) as a function of the factors <code>population</code> and <code>dose</code>. We are multiplying them together here because we want to include an <strong>interaction term</strong>. An interaction between two factors accounts for the fact that the factors may not act independently. You can have changes in expression due to <em>population</em> and changes in expression due to <em>PCB dose</em>, but if you want to estimate how the effect of PCB dose <em>changes across populations</em>, you need the interaction term.</p>
+<p>If we wanted to be more explicit in setting the interaction term, we could write <code>~ population + dose + population:dose</code>, which is equivalent to just doing <code>population*dose</code>. If we felt we didn’t need the interaction term because we expected the dose effect to be the same in both populations, we would use the formula <code>~ dose + population</code>. That would produce a model matrix with 3 parameters instead of 4:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(<span class="sc">~</span> population <span class="sc">+</span> dose, sampleTable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -799,7 +812,7 @@ attr(,"contrasts")$dose
 </div>
 </div>
 <p>This is emphatically <em>not</em> what we want in this experiment, though, because we are specifically interested in the differential response between these populations. In experiments with multiple factors, the interactions between the factors are very often the thing that is of greatest interest.</p>
-<p>Specifying the model for a given experiment can be quite complicated. If you look through the bioconductor help forum posts tagged with DESeq2, you’ll see one of the most common questions is about how to specify some particular complex experimental design. For the most common types, <a href="https://rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html">this document is a great reference</a>.</p>
+<p>Specifying the model for a given experiment can be quite complicated. If you look through the bioconductor help forum posts <a href="https://support.bioconductor.org/tag/DESeq2/">tagged with DESeq2</a>, you’ll see one of the most common questions is about how to specify some particular experimental design. For the most common types, <a href="https://rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html">this document is a great reference</a>.</p>
 <p><a href="https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html">This is also a really great general discussion</a> of how to create design matrices for potentially complicated experimental designs for gene expression studies. It’s focused on edgeR, not DESeq2, but many of the principles apply equally.</p>
 <section id="an-alternative-way-to-specify-the-design" class="level3" data-number="22.4.1">
 <h3 data-number="22.4.1" class="anchored" data-anchor-id="an-alternative-way-to-specify-the-design"><span class="header-section-number">22.4.1</span> An alternative way to specify the design</h3>
@@ -907,7 +920,8 @@ Levels: ER KC</code></pre>
 Levels: control exposed</code></pre>
 </div>
 </div>
-<p>The vectors in <code>dds$population</code> and <code>dds$dose</code> are R’s <strong>factor</strong> data type. They are displayed as character strings, but the underlying representation is as integers, and each unique value is a “level” in the factor. When we created <code>sampleTable</code>, the <code>dose</code> and <code>population</code> columns were <em>character</em> data. When we created the <code>ddsHTSeq</code> object, DESeq2 <em>coerced</em> the character data to factor data. When it did that, it took all the unique values, sorted them alphanumerically and used those as the factor levels. For DESeq2, the first factor level is treated as the reference level. In the case of <code>dose</code>, that level is <code>control</code>, which is what we want. For <code>population</code>, that level is <code>ER</code>, but we want it to be <code>KC</code>.</p>
+<p>The vectors in <code>dds$population</code> and <code>dds$dose</code> are R’s <strong>factor</strong> data type. They are displayed as character strings, but the underlying representation is as integers, and each unique value is a “level” in the factor (e.g.&nbsp;<code>Levels: ER KC</code> above).</p>
+<p>When we created <code>sampleTable</code>, the <code>dose</code> and <code>population</code> columns were <em>character</em> data. When we created the <code>ddsHTSeq</code> object, DESeq2 <em>coerced</em> the character data to factor data. When it did that, it took all the unique values, sorted them and used those as the factor levels. For DESeq2, the first factor level is treated as the reference level. In the case of <code>dose</code>, that level is <code>control</code>, which is what we want. For <code>population</code>, that level is <code>ER</code>, but we want it to be <code>KC</code>.</p>
 <p>We can reset the levels by replacing the population factor with a new factor vector giving with the levels in the desired order.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>ddsHTSeq<span class="sc">$</span>population <span class="ot">&lt;-</span> <span class="fu">factor</span>(ddsHTSeq<span class="sc">$</span>population, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"KC"</span>,<span class="st">"ER"</span>))</span>
@@ -996,7 +1010,7 @@ attr(,"contrasts")$dose
 <h2 data-number="22.5" class="anchored" data-anchor-id="dispersion-parameter-estimation"><span class="header-section-number">22.5</span> Dispersion parameter estimation</h2>
 <p>We need to cover one last topic that is somewhat unique to RNA-seq analysis. We’ve seen so far that our linear model predicts the expected mean of normalized counts for each group of samples, and that sampling variance around those means is accounted for with a negative binomial model with two parameters: the mean, and a dispersion parameter. Since this isn’t a statistics course we’re not going into the details of how all the parameters are estimated, but it is helpful to understand a bit about what’s happening with the dispersion parameter estimates, as it is fairly unique.</p>
 <p>Many RNA-seq data sets suffer from low replication. Considering a single gene in isolation, typical sample sizes of 3-6 would be underpowered for detecting changes in expression for all but the most extreme fold changes. This is in part because having only a handful of replicates make it difficult to estimate the amount of variability expected among replicates. A key innovation in RNA-seq analysis has been the recognition that genes with similar expression levels tend to have similar levels of variability within an experiment.</p>
-<p>Because so many genes have measurements, most software for differential expression analysis “borrows” information across genes with similar expression levels to estimate that variability. This type of information is referred to as an <strong>empirical Bayesian</strong> approach. It’s <a href="https://en.wikipedia.org/wiki/Bayes'_theorem">Bayesian</a> because it relies on information that is not strictly part of the observed data (i.e.&nbsp;the dispersion parameter for one gene is estimated using information from other genes), which is to say, a <strong>prior probability distribution</strong>. and “empirical” refers to the fact the “prior” is drawn from data that are part of the experiment. The empirical Bayesian approach of estimating the prior from the data has occasionally been a point of contention in statistics (strictly speaking the prior is supposed to be <em>prior</em> information), but in practice it seems to work very well in RNA-seq studies.</p>
+<p>Because so many genes have measurements, most software for differential expression analysis “borrows” information across genes with similar expression levels to estimate that variability. This type of information is referred to as an <strong>empirical Bayesian</strong> approach. It’s <a href="https://en.wikipedia.org/wiki/Bayes'_theorem">Bayesian</a> because it relies on information that is not strictly part of the observed data (i.e.&nbsp;the dispersion parameter for one gene is estimated using information from other genes), which is to say, it uses a <strong>prior probability distribution</strong>. and “empirical” refers to the fact the “prior” is drawn from data that are part of the experiment (thus not strictly “prior”). The empirical Bayesian approach of estimating the prior from the data has occasionally been a point of contention in statistics (strictly speaking the prior is supposed to be <em>prior</em> information), but in practice it seems to work very well in RNA-seq studies.</p>
 <p>So how does this work in DESeq2? When we run the <code>DESeq()</code> wrapper function, it printed these messages:</p>
 <pre><code>gene-wise dispersion estimates
 mean-dispersion relationship
@@ -1017,96 +1031,129 @@ final dispersion estimates</code></pre>
 </section>
 <section id="extracting-results" class="level2" data-number="22.6">
 <h2 data-number="22.6" class="anchored" data-anchor-id="extracting-results"><span class="header-section-number">22.6</span> Extracting results</h2>
-<p>Now that we’ve fitted the GLM to each gene in our dataset, how do we extract significance tests for hypotheses we’re interested in? We saw above the <code>results()</code> function. It generates a table. To get the results for “dose_exposed_vs_control” we can do:</p>
+<p>Now that we’ve fitted the GLM to each gene in our dataset, how do we evaluate which genes are differentially expressed? We saw above the <code>results()</code> function. It generates a table. To get the results for the effect of PCB exposure in we can do:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">name=</span><span class="st">"dose_exposed_vs_control"</span>)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res) <span class="co"># print the first 6 lines from the table</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>log2 fold change (MLE): dose exposed vs control 
 Wald test p-value: dose exposed vs control 
 DataFrame with 6 rows and 6 columns
                     baseMean log2FoldChange     lfcSE      stat    pvalue
                    &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
-ENSFHEG00000000002      0.00             NA        NA        NA        NA
-ENSFHEG00000000003   1732.38     -0.2770687  0.259030 -1.069639 0.2847818
-ENSFHEG00000000004      0.00             NA        NA        NA        NA
-ENSFHEG00000000005   2967.33     -0.6181536  0.370535 -1.668275 0.0952611
-ENSFHEG00000000006      0.00             NA        NA        NA        NA
-ENSFHEG00000000007   3674.54     -0.0719688  0.183723 -0.391725 0.6952618
+ENSFHEG00000000003   1732.38     -0.2770698 0.2595340 -1.067566 0.2857161
+ENSFHEG00000000005   2967.33     -0.6181536 0.3705345 -1.668275 0.0952611
+ENSFHEG00000000007   3674.54     -0.0719694 0.1843826 -0.390326 0.6962954
+ENSFHEG00000000011   3015.66     -0.0457858 0.1308538 -0.349900 0.7264134
+ENSFHEG00000000017  70938.00     -0.0100015 0.0993498 -0.100669 0.9198132
+ENSFHEG00000000020  31290.78     -0.1588900 0.1221913 -1.300339 0.1934850
                         padj
                    &lt;numeric&gt;
-ENSFHEG00000000002        NA
-ENSFHEG00000000003  0.704715
-ENSFHEG00000000004        NA
-ENSFHEG00000000005  0.460069
-ENSFHEG00000000006        NA
-ENSFHEG00000000007  0.917123</code></pre>
+ENSFHEG00000000003  0.700079
+ENSFHEG00000000005  0.452443
+ENSFHEG00000000007  0.915455
+ENSFHEG00000000011  0.926159
+ENSFHEG00000000017  0.981695
+ENSFHEG00000000020  0.607426</code></pre>
 </div>
 </div>
-<p>Because we have a model with an interaction term, this gives the results for the exposed vs control comparison for <em>only</em> the KC population. The table itself has 6 columns:</p>
 <ol type="1">
 <li><strong>baseMean</strong>: the mean of the normalized counts</li>
 <li><strong>log2FoldChange</strong>:the log2Fold change for the comparison made</li>
 <li><strong>lfcSE</strong>: standard error of the l2FC</li>
 <li><strong>stat</strong>: By default DESeq2 does a Wald test to ask if the L2FC differs from zero. This is the test statistic.</li>
 <li><strong>pvalue</strong>: a standard p-value.</li>
-<li><strong>padj</strong>: an adjusted p-value controlling for false discovery rates. More on this shortly.</li>
+<li><strong>padj</strong>: an adjusted p-value controlling for false discovery rates. More on this shortly. We will cover some of this in more detail in the following sections.</li>
 </ol>
-<p>Columns 2 and 6 are the most important ones here. The log2FoldChange is, in this case, <code>log2(KC.exposed / KC.control)</code>.</p>
-<section id="false-discovery-rate-correction" class="level3" data-number="22.6.1">
-<h3 data-number="22.6.1" class="anchored" data-anchor-id="false-discovery-rate-correction"><span class="header-section-number">22.6.1</span> False discovery rate correction</h3>
-<p>The interpretation of p-values is typically defined as <strong>the probability of observing a test statistic equal to or more extreme than the one actually observed under the null model</strong>. The test statistic here is the Wald statistic. When considering a single test, scientists often use 0.05 as the significance threshold. It means that you only expect your null hypothesis to produce a test result like the one you’ve observed 5% of the time, and in many cases, scientists are happy to say a p-value &lt; 0.05 is evidence <em>against</em> the null model.</p>
-<p>In genomics, however, we often do <em>many</em> tests. If we tested, say, 10,000 genes, setting the significance threshold at p &lt;= 0.05, even if there were no biological effect, we would expect around 500 genes to be found significant. All of them would. be false discoveries. If instead in our 10,000 genes there were 1000 genes with biological effects strong enough to pass the significance threshold, then we would expect to find <code>1000 + 0.05 * 9000 = 1450</code> genes significant, for a 31% false discovery rate. In practice, we don’t know in advance how many of our tests are true discoveries and how many are false, and you can imagine this makes interpreting large collections of p-values quite problematic.</p>
-<p>To deal with this issue, methods have been developed that <em>adjust</em> the p-values to account for false discoveries. The <strong>adjusted p-value</strong>, has a very different interpretation. An adjusted p-value is interpreted as the expected frequency of false positive tests when all tests with that value or lower are taken as significant. If we set our adjusted p-value threshold at 5% and as a result reject the null hypothesis for 100 tests, we predict 5 of those will be false positives.</p>
-<p>There are many methods to produce adjusted p-values, but they all use the observed distribution of p-values to try to estimate the fraction of false positives across the range, and then adjust them accordingly. By default, the <code>results()</code> function uses <a href="https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini–Hochberg_procedure">the Benjamini-Hochberg procedure</a>. <code>R</code> has a function <code>p.adjust()</code> that implements many methods for this, including Benjamini-Hochberg, though beware its default method is not an FDR correction, but a family-wise error rate correction, where the adjusted p-value threshold gives the probability that one or more tests have had the null rejected in error. This is much more stringent and usually not what you want in expression analysis.</p>
-</section>
-<section id="looking-closer-at-the-results-table" class="level3" data-number="22.6.2">
-<h3 data-number="22.6.2" class="anchored" data-anchor-id="looking-closer-at-the-results-table"><span class="header-section-number">22.6.2</span> Looking closer at the results table</h3>
-<p>First let’s make a summary of this results table.</p>
+<section id="more-about-the-log2foldchange" class="level3" data-number="22.6.1">
+<h3 data-number="22.6.1" class="anchored" data-anchor-id="more-about-the-log2foldchange"><span class="header-section-number">22.6.1</span> More about the log2FoldChange</h3>
+<p>We somewhat laboriously dissected the components of our model above, but it may still be unclear what we did here and what this means. Bear with me for some further explanation.</p>
+<p>The four parameters in our model…</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-out of 22691 with nonzero total read count
-adjusted p-value &lt; 0.1
-LFC &gt; 0 (up)       : 447, 2%
-LFC &lt; 0 (down)     : 498, 2.2%
-outliers [1]       : 10, 0.044%
-low counts [2]     : 3073, 14%
-(mean count &lt; 3)
-[1] see 'cooksCutoff' argument of ?results
-[2] see 'independentFiltering' argument of ?results</code></pre>
-</div>
-</div>
-<p>We can see that for population KC, we have lots of genes upregulated in response to PCB (LFC &gt; 0) and lots downregulated (LFC &lt; 0). We also have a two other quantities listed here: the number of outliers, and the number of genes with low counts. We’ll talk about them in turn.</p>
-<section id="outliers" class="level4" data-number="22.6.2.1">
-<h4 data-number="22.6.2.1" class="anchored" data-anchor-id="outliers"><span class="header-section-number">22.6.2.1</span> Outliers</h4>
-<p>DESeq2 attempts to find genes where one or more samples have extreme values that violate the expectations of the model. When there are lots of replicates (&gt;6), those extreme counts are replaced with the mean across samples and the statistical testing goes forward. When there are fewer replicates, DESeq2 excludes the gene from testing and <em>returns a p-value of NA</em>.</p>
-</section>
-<section id="low-counts" class="level4" data-number="22.6.2.2">
-<h4 data-number="22.6.2.2" class="anchored" data-anchor-id="low-counts"><span class="header-section-number">22.6.2.2</span> Low Counts</h4>
-<p>Adjusting p-values is sensitive to the number of tests performed and the fraction that are significant. If you have a “needle in a haystack” problem, where you have a lot of hay and very few needles, sensitivity can be low. Because of this, including lots of tests that are unlikely to be significant is undesirable. To deal with this, DESeq2 does something called “independent filtering”. In this procedure, a measure that is expected to be unrelated to the likelihood of having a biologically effect, but which is expected to be related to statistical power, is used to filter out tests that have low power.</p>
-<p>In this case, total counts are used. We already did some light filtering of low count genes, but here we can see DESeq2 filters out 3000 more. How does it arrive at its filtering threshold? It dynamically selects the threshold that optimizes the number of significant tests at a provided adjusted p-value threshold. This threshold is set by default at <code>alpha = 0.1</code>, but you can change it if you wish. Filtered genes have p-values, <em>but their adjusted p-values are set to NA</em>.</p>
-</section>
-</section>
-<section id="other-comparisons" class="level3" data-number="22.6.3">
-<h3 data-number="22.6.3" class="anchored" data-anchor-id="other-comparisons"><span class="header-section-number">22.6.3</span> Other comparisons</h3>
-<p>Thus far we’ve only looked at one comparison, the dose response in KC:</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">name=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>How can we see the dose response in ER? What about the population x dose interaction (the difference in dose response between KC and ER). To get those we need to think about the meaning of the parameters we’ve estimated, and which combinations of them will give us the output we want. Once we’ve figured that out, there are a few ways we can tell the <code>results()</code> function to produce them. The easiest is the one we see above, specifying the “name” but it only works when we only need a single parameter. We can extract the names as we’ve seen above, but also with:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resultsNames</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resultsNames</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Intercept"                "population_ER_vs_KC"     
 [3] "dose_exposed_vs_control"  "populationER.doseexposed"</code></pre>
 </div>
 </div>
-<p>Besides the <code>name</code> argument, we can also use the <code>contrast</code>argument. The contrast argument can take three possible inputs. You can read about them with <code>?results()</code>.</p>
-<p>You can specify a factor, and two levels to compare in a vector. The first level is the numerator of the log2 fold change. The second is the denominator. As when we provided the <code>name</code> argument, this applies only to the reference level of <code>population</code>.</p>
+<p>can be added together to give us the expected expression values for each of our experimental groups for a given gene on a log2 scale. The <code>Intercept</code> parameter can be thought of as <code>log2(KC_control)</code>. The other three parameters can be thought of as multipliers. So in linear space:</p>
+<ul>
+<li>KC_control = 2<sup>Intercept</sup></li>
+<li>KC_exposed = 2<sup>Intercept</sup> * 2<sup>dose_exposed_vs_control</sup></li>
+<li>ER_control = 2<sup>Intercept</sup> * 2<sup>population_ER_vs_KC</sup></li>
+<li>ER_exposed = 2<sup>Intercept</sup> * 2<sup>population_ER_vs_KC</sup> * 2<sup>populationER.doseexposed</sup></li>
+</ul>
+<p>And in log2 space:</p>
+<ul>
+<li>log2(KC_control) = Intercept</li>
+<li>log2(KC_exposed) = Intercept + dose_exposed_vs_control</li>
+<li>log2(ER_control) = Intercept + population_ER_vs_KC</li>
+<li>log2(ER_exposed) = Intercept + population_ER_vs_KC + dose_exposed_vs_control + populationER.doseexposed</li>
+</ul>
+<p>We are interested in genes that are <em>differentially expressed</em>, so we (usually) look at comparisons such as <code>KC_exposed / KC_control</code> and thus think about differential expression in terms of <em>fold-changes</em>. We further make things a bit easier on ourselves by thinking of them in terms of <em>log2 fold changes</em>. So a log2 fold-change of 1 is a doubling of expression and -1 is a halving.</p>
+<p>As you can see in the table above, the log2 fold-changes are reported. This is our biological effect. These are extracted by combining parameters from the model.</p>
+<p>If you write out the parameter equivalents for various comparisons, you’ll see, after cancelling:</p>
+<ul>
+<li>log2(KC_exposed / KC_control) = dose_exposed_vs_control</li>
+<li>log2(ER_control / KC_control) = population_ER_vs_KC</li>
+<li>log2(ER_exposed / ER_control) = dose_exposed_vs_control + populationER.doseexposed</li>
+<li>log2(ER_exposed / KC_exposed) = population_ER_vs_KC + populationER.doseexposed</li>
+</ul>
+<p>It should be clear now that <code>populationER.doseexposed</code> is how the model allows <code>ER</code> to have a different dose response than <code>KC</code>. It’s the <em>interaction term</em>.</p>
+<p>If we want to know specifically how the populations differ in dose response, that would look like this:</p>
+<ul>
+<li>log2( (ER_exposed / ER_control) / (KC_exposed / KC_control) ) = populationER.doseexposed</li>
+</ul>
+<p>Using the command <code>results(dds, name="dose_exposed_vs_control")</code> above, we therefore extracted <code>log2(KC_exposed / KC_control)</code> and tested whether that differed significantly from zero (i.e.&nbsp;no change).</p>
+</section>
+<section id="false-discovery-rate-correction" class="level3" data-number="22.6.2">
+<h3 data-number="22.6.2" class="anchored" data-anchor-id="false-discovery-rate-correction"><span class="header-section-number">22.6.2</span> False discovery rate correction</h3>
+<p>The interpretation of p-values is typically defined as <strong>the probability of observing a test statistic equal to or more extreme than the one actually observed under the null model</strong>. The test statistic here is the Wald statistic (in the <code>stat</code> column above). Our null model is that the log2 fold change attributable to the test we’re doing is zero. When considering a single test, scientists often use 0.05 as the p-value significance threshold. This threshold implies that for cases when the null model is <em>true</em>, 5% of the time you will falsely reject it anyway. In many cases, scientists are happy to say a p-value &lt; 0.05 is evidence <em>against the null model</em> because they consider it to be sufficiently rare.</p>
+<p>In genomics, however, we often do <em>many</em> tests. If we tested, say, 10,000 genes and set the significance threshold at 0.05, then even if there were no biological effect, we would expect around 500 genes to be found significant. All of them would be false discoveries. If instead in our 10,000 genes there were 1000 genes with biological effects strong enough to pass the significance threshold, then we would expect to find <code>1000 + 0.05 * 9000 = 1450</code> genes significant, for a 31% false discovery rate. In practice, we don’t know in advance how many of our tests are true discoveries and how many are false, and you can imagine this makes interpreting large collections of p-values quite problematic.</p>
+<p>To deal with this issue, methods have been developed that <em>adjust</em> the p-values to account for false discoveries. The <strong>adjusted p-value</strong>, has a very different interpretation. An adjusted p-value is interpreted as the expected frequency of false positive tests when all tests with that value or lower are taken as significant. If we set our adjusted p-value threshold at 5% and as a result reject the null hypothesis for 100 tests, we predict 5 of those will be false positives.</p>
+<p>This is a somewhat confusing concept. So to try to clarify a little: the adjusted p-values are <em>not</em> telling you the probability that an individual test is a false discovery. The adjusted p-values for individual tests are simply telling you the minimum false discovery rate at which that test could be called significant.</p>
+<p>There are many methods to produce adjusted p-values, but they all use the observed distribution of p-values to try to estimate the fraction of false positives across the range, and then adjust them accordingly. By default, the <code>results()</code> function uses <a href="https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini–Hochberg_procedure">the Benjamini-Hochberg procedure</a>. <code>R</code> has a function <code>p.adjust()</code> that implements many methods for this, including Benjamini-Hochberg. Beware, though, its default method is not an FDR correction, but a <em>family-wise error rate</em> correction, where the adjusted p-values give the probability that <em>one or more</em> tests have had the null rejected in error if the given value is used as a significance threshold. This is much more stringent and usually not what you want in expression analysis.</p>
+</section>
+<section id="looking-closer-at-the-results-table" class="level3" data-number="22.6.3">
+<h3 data-number="22.6.3" class="anchored" data-anchor-id="looking-closer-at-the-results-table"><span class="header-section-number">22.6.3</span> Looking closer at the results table</h3>
+<p>First let’s make a summary of this results table.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+out of 20810 with nonzero total read count
+adjusted p-value &lt; 0.1
+LFC &gt; 0 (up)       : 451, 2.2%
+LFC &lt; 0 (down)     : 502, 2.4%
+outliers [1]       : 8, 0.038%
+low counts [2]     : 1614, 7.8%
+(mean count &lt; 5)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results</code></pre>
+</div>
+</div>
+<p>We can see that for population KC, we have lots of genes upregulated in response to PCB (LFC &gt; 0) and lots downregulated (LFC &lt; 0). We also have a two other quantities listed here: the number of outliers, and the number of genes with low counts. We’ll talk about them in turn.</p>
+<section id="outliers" class="level4" data-number="22.6.3.1">
+<h4 data-number="22.6.3.1" class="anchored" data-anchor-id="outliers"><span class="header-section-number">22.6.3.1</span> Outliers</h4>
+<p>DESeq2 attempts to find genes where one or more samples have extreme values that violate the expectations of the model. When there are lots of replicates (&gt;6), those extreme counts are replaced with the mean across samples and the statistical testing goes forward. When there are fewer replicates, DESeq2 excludes the gene from testing and <em>returns a p-value of NA</em>.</p>
+</section>
+<section id="low-counts" class="level4" data-number="22.6.3.2">
+<h4 data-number="22.6.3.2" class="anchored" data-anchor-id="low-counts"><span class="header-section-number">22.6.3.2</span> Low Counts</h4>
+<p>Adjusting p-values is sensitive to the number of tests performed and the fraction that are significant. If you have a “needle in a haystack” problem, where you have a lot of hay and very few needles, sensitivity can be low. Because of this, including lots of tests that are unlikely to be significant is undesirable. To deal with this, DESeq2 does something called “independent filtering”. In this procedure, a measure that is expected to be unrelated to the likelihood of having a biological effect, but which is expected to be related to statistical power, is used to filter out tests that have low power.</p>
+<p>In this case, total counts are used. We already did some light filtering of low count genes, but here we can see DESeq2 filters out &gt;1600 more. How does it arrive at its filtering threshold? It dynamically selects the threshold that optimizes the number of significant tests at a provided adjusted p-value threshold. This threshold is set by default at <code>alpha = 0.1</code>, but you can change it if you wish. Filtered genes have p-values, <em>but their adjusted p-values are set to NA</em>.</p>
+</section>
+</section>
+<section id="other-comparisons" class="level3" data-number="22.6.4">
+<h3 data-number="22.6.4" class="anchored" data-anchor-id="other-comparisons"><span class="header-section-number">22.6.4</span> Other comparisons</h3>
+<p>Thus far we’ve only looked at one comparison, the dose response in KC:</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">name=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>How can we see the dose response in ER? What about the population x dose interaction (the difference in dose response between KC and ER). Above we used the argument <code>name</code> to extract this comparison. That only works because the comparison corresponds to a single parameter rather than a combination.</p>
+<p>Besides the <code>name</code> argument, we can also use the <code>contrast</code>argument, which allows for more complexity. The contrast argument can take three possible inputs. You can read about them in the documentation with <code>?results()</code>.</p>
+<p>For the first input you can provide a vector containing three elements: an experimental factor, and two levels to compare. The first level is the numerator of the log2 fold change. The second is the denominator. As when we provided the <code>name</code> argument, this applies only to the reference level of <code>population</code> (KC).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"dose"</span>, <span class="st">"exposed"</span>, <span class="st">"control"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You can specify a list with two vectors. The first vector is parameters for the numerator, the second is parameters for the denominator. If necessary, the second vector can be absent. Sometimes we only need to <em>add</em> log2 fold changes (only use the numerator), rather than subtract them (use the denominator). For the same results as above:</p>
+<p>The second possible input is a list with two vectors. The first vector is parameters for the numerator of the fold change, the second is parameters for the denominator. Think about the section above where we discussed parameter combinations. In many cases, the denominator vector can be absent. For the same results as above:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1114,16 +1161,16 @@ low counts [2]     : 3073, 14%
 <div class="cell">
 <div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>, <span class="st">"populationER.doseexposed"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In this case we’re <em>adding</em> (in log2 space) the dose response in KC to the difference in the dose response in ER and KC to produce the dose response in ER. Note that we are not including a second vector (i.e.&nbsp;a denominator).</p>
+<p>In this case we’re <em>adding</em> (in log2 space) the dose response in KC to the difference in the dose response in ER and KC to produce the dose response in ER.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-out of 22691 with nonzero total read count
+out of 20810 with nonzero total read count
 adjusted p-value &lt; 0.1
 LFC &gt; 0 (up)       : 0, 0%
-LFC &lt; 0 (down)     : 1, 0.0044%
-outliers [1]       : 10, 0.044%
+LFC &lt; 0 (down)     : 1, 0.0048%
+outliers [1]       : 8, 0.038%
 low counts [2]     : 0, 0%
 (mean count &lt; 0)
 [1] see 'cooksCutoff' argument of ?results
@@ -1142,17 +1189,33 @@ low counts [2]     : 0, 0%
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get the results</span></span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Note that testing the interaction term by itself will be a major focus in this data set, because it tells us which genes show significantly different dose responses in KC and ER. We could specify it using any of our approaches.</p>
+<p>Note that testing the interaction term by itself will be a major focus in this data set, because it tells us which genes show significantly different dose responses in KC and ER. We could specify it using any of our approaches. For example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>res3 <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">name=</span><span class="st">"populationER.doseexposed"</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+out of 20810 with nonzero total read count
+adjusted p-value &lt; 0.1
+LFC &gt; 0 (up)       : 27, 0.13%
+LFC &lt; 0 (down)     : 65, 0.31%
+outliers [1]       : 8, 0.038%
+low counts [2]     : 2823, 14%
+(mean count &lt; 10)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results</code></pre>
+</div>
+</div>
 <p>We also had an alternate parameterization of our model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>dds2<span class="sc">$</span>fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>dds2<span class="sc">$</span>fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] ER.control ER.control ER.control ER.exposed ER.exposed ER.exposed
  [7] ER.exposed ER.exposed ER.exposed KC.control KC.control KC.control
 [13] KC.control KC.control KC.exposed KC.exposed KC.exposed KC.exposed
 Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resultsNames</span>(dds2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resultsNames</span>(dds2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Intercept"                    "fac_ER.exposed_vs_ER.control"
 [3] "fac_KC.control_vs_ER.control" "fac_KC.exposed_vs_ER.control"</code></pre>
@@ -1162,20 +1225,20 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <p>We have the comparisons <code>KC.exposed</code> vs <code>ER.control</code> and <code>KC.control</code> vs <code>ER.control</code>. How can we get the log2 fold changes for <code>KC.exposed</code> vs <code>KC.control</code>?</p>
 <p>There are two ways: using the contrast list and with the numeric vector:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with a list</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>resx <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"fac_KC.exposed_vs_ER.control"</span>),<span class="fu">c</span>(<span class="st">"fac_KC.control_vs_ER.control"</span>)))</span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="co"># with a numeric vector</span></span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>resy <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with a list</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>resx <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"fac_KC.exposed_vs_ER.control"</span>),<span class="fu">c</span>(<span class="st">"fac_KC.control_vs_ER.control"</span>)))</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a><span class="co"># with a numeric vector</span></span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>resy <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>These should both produce identical results to our above parameterization for the dose effect in KC. Check that with <code>summary()</code></p>
 <p>And what about the interaction? It doesn’t have its own term. What combination of these parameters is equivalent?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with a list</span></span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>resa <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"fac_KC.control_vs_ER.control"</span>,<span class="st">"fac_ER.exposed_vs_ER.control"</span>),<span class="fu">c</span>(<span class="st">"fac_KC.exposed_vs_ER.control"</span>)))</span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="co"># with a numeric vector</span></span>
-<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>resb <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with a list</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>resa <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"fac_KC.control_vs_ER.control"</span>,<span class="st">"fac_ER.exposed_vs_ER.control"</span>),<span class="fu">c</span>(<span class="st">"fac_KC.exposed_vs_ER.control"</span>)))</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="co"># with a numeric vector</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>resb <span class="ot">&lt;-</span> <span class="fu">results</span>(dds2, <span class="at">contrast=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>You can think about it like this. The you’ve got the fold change of <code>KC.exposed/KC.control</code> and <code>ER.exposed/ER.control</code>, and you want the ratio of the ER fold change over the KC fold change. So it looks like this: <code>(ER.exposed * KC.control) / (ER.control * KC.exposed)</code>. In terms of the parameters in the model, they are all already fold changes with respect to <code>ER.control</code>, so you need to put them together in a way that accounts for that.</p>
 <p>This can get very tricky. Try to come to grips with it, and ask for help with this aspect of analysis if you need it.</p>
@@ -1190,7 +1253,7 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <p>The solution is another shrinking procedure. We can re-estimate the log2 fold changes with a prior distribution that pushes them toward zero. Genes with a strong signal for a large log2 fold change won’t be dramatically effected, while genes with weak signals and effect sizes that are large just by chance will give way to the prior. Like with the dispersion parameters, these log2 fold changes will be a compromise between a prior distribution and the signal in the data. Note though, that while we can use them for ranking the genes, we want to use the raw log2 fold changes in any reports or summaries of the results, as they represent the best estimates given the data.</p>
 <p>We can generate shrunken log2 fold changes like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>res_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds,<span class="at">type=</span><span class="st">"ashr"</span>,<span class="at">coef=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>res_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds,<span class="at">type=</span><span class="st">"ashr"</span>,<span class="at">coef=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using 'ashr' for LFC shrinkage. If used in published research, please cite:
     Stephens, M. (2016) False discovery rates: a new deal. Biostatistics, 18:2.
@@ -1201,15 +1264,15 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <p>Note that this results table is identical to the one generated by <code>results()</code>, with the exception of the log2 fold changes.</p>
 <p>If we want to see how the log2 fold changes have been altered, we can do:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">l2fc=</span>res<span class="sc">$</span>log2FoldChange, <span class="at">l2fc_shrink=</span>res_shrink<span class="sc">$</span>log2FoldChange, <span class="at">padj=</span>res<span class="sc">$</span>padj) <span class="sc">%&gt;%</span></span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(l2fc <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">&amp;</span> l2fc <span class="sc">&lt;</span> <span class="dv">5</span> <span class="sc">&amp;</span> l2fc_shrink <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">&amp;</span> l2fc_shrink <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>l2fc, <span class="at">y=</span>l2fc_shrink,<span class="at">color=</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
-<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_point</span>(<span class="at">size=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
-<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">l2fc=</span>res<span class="sc">$</span>log2FoldChange, <span class="at">l2fc_shrink=</span>res_shrink<span class="sc">$</span>log2FoldChange, <span class="at">padj=</span>res<span class="sc">$</span>padj) <span class="sc">%&gt;%</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(l2fc <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">&amp;</span> l2fc <span class="sc">&lt;</span> <span class="dv">5</span> <span class="sc">&amp;</span> l2fc_shrink <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">&amp;</span> l2fc_shrink <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>l2fc, <span class="at">y=</span>l2fc_shrink,<span class="at">color=</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_point</span>(<span class="at">size=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1217,14 +1280,14 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <p>We can see that genes with no adjusted p-value (mostly low count genes lost to independent filtering) have had their log2 fold changes shrunken very close to 0. Slightly more resistant to shrinkage we have genes with p-values, but whose log2 fold changes were not significantly different from 0, and the group of genes that were generally most resistant were the significant ones, although many have had their log2 fold changes altered substantially.</p>
 <p>Now to rank significant genes (here by absolute log2 fold change):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>res_ranked <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(res_shrink) <span class="sc">%&gt;%</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span>
-<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_ranked, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>res_ranked <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(res_shrink) <span class="sc">%&gt;%</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange))</span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_ranked, <span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["baseMean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2504.91429","2":"8.003642","3":"0.2543707","4":"1.325714e-218","5":"2.599461e-214","_rn_":"ENSFHEG00000010510"},{"1":"1267.13309","2":"6.323821","3":"0.2764744","4":"1.146296e-116","5":"1.123829e-112","_rn_":"ENSFHEG00000008855"},{"1":"19.85558","2":"5.353385","3":"0.6254973","4":"1.987678e-18","5":"4.330488e-15","_rn_":"ENSFHEG00000008848"},{"1":"115.45892","2":"4.949947","3":"0.3084651","4":"1.451381e-58","5":"5.691737e-55","_rn_":"ENSFHEG00000002649"},{"1":"792.49226","2":"4.517177","3":"0.2694031","4":"8.240991e-64","5":"4.039734e-60","_rn_":"ENSFHEG00000021655"},{"1":"1597.11234","2":"4.193587","3":"0.1942319","4":"2.545203e-104","5":"1.663545e-100","_rn_":"ENSFHEG00000011110"},{"1":"19.98550","2":"-3.115234","3":"1.7770443","4":"3.765727e-06","5":"1.070121e-03","_rn_":"ENSFHEG00000020789"},{"1":"84.86309","2":"2.613930","3":"0.3888696","4":"1.651428e-14","5":"3.238120e-11","_rn_":"ENSFHEG00000008836"},{"1":"33.33021","2":"2.486425","3":"0.4117706","4":"1.377845e-12","5":"2.456072e-09","_rn_":"ENSFHEG00000014747"},{"1":"216.79832","2":"2.463992","3":"0.2560286","4":"1.277712e-24","5":"3.579054e-21","_rn_":"ENSFHEG00000011240"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["baseMean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log2FoldChange"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lfcSE"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["padj"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2504.91429","2":"8.003751","3":"0.2554167","4":"8.262318e-217","5":"1.585374e-212","_rn_":"ENSFHEG00000010510"},{"1":"1267.13309","2":"6.324232","3":"0.2770946","4":"3.800705e-116","5":"3.646397e-112","_rn_":"ENSFHEG00000008855"},{"1":"19.85558","2":"5.358089","3":"0.6216000","4":"1.226519e-18","5":"2.614939e-15","_rn_":"ENSFHEG00000008848"},{"1":"115.45892","2":"4.950852","3":"0.3075846","4":"6.832664e-59","5":"2.622103e-55","_rn_":"ENSFHEG00000002649"},{"1":"792.49226","2":"4.517640","3":"0.2698026","4":"1.254989e-63","5":"6.020184e-60","_rn_":"ENSFHEG00000021655"},{"1":"1597.11234","2":"4.193786","3":"0.1948419","4":"1.108048e-103","5":"7.087074e-100","_rn_":"ENSFHEG00000011110"},{"1":"19.98550","2":"-3.150127","3":"1.7655434","4":"3.765727e-06","5":"1.040633e-03","_rn_":"ENSFHEG00000020789"},{"1":"84.86309","2":"2.616440","3":"0.3870951","4":"1.275171e-14","5":"2.446798e-11","_rn_":"ENSFHEG00000008836"},{"1":"33.33021","2":"2.492283","3":"0.4070611","4":"8.335982e-13","5":"1.454098e-09","_rn_":"ENSFHEG00000014747"},{"1":"216.79832","2":"2.464334","3":"0.2560133","4":"1.239839e-24","5":"3.398576e-21","_rn_":"ENSFHEG00000011240"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -1236,33 +1299,33 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <p>We’ve covered what’s necessary to understand our analysis, we can now look at the results.</p>
 <p>Let’s generate results for our three major questions of interest, and also look at baseline differences between ER and KC.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dose effect in KC</span></span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>kcdose <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>)))</span>
-<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>  kcdose_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">coef=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dose effect in KC</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>kcdose <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>)))</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  kcdose_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">coef=</span><span class="st">"dose_exposed_vs_control"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using 'ashr' for LFC shrinkage. If used in published research, please cite:
     Stephens, M. (2016) False discovery rates: a new deal. Biostatistics, 18:2.
     https://doi.org/10.1093/biostatistics/kxw041</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dose effect in ER</span></span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>erdose <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>, <span class="st">"populationER.doseexposed"</span>)))</span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  erdose_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>, <span class="st">"populationER.doseexposed"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dose effect in ER</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>erdose <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>, <span class="st">"populationER.doseexposed"</span>)))</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  erdose_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"dose_exposed_vs_control"</span>, <span class="st">"populationER.doseexposed"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using 'ashr' for LFC shrinkage. If used in published research, please cite:
     Stephens, M. (2016) False discovery rates: a new deal. Biostatistics, 18:2.
     https://doi.org/10.1093/biostatistics/kxw041</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># interaction effect</span></span>
-<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>doseint <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"populationER.doseexposed"</span>)))</span>
-<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  doseint_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"populationER.doseexposed"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># interaction effect</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>doseint <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"populationER.doseexposed"</span>)))</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  doseint_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"populationER.doseexposed"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using 'ashr' for LFC shrinkage. If used in published research, please cite:
     Stephens, M. (2016) False discovery rates: a new deal. Biostatistics, 18:2.
     https://doi.org/10.1093/biostatistics/kxw041</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># baseline population differences</span></span>
-<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>popdiff <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"population_ER_vs_KC"</span>)))</span>
-<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  popdiff_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"population_ER_vs_KC"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co"># baseline population differences</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>popdiff <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"population_ER_vs_KC"</span>)))</span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>  popdiff_shrink <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">type=</span><span class="st">"ashr"</span>, <span class="at">contrast=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"population_ER_vs_KC"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using 'ashr' for LFC shrinkage. If used in published research, please cite:
     Stephens, M. (2016) False discovery rates: a new deal. Biostatistics, 18:2.
@@ -1278,23 +1341,7 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotCounts</span>(dds, <span class="st">"ENSFHEG00000010510"</span>, <span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(sampleTable,<span class="at">count=</span><span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)[<span class="st">"ENSFHEG00000010510"</span>,]) <span class="sc">%&gt;%</span></span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>dose, <span class="at">y=</span><span class="fu">log</span>(count,<span class="dv">10</span>))) <span class="sc">+</span> </span>
-<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span> </span>
-<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
-<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> population)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotCounts</span>(dds, <span class="st">"ENSFHEG00000010510"</span>, <span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1304,73 +1351,89 @@ Levels: ER.control ER.exposed KC.control KC.exposed</code></pre>
 </div>
 </div>
 </div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(sampleTable,<span class="at">count=</span><span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)[<span class="st">"ENSFHEG00000010510"</span>,]) <span class="sc">%&gt;%</span></span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>dose, <span class="at">y=</span><span class="fu">log</span>(count,<span class="dv">10</span>))) <span class="sc">+</span> </span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span> </span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> population)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <p>We can see pretty clearly that this gene is upregulated very strongly in KC in response to PCB, but appears to be <em>downregulated</em> in ER. This is a classic case of an interaction, where the response is not just modulated, but changes <em>sign</em>. If we look at the log2 fold changes and adjusted p-values, we see that this gene is significant for <em>all</em> our tests, even baseline population difference.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
-<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  kcdose[<span class="st">"ENSFHEG00000010510"</span>,],</span>
-<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  erdose[<span class="st">"ENSFHEG00000010510"</span>,],</span>
-<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>  doseint[<span class="st">"ENSFHEG00000010510"</span>,],</span>
-<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>  popdiff[<span class="st">"ENSFHEG00000010510"</span>,]</span>
-<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>  kcdose[<span class="st">"ENSFHEG00000010510"</span>,],</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>  erdose[<span class="st">"ENSFHEG00000010510"</span>,],</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>  doseint[<span class="st">"ENSFHEG00000010510"</span>,],</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>  popdiff[<span class="st">"ENSFHEG00000010510"</span>,]</span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>log2 fold change (MLE): dose_exposed_vs_control effect 
 Wald test p-value: dose_exposed_vs_control effect 
 DataFrame with 4 rows and 6 columns
                     baseMean log2FoldChange     lfcSE      stat       pvalue
                    &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;    &lt;numeric&gt;
-ENSFHEG00000010510   2504.91        8.03942  0.254738  31.55956 1.32571e-218
-ENSFHEG00000010510   2504.91       -2.06764  0.432595  -4.77962  1.75623e-06
-ENSFHEG00000010510   2504.91      -10.10706  0.502026 -20.13255  3.82781e-90
-ENSFHEG00000010510   2504.91       -1.45742  0.337310  -4.32072  1.55519e-05
+ENSFHEG00000010510   2504.91        8.03945  0.255801  31.42848 8.26232e-217
+ENSFHEG00000010510   2504.91       -2.06798  0.433308  -4.77254  1.81918e-06
+ENSFHEG00000010510   2504.91      -10.10743  0.503180 -20.08709  9.57005e-90
+ENSFHEG00000010510   2504.91       -1.45725  0.338260  -4.30809  1.64670e-05
                            padj
                       &lt;numeric&gt;
-ENSFHEG00000010510 2.59946e-214
-ENSFHEG00000010510  3.98332e-02
-ENSFHEG00000010510  7.50556e-86
-ENSFHEG00000010510  3.23285e-03</code></pre>
+ENSFHEG00000010510 1.58537e-212
+ENSFHEG00000010510  3.78427e-02
+ENSFHEG00000010510  1.72060e-85
+ENSFHEG00000010510  3.36432e-03</code></pre>
 </div>
 </div>
 <p>To reiterate how our model parameters are working here, we can easily see that if we add the log2 fold change for dose response in KC to the interaction log2 fold change, we get the dose response in ER:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fl">8.03942</span> <span class="sc">+</span> <span class="sc">-</span><span class="fl">10.1071</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fl">8.03942</span> <span class="sc">+</span> <span class="sc">-</span><span class="fl">10.1071</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -2.06768</code></pre>
 </div>
 </div>
 <p>We can see a similar result in <code>ENSFHEG00000002649</code>, but the population and ER dose response are not significant.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  kcdose[<span class="st">"ENSFHEG00000002649"</span>,],</span>
-<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>  erdose[<span class="st">"ENSFHEG00000002649"</span>,],</span>
-<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>  doseint[<span class="st">"ENSFHEG00000002649"</span>,],</span>
-<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>  popdiff[<span class="st">"ENSFHEG00000002649"</span>,]</span>
-<span id="cb99-6"><a href="#cb99-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>  kcdose[<span class="st">"ENSFHEG00000002649"</span>,],</span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  erdose[<span class="st">"ENSFHEG00000002649"</span>,],</span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>  doseint[<span class="st">"ENSFHEG00000002649"</span>,],</span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>  popdiff[<span class="st">"ENSFHEG00000002649"</span>,]</span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>log2 fold change (MLE): dose_exposed_vs_control effect 
 Wald test p-value: dose_exposed_vs_control effect 
 DataFrame with 4 rows and 6 columns
-                    baseMean log2FoldChange     lfcSE        stat      pvalue
-                   &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;   &lt;numeric&gt;   &lt;numeric&gt;
-ENSFHEG00000002649   115.459      4.9883442  0.309166  16.1348592 1.45138e-58
-ENSFHEG00000002649   115.459     -0.0311308  0.353187  -0.0881425 9.29763e-01
-ENSFHEG00000002649   115.459     -5.0194749  0.469387 -10.6936761 1.08965e-26
-ENSFHEG00000002649   115.459      0.1919752  0.377031   0.5091767 6.10628e-01
+                    baseMean log2FoldChange     lfcSE       stat      pvalue
+                   &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt;   &lt;numeric&gt;
+ENSFHEG00000002649   115.459      4.9882926  0.308275  16.181309 6.83266e-59
+ENSFHEG00000002649   115.459     -0.0309729  0.352325  -0.087910 9.29948e-01
+ENSFHEG00000002649   115.459     -5.0192655  0.468152 -10.721450 8.07280e-27
+ENSFHEG00000002649   115.459      0.1917984  0.376167   0.509875 6.10139e-01
                           padj
                      &lt;numeric&gt;
-ENSFHEG00000002649 5.69174e-55
-ENSFHEG00000002649 9.99962e-01
-ENSFHEG00000002649 4.27316e-23
-ENSFHEG00000002649 8.45269e-01</code></pre>
+ENSFHEG00000002649 2.62210e-55
+ENSFHEG00000002649 9.99957e-01
+ENSFHEG00000002649 2.90282e-23
+ENSFHEG00000002649 8.43510e-01</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotCounts</span>(dds, <span class="st">"ENSFHEG00000002649"</span>, <span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotCounts</span>(dds, <span class="st">"ENSFHEG00000002649"</span>, <span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1383,43 +1446,19 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>vsd_kcdose <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
-<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_kcdose,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>vsd_kcdose <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(kcdose<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_kcdose,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using ntop=500 top features by variance</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>vsd_doseint <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(doseint<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_doseint,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>using ntop=500 top features by variance</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1429,25 +1468,49 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>vsd_popdiff <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(popdiff<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
-<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_popdiff,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>vsd_doseint <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(doseint<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_doseint,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>using ntop=500 top features by variance</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
-<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
-<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>vsd_popdiff <span class="ot">&lt;-</span> vsd[<span class="fu">which</span>(popdiff<span class="sc">$</span>padj <span class="sc">&lt;</span> <span class="fl">0.1</span>),]</span>
+<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_popdiff,<span class="at">returnData=</span><span class="cn">TRUE</span>,<span class="at">intgroup=</span><span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat,<span class="fu">aes</span>(<span class="at">x=</span>PC1,<span class="at">y=</span>PC2,<span class="at">col=</span>population, <span class="at">shape=</span>dose))</span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste</span>(<span class="st">"PC1: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">1</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span> </span>
+<span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">"PC2: "</span>, <span class="fu">round</span>(<span class="fu">attr</span>(dat,<span class="st">"percentVar"</span>)[<span class="dv">2</span>],<span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, <span class="st">"% variation explained"</span>, <span class="at">sep=</span><span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label=</span>name))</span>
+<span id="cb112-6"><a href="#cb112-6" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1462,38 +1525,38 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <p>Heatmaps are a tricky way to visualize expression data. Let’s plot the 50 genes that respond most strongly in KC.</p>
 <p>Let’s get the data ready first.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
-<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
-<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
-<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a><span class="co"># transform the count data</span></span>
-<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a metadata data frame to add to the heatmap</span></span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">colData</span>(ddsHTSeq)[,<span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)])</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ddsHTSeq)</span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"population"</span>,<span class="st">"dose"</span>)</span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a><span class="co"># transform the count data</span></span>
+<span id="cb113-9"><a href="#cb113-9" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Make the plot:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pull the top 50 genes by shrunken log2 fold change</span></span>
-<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>top50 <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
-<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange)) <span class="sc">%&gt;%</span></span>
-<span id="cb112-6"><a href="#cb112-6" aria-hidden="true" tabindex="-1"></a>  rownames <span class="sc">%&gt;%</span></span>
-<span id="cb112-7"><a href="#cb112-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">50</span>)</span>
-<span id="cb112-8"><a href="#cb112-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb112-9"><a href="#cb112-9" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
-<span id="cb112-10"><a href="#cb112-10" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb112-11"><a href="#cb112-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
-<span id="cb112-12"><a href="#cb112-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb112-13"><a href="#cb112-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb112-14"><a href="#cb112-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb112-15"><a href="#cb112-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
-<span id="cb112-16"><a href="#cb112-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pull the top 50 genes by shrunken log2 fold change</span></span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>top50 <span class="ot">&lt;-</span> kcdose_shrink <span class="sc">%&gt;%</span> </span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(padj <span class="sc">&lt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span><span class="fu">abs</span>(log2FoldChange)) <span class="sc">%&gt;%</span></span>
+<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>  rownames <span class="sc">%&gt;%</span></span>
+<span id="cb114-7"><a href="#cb114-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">50</span>)</span>
+<span id="cb114-8"><a href="#cb114-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb114-9"><a href="#cb114-9" aria-hidden="true" tabindex="-1"></a><span class="co"># make the heatmap</span></span>
+<span id="cb114-10"><a href="#cb114-10" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb114-11"><a href="#cb114-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
+<span id="cb114-12"><a href="#cb114-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb114-13"><a href="#cb114-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb114-14"><a href="#cb114-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb114-15"><a href="#cb114-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df</span>
+<span id="cb114-16"><a href="#cb114-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1505,35 +1568,14 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>This clusters better by expression pattern, but overall differences in expression still make it messy looking.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
-<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<p>We can rescale the transformed counts by overall expression level to try to make it a bit clearer.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd))</span>
-<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
-<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb114-7"><a href="#cb114-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb114-8"><a href="#cb114-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb114-9"><a href="#cb114-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assay</span>(vsd)[top50,], </span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb115-6"><a href="#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb115-7"><a href="#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb115-8"><a href="#cb115-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1543,22 +1585,43 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
-<p>We can similarly rescale by KC control mean transformed counts, as this is the closest thing we have to reference group in these samples.</p>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>We can rescale the transformed counts by overall expression level to try to make it a bit clearer.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd)[, dds<span class="sc">$</span>population<span class="sc">==</span><span class="st">"KC"</span> <span class="sc">&amp;</span> dds<span class="sc">$</span>dose<span class="sc">==</span><span class="st">"control"</span>])</span>
-<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
-<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
-<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
-<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb115-6"><a href="#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
-<span id="cb115-7"><a href="#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
-<span id="cb115-8"><a href="#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
-<span id="cb115-9"><a href="#cb115-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd))</span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb116-7"><a href="#cb116-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb116-8"><a href="#cb116-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb116-9"><a href="#cb116-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>We can similarly rescale by KC control mean transformed counts, as this is the closest thing we have to reference group in these samples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>rescaled <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd) <span class="sc">-</span> <span class="fu">rowMeans</span>(<span class="fu">assay</span>(vsd)[, dds<span class="sc">$</span>population<span class="sc">==</span><span class="st">"KC"</span> <span class="sc">&amp;</span> dds<span class="sc">$</span>dose<span class="sc">==</span><span class="st">"control"</span>])</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>  rescaled[top50,], </span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_rows=</span><span class="cn">TRUE</span>, </span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_cols=</span><span class="cn">TRUE</span>,</span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation_col=</span>df,</span>
+<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">clustering_distance_rows=</span><span class="st">"correlation"</span></span>
+<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1576,19 +1639,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1598,9 +1649,9 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1610,13 +1661,25 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1630,19 +1693,7 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(kcdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1652,9 +1703,9 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(erdose_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1664,13 +1715,25 @@ ENSFHEG00000002649 8.45269e-01</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(doseint_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMA</span>(popdiff_shrink)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07_3_differential_expression_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
