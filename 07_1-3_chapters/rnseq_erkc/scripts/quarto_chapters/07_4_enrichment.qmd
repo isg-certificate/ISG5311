@@ -9,12 +9,13 @@ format:
 |                                                                       |
 |-----------------------------------------------------------------------|
 | **Learning Objectives:**                                              |
-| Customize your shell |
+| Conduct gene set enrichment analysis. |
+| Conduct overrepresentation analysis. |
+| Visualize results of GSEA and ORA. |
 
 We've conducted a differential expression analysis and gotten log2 fold changes and adjusted p-values for our genes. We've interpreted the results in the absence of any knowledge of what those genes are. This is a useful way to approach some types of studies, particularly when it's not clear yet even in the broad sense how the study subjects respond to experimental factors. But we definitely would like to investigate in more detail, with the goal of understanding biological processes that are involved in the response we see. 
 
 Continue building your script from the previous two chapters. This chapter assumes you've got the variables created previously in your environment. Restart your RStudio session without saving anything, though, and execute everything up until now. Sort out any errors before moving forward. 
-
 
 ## Functional annotation
 
@@ -30,7 +31,7 @@ The Gene Ontology is a controlled vocabulary that can be used to describe gene f
 2. Molecular function
 3. Biological process. 
 
-All terms used to describe gene products fall in one of these three categories. GO terms within these categories are linked in network (a [*directed acyclic graph*](https://en.wikipedia.org/wiki/Directed_acyclic_graph)). Terms are assigned numeric levels, and the higher the number, the more specific the term. Parent terms have lower numeric levels, and are more generally applicable. For a concrete example, see the page for [GO:0005996](https://amigo.geneontology.org/amigo/term/GO:0005996), "monosaccharide metabolic process". Click the tab for "Inferred Tree View". This will show you the parent and child terms associated with this term. If you click the "Graph View" tab, and the "OLSVIS (interactive)", you will be able to see the directed acyclic graph that unites this term with its parent and child terms. 
+All terms used to describe gene products fall in one of these three categories. GO terms within these categories are linked in network (a [*directed acyclic graph*](https://en.wikipedia.org/wiki/Directed_acyclic_graph)). Terms are assigned numeric levels, and the higher the number, the more specific the term. Parent terms have lower numeric levels, and are more broadly applicable. For a concrete example, see the page for [GO:0005996](https://amigo.geneontology.org/amigo/term/GO:0005996), "monosaccharide metabolic process". Click the tab for "Inferred Tree View". This will show you the parent and child terms associated with this term. If you click the "Graph View" tab, and the "OLSVIS (interactive)", you will be able to see the directed acyclic graph that unites this term with its parent and child terms. 
 
 The GO consortium maintains these terms, and updates their relationships, but it does not *apply* them. How are terms applied to genes? Typically by research groups. For model systems like human, mouse and various *Drosophila* species, many terms will be applied based on experimental evidence that the term is relevant. Rigorous annotations like these can also include links to published research that supports the application of the term. For many non-model systems, terms are applied based on the evolutionary relationships or structural or sequence similarity of focal genes to annotated genes in model systems. 
 
@@ -90,6 +91,12 @@ ddsHTSeq <- DESeqDataSetFromHTSeqCount(
   directory = directory, 
   design = ~ population*dose
 )
+
+# filter genes per previous chapter
+rawcounts <- counts(ddsHTSeq)
+keep <- rowSums(rawcounts == 0) < 15 & rowSums(rawcounts) > 20
+sum(keep)
+ddsHTSeq <- ddsHTSeq[keep,]
 
 # filter out previously identified bad samples
 badSamples <- c("SRR12475446","SRR12475449")
@@ -265,7 +272,7 @@ If we look at the description column something immediately jumps out at us. Amon
 
     The cytochrome P450 (CYP) enzymes are membrane-bound hemoproteins that play a pivotal role in the detoxification of xenobiotics, cellular metabolism and homeostasis.
 
-If we start looking up these top 10 differentially regulated genes we'll see there is already quite a bit known about many of them (with the exception perhaps of hepcidin) with respect to toxicant exposure, and that they are all already known to be upregulated to aryl-hydrocarbon receptor signaling in response to various types nasty chemicals. 
+If we start looking up these top 10 differentially regulated genes we'll see there is already quite a bit known about many of them (with the exception perhaps of hepcidin) with respect to toxicant exposure, and that they are all already known to be upregulated to aryl-hydrocarbon receptor signaling in response to various types of nasty chemicals. 
 
 We can look at the [comparative toxicogenomics database](https://ctdbase.org), which will allow us to search by chemical or gene for known connections. We can look at [reactome](https://reactome.org), a pathway database. Or we can just dig into the literature. 
 
@@ -275,20 +282,22 @@ There is a broader way to approach this question though, and it will provide a b
 
 ## Enrichment analysis
 
-We didn't just grab gene names above, we also pulled down GO terms. There are two mostly similar ways we can approach analyzing our GO terms. 
+We didn't just grab gene names above, we also pulled down GO terms. There are two similar ways we can approach analyzing our GO terms. 
 
 1. Over-representation analysis. 
 2. Gene-set enrichment analysis. 
 
-In over-representation analysis we categorize genes as either differentially expressed or not, by setting an adjusted p-value and/or log2 fold change threshold (probably a shrunken log2 fold change). Then we ask if any GO terms are over- (or possibly under-) represented among the DE genes. 
+In **over-representation analysis** we categorize genes as either differentially expressed or not, by setting an adjusted p-value and/or log2 fold change threshold (probably a shrunken log2 fold change). Then we ask if any GO terms are over- (or possibly under-) represented among the DE genes. 
 
-In gene-set enrichment, we provide a continuous variable to rank the genes by (shrunken log2 fold changes) and ask if genes tagged with a given GO term are randomly distributed in this ranking. By not discretely categorizing genes as DE or not, gene-set enrichment can detect coordinated but small changes across many genes in a functional category. 
+In **gene-set enrichment**, we provide a continuous variable to rank the genes by log2 fold changes and ask if genes tagged with a given GO term are randomly distributed in this ranking. By not discretely categorizing genes as DE or not, gene-set enrichment can detect coordinated but small changes across many genes in a functional category. 
 
 In many cases these will produce similar results. 
 
-We're going to use `clusterProfiler` to do this analysis. `clusterProfiler` is a bioconductor package, and you'll need to install it accordingly. Unfortunately, the installation for this package can sometimes be a bit rough. If some dependencies fail to install, thus killing the entire installation, you can try installing them with `install.packages("packagename")`, and then trying clusterProfiler again. You may need to do this repeatedly with multiple dependencies. This isn't all that common with R/bioconductor, but it does happen. Additionally, for some of the plots we make with clusterProfiler we'll use `enrichplot`. Some dependencies *won't* be installed automatically, and they will raise errors when you run the command. As you come across them, install those packages. Try to work this out yourself if you can, but reach out for help if you reach an impasse. 
+We're going to use [`clusterProfiler`](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) to do this analysis. `clusterProfiler` is a bioconductor package, and you'll need to install it accordingly. Unfortunately, the installation for this package can sometimes be a bit rough. If some dependencies fail to install, thus killing the entire installation, you can try installing them with `install.packages("packagename")`, and then trying clusterProfiler again. You may need to do this repeatedly with multiple dependencies. This isn't all that common with R/bioconductor, but it does happen. Additionally, for some of the plots we make with clusterProfiler we'll use `enrichplot`. Some dependencies *won't* be installed automatically, and they will raise errors when you run the command. As you come across them, install those packages. Try to work this out yourself if you can, but reach out for help if you reach an impasse. 
 
 ```{r}
+#| message: false
+#| warning: false
 library(clusterProfiler)
 library(enrichplot)
 ```
@@ -344,11 +353,11 @@ The result is an S4 object. You can more easily inspect the results by making a 
 as.data.frame(kcdose_enrich)
 ```
 
-In this case for each significant GO term we've got the column `GeneRatio`, which gives the number of DE genes in the category/total DE genes, `BgRatio` which gives the total number of genes in the category / total number of genes considered, `pvalue` which is the raw p-value, `p.adjust`, which by default is the false discovery rate adjusted p-value produced by `p.adjust()` with the Benjamini-Hochberg method and `qvalue`, which is a slightly different method of producing FDR adjusted p-values. These two are subtly different in that the adjusted p-value is the maximum estimate of the FDR and the q-value is the best unbiased estimate (so it will be a little lower in general). 
+In this case for each significant GO term we've got the column `GeneRatio`, which gives the number of DE genes in the category/total DE genes, `BgRatio` which gives the total number of genes in the category / total number of genes considered, `pvalue` which is the raw p-value, `p.adjust`, which by default is the false discovery rate adjusted p-value produced by `p.adjust()` with the Benjamini-Hochberg method and `qvalue`, which is a slightly different method of producing FDR adjusted p-values. These two are similar, but subtly different, but the q-value will generally be slightly lower. For discussions see [here](https://support.bioconductor.org/p/49864/) and [here](https://stats.stackexchange.com/questions/638029/fdr-adjusted-p-values-and-q-values). 
 
 ### Gene-set enrichment analysis
 
-Now we'll take the second approach to functional enrichment: gene-set enrichment analysis. In this case, instead of calling genes DE or not, we'll ask if functional categories tend to be enriched for higher or lower expression levels. For this we need a list of log2 fold changes for all genes in the universe. `clusterProfiler` wants this to be provided as a sorted vector of log2 fold changes where each element is named with the gene ID. Previously, we discussed using shrunken log2 fold changes for ranking genes, but because we are hoping to be able to detect small, potentially individually non-significant changes in expression that are coordinated across a functional group, we're going to use the raw log2 fold changes. If we used the shrunken log2 fold changes, we might smooth out a lot of noise, but also reduce signal. In this particular case, if you use the shrunken log2 fold changes you do in fact get fewer enriched terms, but the most significant ones are retained. 
+Now we'll take the second approach to functional enrichment: gene-set enrichment analysis. In this case, instead of calling genes DE or not, we'll ask if functional categories tend to be enriched for higher or lower expression levels. For this we need a list of log2 fold changes for all genes in the universe. `clusterProfiler` wants this to be provided as a sorted vector of log2 fold changes where each element is named with the gene ID. Previously, we discussed using shrunken log2 fold changes for ranking genes, but because we are hoping to be able to detect small, potentially individually non-significant changes in expression that are coordinated across a functional group, we're going to use the raw log2 fold changes. If we used the shrunken log2 fold changes, we might smooth out a lot of noise, but also reduce signal. In this particular case, if you use the shrunken log2 fold changes you do in fact get fewer enriched terms, but the most significant ones are retained. You can try it and see for yourself. 
 
 ```{r}
 # extract log2 fold changes, only for genes that passed independent filtering. 
@@ -372,13 +381,13 @@ kcdose_gsea <- GSEA(
 ) 
 ```
 
-So what have we done here? It's easiest to look at a couple of plots to illustrate. There are two plots, one for a term that tends to be upregulated and one for a term that tends to be downregulated. 
+So what have we done here? It's easiest to look at a couple of plots to illustrate. There are two plots below, one for a term that tends to be upregulated and one for a term that tends to be downregulated. 
 
 :::: {.panel-tabset}
 
 ## Upregulated term
 ```{r}
-gseaplot(kcdose_gsea, by = "all", title = kcdose_enrich$Description[2], geneSetID = 2)
+gseaplot(kcdose_gsea, by = "all", title = kcdose_enrich$Description[4], geneSetID = 4)
 ```
 ## Down-regulated term
 ```{r}
@@ -400,7 +409,7 @@ Now that we've got our results, there are some helpful visualizations we can do.
 
 #### Dotplots
 
-Dotplots are a common approach. For the ORA results, the x-axis below is the `GeneRatio`, which is the fraction of DE genes in the category. 
+Dotplots are a common approach. For the ORA results, the x-axis below is the `GeneRatio`, which is the fraction of genes in the category that are DE (35/953 = 0.037 for "visual perception"). 
 
 ```{r}
 dotplot(kcdose_enrich)
