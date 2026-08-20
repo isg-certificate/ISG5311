@@ -15,7 +15,7 @@ editor: source
 
 As we have mentioned, this course will make heavy use of a high performance computing cluster running a **Linux operating system**. But what is Linux? [Linux](https://en.wikipedia.org/wiki/Linux) is an open-source computer operating system descended from an older operating system called [Unix.](https://en.wikipedia.org/wiki/Unix) There are lots of different flavors of Linux, referred to as **distributions**. 
 
-The vast majority of cutting-edge research software is built in Linux environments, and can be relatively easily compiled on most distributions. MacOS is built on a different descendant of Unix, [BSD](https://en.wikipedia.org/wiki/Berkeley_Software_Distribution), which differs from Linux. Because of their shared ancestral design features, however, most software developed for use on Linux systems can be compiled and run on MacOS. To run Linux software on a Windows system, a good option is to install *Windows Subsystem for Linux*, which we asked you to do in the previous chapter if you are using Windows. Xanadu runs on a Linux distribution called [CentOS](https://en.wikipedia.org/wiki/CentOS). This is occasionally important to know when compiling software. 
+The vast majority of cutting-edge research software is built in Linux environments, and can be relatively easily compiled on most distributions. MacOS is built on a different descendant of Unix, [BSD](https://en.wikipedia.org/wiki/Berkeley_Software_Distribution), which differs from Linux. Because of their shared ancestral design features, however, most software developed for use on Linux systems can be compiled and run on MacOS. To run Linux software on a Windows system, a good option is to install *Windows Subsystem for Linux*, which we asked you to do in the previous chapter if you are using Windows. Mantis runs on a Linux distribution called [Ubuntu](https://en.wikipedia.org/wiki/Ubuntu). This is occasionally important to know when compiling software. 
 
 Linux distributions can have *graphical user interfaces*, but for scientific computing purposes, interacting with Linux through a **command-line interface** (sometimes abbreviated **CLI**) is nearly universal. 
 
@@ -23,7 +23,7 @@ Linux distributions can have *graphical user interfaces*, but for scientific com
 
 While Linux is the **operating system** that runs the computer, command-line interaction with that operating system happens through another layer of software called a **shell**. A shell is essentially an application, like any other, that takes input from the user, passes it to the operating system to be processed, and then returns any output, warnings or errors. There are several commonly used command-line shells, including Z shell (zsh), TC shell (tcsh) and Bourne-Again shell (bash). These shells share many features in common, but in scientific computing, **bash** is most commonly used and is what we'll use here. Newer MacOS computers default to zsh (this can be changed), but zsh is an extension of bash that is mostly compatible with it, so bash scripts should work in zsh. 
 
-**Try this now**: To find out what shell your local computer is running, open a terminal window and type `echo $SHELL` at the prompt. `echo` is a command that simply prints whatever input it receives and `$SHELL` is an environment variable (more about those later). The variable contains a character string, probably `/bin/bash` or `/bin/zsh`, depending on your operating system and if you have changed the defaults. If you log in to Xanadu (remember: `ssh username@xanadu-submit-ext.cam.uchc.edu`) and type the same command, it will say `/bin/bash`. 
+**Try this now**: To find out what shell your local computer is running, open a terminal window and type `echo $SHELL` at the prompt. `echo` is a command that simply prints whatever input it receives and `$SHELL` is an environment variable (more about those later). The variable contains a character string, probably `/bin/bash` or `/bin/zsh`, depending on your operating system and if you have changed the defaults. If you log in to Mantis (remember: `ssh username@mantis.hpc.cam.uchc.edu`) and type the same command, it will say `/bin/bash`. 
 
 Your interactions with the command-line shell will nearly always take the form of `<command> <argument1> ... <argumentN>` You've seen this twice now when you ran `ssh` and `echo`. Using the command line, you will issue commands to navigate the file system, to manipulate files, and to execute programs. 
 
@@ -31,11 +31,11 @@ Your interactions with the command-line shell will nearly always take the form o
 
 Now that we have learned a little about the Linux operating system and how to connect to a remote computer, a natural place to begin *interacting* with Linux is to learn how to navigate the **file system**. The file system organizes and tracks data stored on a computer. It keeps track of where files are on a storage device, how big they are, when they were created, which users own them, and many other things. 
 
-These days, many people's primary experience with computers is through smartphones. Smartphones running the IOS and Android operating systems obscure and restrict access to the file system. On a smartphone, your entire interaction with the OS is through apps, of which the phone's graphical user interface (GUI) is one. For example, if you want to explore, edit, copy, or delete photos you've taken, you might use Google Photos, or some other specialized app. If you want to listen to music files you've downloaded, you might use Spotify. At no point do you, personally, manipulate any of these files. 
+These days, many people's primary experience with computers is through smartphones. Smartphones running the IOS and Android operating systems obscure and restrict access to the file system. On a smartphone, your entire interaction with the OS is through apps, of which the phone's graphical user interface (GUI) is one. For example, if you want to explore, edit, copy, or delete photos you've taken, you might use Google Photos, or some other specialized app. If you want to listen to music files you've downloaded, you might use Spotify. At no point do you, personally, have permission to manipulate any of these files directly. 
 
 ![An android home screen](images/android.jpg)
 
-GUIs and CLIs on personal computers, on the other hand, often give you more flexibility in access to the filesystem. You might use a photo app to explore or edit photos on your laptop, but if you wished to copy, move, or delete a photo, you could do that yourself by navigating through the filesystem to the place the photo is stored and then directly acting on the file through the operating system, rather than by asking a specialized app to do it for you. 
+GUIs and CLIs on personal computers, on the other hand, often give you more flexibility in access to the filesystem. You might use a photo app to explore or edit photos on your laptop, but if you wished to copy, move, or delete a photo, you could do that yourself by navigating through the filesystem to the place the photo is stored and then directly act on the file through the operating system, rather than by asking a specialized app to do it for you. 
 
 In a GUI, the file system itself is usually represented as a nested series of directories, graphically depicted as windows. You open the window for a directory, and inside you will see files and subdirectories, possibly in the form of a list, or maybe as a series of icons laid out in a grid. There are also likely to be directories which you can open up in new windows by pointing the mouse at them and double-clicking. You may have multiple windows open at once, but only one of these will be the window in which you are actively working. If you use a keyboard shortcut or menu option to create a new file or directory, that action will occur in the active window. 
 
@@ -47,9 +47,9 @@ In a Linux CLI, the file system is also represented by a hierarchical directory 
 
 ### Paths
 
-When doing any kind of work on a Linux CLI, you'll need to be aware of what the current working directory is. There are two ways to access it. First, there is a simple command, `pwd` (for **p**rint **w**orking **d**rectory). Second, there is a built-in environment variable, `$PWD`. 
+When doing any kind of work in a Linux CLI, you'll need to be aware of what the current working directory is. There are two ways to access it. First, there is a simple command, `pwd` (for **p**rint **w**orking **d**rectory). Second, there is a built-in environment variable, `$PWD`. 
 
-**Try this now:** Log in to Xanadu and try entering `pwd` and `echo $PWD` now. Both will return something like the following: 
+**Try this now:** Log in to Mantis and try entering `pwd` and `echo $PWD` now. Both will return something like the following: 
 
 ```bash
 /home/FCAM/username
@@ -57,7 +57,7 @@ When doing any kind of work on a Linux CLI, you'll need to be aware of what the 
 
 This is called a *path*. It gives the full sequence of enveloping directories for the current working directory, with each directory name separated by `/`, and ending in the current working directory with name `username`. The initial `/` refers to the *root directory*, which has no name and no parent directories. On our system, `home` is one of the directories found in root, `FCAM` is found inside `home`, and `username` is found inside `FCAM`. If you change your current working directory, the results of `pwd` and `echo $PWD` will change as well. 
 
-Assuming you executed the above commands after logging in, and before doing anything else, *the particular path* you saw is pretty important. It is your **home directory**. Xanadu, like most high performance computing clusters, has many users, and each has a home directory where only they have permission to make or modify files and directories. Because of the special status of this directory, it is also assigned a symbolic shortcut: `~`. 
+Assuming you executed the above commands after logging in, and before doing anything else, *the particular path* you saw is pretty important. It is your **home directory**. Mantis, like most high performance computing clusters, has many users, and each has a home directory where only they have permission to make or modify files and directories. Because of the special status of this directory, it is also assigned a symbolic shortcut: `~`. 
 
 **Try this now:** Type `echo ~`. No matter what your current working directory is, `~` will always be set to your home directory. 
 
@@ -89,7 +89,7 @@ or this:
 ./killifishGenomes/rawdata
 ```
 
-where the `.` stand in for the current working directory. 
+where the `.` stands in for the current working directory. 
 
 What if your current working directory is `scripts`, and you want to refer to `rawdata`? You can use `..`, to indicate the relative path goes *up* one level in the hierarchy before descending into another directory: 
 
@@ -119,7 +119,7 @@ Relative paths can be useful in two ways. First, they are often much shorter tha
 
 All of the above discussion of paths and working directories raises the question: How do I change my working directory? The answer is to use the command `cd`, which takes a single argument: the directory you wish to move into. 
 
-**Try this now:** Making sure you are logged in to Xanadu, try changing to the root directory, then type `pwd`:
+**Try this now:** Making sure you are logged in to Mantis, try changing to the root directory, then type `pwd`:
 
 ```bash
 cd /
@@ -137,44 +137,44 @@ pwd
 
 If you forget where your home directory is, remember the shortcut `~`. `cd ~` will always take you home. 
 
-You can use relative and absolute paths to change directories, as we discussed above. 
+You can use both relative and absolute paths to change directories, as we discussed above. 
 
 ### Listing directory contents
 
-A downside of command-line navigation of the filesystem is that you don't immediately see directory contents as you do in a GUI with windows. For that, we use the command `ls`. Since we are just getting started, your home directory on Xanadu is probably empty, so if you go there and type `ls`, you should get no results. 
+A downside of command-line navigation of the filesystem is that you don't immediately see directory contents as you do in a GUI with windows. For that, we use the command `ls`. Since we are just getting started, your home directory on Mantis is probably empty, so if you go there and type `ls`, you should get no results. 
 
 Let's go somewhere more interesting. 
 
-**Try this now:** List the contents of the directory `/isg/shared/apps/`. You can do this one of two ways. Without changing the working directory, and supplying a target directory as an argument to `ls`:
+**Try this now:** List the contents of the directory `/isg/shared/mantis/apps/`. You can do this one of two ways. Without changing the working directory, and supplying a target directory as an argument to `ls`:
 
 ```bash
-ls /isg/shared/apps
+ls /isg/shared/mantis/apps/
 ```
 
 Or you can move to that directory and type `ls` with no arguments:
 
 ```bash
-cd /isg/shared/apps
+cd /isg/shared/mantis/apps/
 ls
 ```
 
-The directory contents should be a very large list. This directory contains a subdirectory for each globally installed (i.e. available to all users) software package on Xanadu. Each subdirectory contains yet more subdirectories for each version of the package installed. Let's look more closely at `iqtree`, a package used for phylogenetic inference. 
+The directory contents should be a very large list. This directory contains a subdirectory for each globally installed (i.e. available to all users) software package on Mantis. Each subdirectory contains yet more subdirectories for each version of the package installed. Let's look more closely at `iqtree`, a package used for phylogenetic inference. 
 
 ```bash
-cd /isg/shared/apps/iqtree/
+cd /isg/shared/mantis/apps/iqtree/
 ls
 ```
 
-At the time of writing, there were four subdirectories, corresponding to 4 package versions:
+At the time of writing, there were two subdirectories, corresponding to two package versions:
 
 ```bash
-1.5.5  1.6.10  1.6.6  2.1.3  2.2.2
+3.0.0  3.0.1
 ```
 
-Let's visit `2.2.2` and have a closer look:
+Let's visit `3.0.1` and have a closer look:
 
 ```bash
-cd 2.2.2
+cd 3.0.1
 ls
 ```
 
@@ -190,11 +190,11 @@ The first let's try the argument `ls -l`. This will give you the *long form* dir
 
 ```bash
 total 2364
-drwxr-xr-x 2 root root     512 Dec 14  2022 bin
--rw-r--r-- 1 root root 2237314 Nov 15  2022 example.cf
--rw-r--r-- 1 root root     174 Nov 15  2022 example.nex
--rw-r--r-- 1 root root   34178 Nov 15  2022 example.phy
--rw-r--r-- 1 root root  121669 Nov 15  2022 models.nex
+drwxr-xr-x 2 root root    1536 May  5  2025 bin
+-rw-r--r-- 1 root root 2237314 May  5  2025 example.cf
+-rw-r--r-- 1 root root     174 May  5  2025 example.nex
+-rw-r--r-- 1 root root   34178 May  5  2025 example.phy
+-rw-r--r-- 1 root root  121669 May  5  2025 models.nex
 ```
 
 We won't cover all this in detail just yet, but some key information is 
@@ -207,11 +207,11 @@ For easier-to-read file sizes, supply a second argument `ls -l -h` or the more a
 
 ```bash
 total 2.4M
-drwxr-xr-x 2 root root  512 Dec 14  2022 bin
--rw-r--r-- 1 root root 2.2M Nov 15  2022 example.cf
--rw-r--r-- 1 root root  174 Nov 15  2022 example.nex
--rw-r--r-- 1 root root  34K Nov 15  2022 example.phy
--rw-r--r-- 1 root root 119K Nov 15  2022 models.nex
+drwxr-xr-x 2 root root 1.5K May  5  2025 bin
+-rw-r--r-- 1 root root 2.2M May  5  2025 example.cf
+-rw-r--r-- 1 root root  174 May  5  2025 example.nex
+-rw-r--r-- 1 root root  34K May  5  2025 example.phy
+-rw-r--r-- 1 root root 119K May  5  2025 models.nex
 ```
 
 Now the file sizes have a suffix indicating the unit (K = kilobytes, M = megabytes, G = gigabytes)
@@ -224,18 +224,18 @@ There are a few more arguments that may come in handy:
 I want to introduce another concept here, the *glob* : `*`. This symbol serves as a *wildcard* when referring to files and directories. If you want to list only the files in the directory beginning with "example" you can type `ls -lh example*`
 
 ```bash
--rw-r--r-- 1 root root 2.2M Nov 15  2022 example.cf
--rw-r--r-- 1 root root  174 Nov 15  2022 example.nex
--rw-r--r-- 1 root root  34K Nov 15  2022 example.phy
+-rw-r--r-- 1 root root 2.2M May  5  2025 example.cf
+-rw-r--r-- 1 root root  174 May  5  2025 example.nex
+-rw-r--r-- 1 root root  34K May  5  2025 example.phy
 ```
 
 You can use multiple globs, if necessary. `ls -lh *l*` will output every element containing the letter "l". 
 
 ```bash
--rw-r--r-- 1 root root 2.2M Nov 15  2022 example.cf
--rw-r--r-- 1 root root  174 Nov 15  2022 example.nex
--rw-r--r-- 1 root root  34K Nov 15  2022 example.phy
--rw-r--r-- 1 root root 119K Nov 15  2022 models.nex
+-rw-r--r-- 1 root root 2.2M May  5  2025 example.cf
+-rw-r--r-- 1 root root  174 May  5  2025 example.nex
+-rw-r--r-- 1 root root  34K May  5  2025 example.phy
+-rw-r--r-- 1 root root 119K May  5  2025 models.nex
 ```
 
 ::: {.callout-note}
@@ -253,6 +253,8 @@ There is one more way of looking at directory contents, but it's not available o
 1 directory, 5 files
 ```
 For complex directories you can supply the argument `-L` and a number to specify the number of directories deep the listing should go. 
+
+Update: `tree` was available on our old cluster, Xanadu, but is not installed by default on Mantis. Maybe we'll try to remedy that...
 :::
 
 ### The `find` command
@@ -261,13 +263,15 @@ It's often the case that you will want to find files in a large and complicated 
 
 `find` is an extremely flexible utility included with Linux. It allows searching for files within a specified directory on combinations of attributes such as name, modification date, size, owner and more. Here we'll just cover the simple case of searching by name. The most basic usage of find is `find <path to search> <expression>`. The expression we're going to use is `-name "matchpattern"`. The match pattern can use one or more globs as a wildcard. 
 
-**Try this now**: We can search for all files with the suffix `fq.gz` in the directory `/core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling/data/demux/` like this:
+**Try this now**: We can search for all files with the suffix `fq.gz` in the directory `/core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling_2026/data/demux/` like this:
 
 ```bash
-find /core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling/data/demux/ -name "*fq.gz"
+find /core/cbc/tutorials/workshopdirs/RADseq_tutorial_grayling_2026/data/demux/ -name "*fq.gz"
 ```
 
 Find needs to traverse all the subdirectories of a target, so in a very large and complicated project, it can be somewhat slow. 
+
+Note that `find` does not output results in any particular order, so don't rely on that in any code you write. 
 
 ## Manipulating files and directories
 
@@ -277,7 +281,7 @@ We have seen some basic ways to navigate the file system. Now we're going to sta
 
 We're going to start with the basics of creating things and moving them around, and worry about the contents of files later. 
 
-**Try this now:** To start, let's create a series of directories and populate them with (empty) files as a demonstration. Make sure you are logged in to Xanadu and in your home directory (remember `hostname` and `pwd` to check if you're not sure). Enter the following commands at the prompt:
+**Try this now:** To start, let's create a series of directories and populate them with (empty) files as a demonstration. Make sure you are logged in to Mantis and in your home directory (remember `hostname` and `pwd` to check if you're not sure). Enter the following commands at the prompt:
 
 ```bash
 mkdir killifishGenomes
@@ -343,7 +347,7 @@ There are several ways that files can be created. A very simple way is by redire
 echo "This is a test directory" >killifishGenomes/README.md
 ```
 
-This will write the text you `echo`ed to the file `README.md`. The `>` symbol redirects output to a file. If the file already exists, it will be overwritten. We'll talk in more detail about that later. 
+This will write the text you `echo`ed to the file `README.md`. The `>` symbol redirects output to a file. If the file already exists, it will be *overwritten*. We'll talk in more detail about that later. 
 
 You can *append* new lines to that file with `>>`:
 
@@ -367,7 +371,7 @@ touch killifishGenomes/results/sample{1..5}.fasta
 
 Note that above we used a range of numbers in our shell expansion, `{1..5}`, to create 10 empty files. Shell expansions can also be used with letters, e.g. `{a..z}`. Check to see that the files are where you expect them to be using `ls`. 
 
-If you've been following along so far, you can also try typing `tree killifishGenomes`. You should see this structure:
+If you've been following along so far, you can also try typing `tree killifishGenomes` or `ls -lh killifishGenomes/*`. You should see this structure:
 
 ```bash
 killifishGenomes/
@@ -517,7 +521,7 @@ But if you mistakenly type this:
 ```bash
 rm /path/to/garbage/ *
 ```
-`rm` will refuse to remove directory `garbage` and give you an error (because you didn't supply `-r`) and then go on to **remove every single file in your current working directory** because it interprets the wildcard as a second independent argument. 
+`rm` will refuse to remove directory `garbage` and give you an error (because you didn't supply `-r`) and then go on to **remove every single file in your current working directory** because it interprets the wildcard as a second independent argument which matches *everything*. 
 
 If you accidentally type:
 
@@ -525,7 +529,7 @@ If you accidentally type:
 rm / path/to/garbage/*
 ```
 
-then `rm` may or may not be able to remove the files in `path/to/garbage`, depending on if the current working directory is contains the path, but the single `/` means `rm` **will try to delete every file in the root directory**. This would be **very bad**. 
+then `rm` may or may not be able to remove the files in `path/to/garbage`, depending on if the current working directory contains the path, but the single `/` followed by a space means `rm` **will also try to delete every file in the root directory**. This would be **very bad** because important system files are there. 
 
 Supplying `-r` amplifies the damage done by these typos. 
 
@@ -543,15 +547,18 @@ Things work a bit differently in Linux. Permissions for files and directories ar
 drwxr-xr-x  5 nreid cbc          2.0K Dec 18 14:27 killifishGenomes
 ```
 
-The first field in this output (`drwxr-xr-x`) is the permission string. It is always 10 characters. The first letter, `d` is the file type. It would be `-` for regular files and `d` for directories. The following letters come in groups of three. The groups of three correspond to the permission types for three sets of users: the user owner (`u`) of the file, the user group (`g`) the file is assigned to, and every other user on the system (`o`). The permission types are, in order, "read" (`r`), "write" (`w`), "execute" (`x`). If a given permission is *not granted* to a given set of users, that character will be `-` instead of `r`, `w`, or `x`. 
+The first field in this output (`drwxr-xr-x`) is the permission string. It is always 10 characters. The first letter, `d` is the file type. It is `-` for regular files and `d` for directories. The following letters come in groups of three. The groups of three correspond to the permission types for three sets of users: the user owner (`u`) of the file, the user group (`g`) the file is assigned to, and every other user on the system (`o`). The permission types are, in order, "read" (`r`), "write" (`w`), "execute" (`x`). If a given permission is *not granted* to a given set of users, that character will be `-` instead of `r`, `w`, or `x`. 
 
-Remember that fields 3 and 4 are the user owner of the file, and the user group the file is assigned to. 
+So the permission string above broken down:
 
-So the permission string above indicates that `killifishGenomes` is a directory. The user who owns the directory, `nreid`, has read/write/execute permission (characters 2-4: `rwx`). The user group `cbc` has read and execute permission (characters 5-7: `r-x`) and the rest of the users on the system also have read and execute permission (characters 8-10: `r-x`). 
+- `d`: `killifishGenomes` is a directory. 
+- `rwx`: The user who owns the directory, `nreid`, has read/write/execute permission (characters 2-4). 
+- `r-x`: The user group `cbc` has read and execute permission, but *not* write (characters 5-7).
+- `r-x`: The rest of the users on the system also have read and execute permission (characters 8-10). 
 
 A few notes about this:
 
-1. This is a directory, so execute permission may seem somewhat nonsensical. You can execute a program (or a script), but not a directory. In this case it allows you access to see the list of files in the directory and their metadata. If you don't have execute permission, you can't do anything inside the directory. 
+1. This is a directory, so execute permission may seem somewhat nonsensical. You can execute a program (or a script), but not a directory. In this case it allows you access to see the list of files in the directory and their metadata. If you have read, but don't have execute permission, you can `cd` into the directory, but you can't do anything inside the directory, including listing the directory contents. 
 2. This directory is inside my home directory, where I am the only user with any permissions at all, therefore, per point one above, even though other users nominally have read and execute access, they effectively do not. 
 
 ### Changing permissions
@@ -636,21 +643,28 @@ But there are many sites, ranging in quality and focus that can help you figure 
 
 Since 2022, the emergence of large language models like [chatGPT](https://chat.openai.com) has been transforming how we do work in bioinformatics. These models allow users to ask questions and receive answers in natural language, and they are remarkably adept at producing and interpreting code, at least for relatively straightforward tasks. They can dramatically increase the speed at which experienced users can produce code, and help elevate the abilities of new users. 
 
-For a simple example of how you can get help, visit [chat.openai.com](chat.openai.com) and try this question: "In bash, how can I use the find command to find all files created since 2022?"
+For a simple example of how you can get help, visit [Chat GPT](https://chatgpt.com/) and try this question: "In bash, how can I use the find command to find all files in a given directory created since 2022?"
 
 ::: {.callout-warning}
-We (hesitantly) encourage the use of LLMs as an aid for writing code and navigating the command-line in this program. They can help you focus in on something you don't understand, or point you toward ideas or resources that can help you learn, but which you weren't finding through a traditional search engine. We caution students, however that they frequently suggest inefficient or incorrect things. When using code from LLMs, students should:
+We (hesitantly) encourage the use of LLMs as an aid for writing code and navigating the command-line in this program. They can help you focus in on something you don't understand, or point you toward ideas or resources that can help you learn, but which you weren't finding through a traditional search engine. 
 
-- understand what the code is doing.
-- verify that it is correct by checking documentation.
-- validate it through testing. 
+There are a few pitfalls, however:
+1. LLMs can shortcut your learning. This is not an AI-first program. We think you should know how to do this stuff on your own. Experience doing this work yourself will help you develop critical intuition and the ability to *discern* good work from bad. If you lean heavily on LLMs to produce work you don't understand you may get through this program, but you will be unprepared to do good work in your future endeavors and it will show. 
+2. LLMs are *frequently wrong*. It is incredibly common for LLMs like ChatGPT or Claude to suggest command-line options for software that do not exist in a current version of the software, have never existed, or exist but do not do the thing the LLM says. Even worse, not all incorrect suggestions will result in errors. You cannot simply trust them to get things right on their own. 
+3. LLMs, even when suggesting technically correct solutions, may suggest inefficient or otherwise problematic things. An LLM may suggest you use a piece of software that is outdated and effectively abandoned by its developers. An LLM may suggest a statistical approach with a theoretical basis that is inappropriate for real world data. For example (as of 2024), if you ask ChatGPT for code to calculate the variance from a sample, it will give you code for a standard statistics textbook equation for estimating variance. This method is subject to [numerical instability](https://en.wikipedia.org/wiki/Numerical_stability), however, and will yield inaccurate estimates under some circumstances. If you know enough to *ask* ChatGPT about the numerical stability issue, it will immediately suggest fixes, but we don't always know what we don't know. 
 
-Also, be aware that sometimes an LLM will produce a result that is technically correct, but problematic for other reasons. For example (as of 2024), if you ask ChatGPT for code to calculate the variance from a sample, it will give you code for a standard statistics textbook equation for estimating variance. This method is subject to [numerical instability](https://en.wikipedia.org/wiki/Numerical_stability), however, and will yield inaccurate estimates under some circumstances. If you know enough to *ask* ChatGPT about the numerical stability issue, it will immediately suggest fixes, but we don't always know what we don't know. 
+
+When using LLMs, students should:
+
+- Understand exactly what any suggestions or code are doing, down to the last detail.
+- Verify that any suggestions or code are correct by checking documentation or published literature, as appropriate. 
+- Validate any suggestions with testing rather than trusting them. 
+
 :::
 
 ## Asking questions about the system
 
-**What is the name of the system you are on now?** Try `hostname`. On a computer cluster like Xanadu this is really important. There are many different nodes. Sometimes a job will fail as a result of a problem with the system rather than some kind of user error. It's good to know when troubleshooting which one you were using. 
+**What is the name of the system you are on now?** Try `hostname`. On a computer cluster like Mantis this is really important. There are many different nodes. Sometimes a job will fail as a result of a problem with the system rather than some kind of user error. It's good to know when troubleshooting which one you were using. 
 
 **Which Linux distribution and kernel version is your system running?** Try `hostnamectl` (or `hostinfo` on a local MacOS machine). 
 
@@ -662,11 +676,11 @@ Also, be aware that sometimes an LLM will produce a result that is technically c
 
 **How long and how intensively has the system been used?** Try `uptime`. Per the man page, `uptime` will tell you how long the system (the machine you are currently logged into, not an entire cluster) has been running, how many users are currently logged on, and the system load averages for the past 1, 5, and 15 minutes. Note that "Load averages  are  not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time."
 
-**How full are available storage systems?** Try `df -h`. This should give the total amount of storage on each system and how much is currently used. Xanadu has several network-attached file systems (NFS). Some of them don't mount and thus won't be visible to the command unless you visit them first (e.g. `cd /seqdata`). Hopefully none are too close to full...
+**How full are available storage systems?** Try `df -h`. This should give the total amount of storage on each system and how much is currently used. Mantis has several network-attached file systems (NFS). Some of them don't mount and thus won't be visible to the command unless you visit them first (e.g. `cd /seqdata`). Hopefully none are too close to full...
 
 **How much space is a given directory using?** We've seen that `ls -l` can tell us how much disk space a file uses, but it won't sum everything up for a whole directory. Try `du -sh`. This will give you an accounting of the space used in your current working directory. To tally up each directory in the current working directory individually, try `du -sh *` or for a specific directory `du -sh killifishGenomes`. 
 
-**Which other users are logged in to this system?**: Try `who`. Xanadu has many login and compute nodes. This list is only users who are currently logged in (though they may be idle). 
+**Which other users are logged in to this system?**: Try `who`. Mantis has many login and compute nodes. This list is only users who are currently logged in (though they may be idle). 
 
 **Which groups does a user belong to?** Try `groups <username>`. Try your own username
 
