@@ -448,7 +448,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Regularly quit without saving the workspace and re-run the analysis code to make sure it works as expected.</li>
 </ul>
 <p>As we work through the next three chapters, use the following code chunks as the basis for a script you create in RStudio to reproduce the entire analysis. In the next module, we’ll learn how to create documents of mixed text and code that we can render into reports explaining data and results.</p>
-<p>Before we get started, make sure you’ve got the directory <code>results/03_align/samtools_stats</code> from Xanadu in your local project directory. It contains some of our alignment QC data from <code>samtools stats</code> in tabular form that we didn’t use in the last chapter, but need now.</p>
+<p>Before we get started, make sure you’ve got the directory <code>results/03_align/samtools_stats</code> from Mantis in your local project directory. It contains some of our alignment QC data from <code>samtools stats</code> in tabular form that we didn’t use in the last chapter, but need now.</p>
 <section id="initial-qc-of-count-data" class="level2" data-number="21.1">
 <h2 data-number="21.1" class="anchored" data-anchor-id="initial-qc-of-count-data"><span class="header-section-number">21.1</span> Initial QC of count data</h2>
 <p>Start by repeating the steps to read the data in.</p>
@@ -818,7 +818,7 @@ attr(,"package")
   .. .. .. .. .. .. ..@ lengths        : int(0) 
   .. .. .. .. .. .. ..@ elementMetadata: NULL
   .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. ..@ seqinfo        :Formal class 'Seqinfo' [package "GenomeInfoDb"] with 4 slots
+  .. .. .. .. ..@ seqinfo        :Formal class 'Seqinfo' [package "Seqinfo"] with 4 slots
   .. .. .. .. .. .. ..@ seqnames   : chr(0) 
   .. .. .. .. .. .. ..@ seqlengths : int(0) 
   .. .. .. .. .. .. ..@ is_circular: logi(0) 
@@ -892,7 +892,7 @@ attr(,"package")
   .. .. ..@ listData       : Named list()
   ..@ metadata          :List of 1
   .. ..$ version:Classes 'package_version', 'numeric_version'  hidden list of 1
-  .. .. ..$ : int [1:3] 1 46 0</code></pre>
+  .. .. ..$ : int [1:3] 1 52 0</code></pre>
 </div>
 </div>
 <p>There are 8 slots at the first level, but many of those slots contain other S4 objects with their own sets of slots. If we want to pull out the count data, we can find it buried in the <code>assays</code> slot.</p>
@@ -987,7 +987,7 @@ ENSFHEG00000000011        3600        4747        3930        4436</code></pre>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>sumcounts)) <span class="sc">+</span> </span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code></pre>
 </div>
 <div class="cell-output-display">
 <div>

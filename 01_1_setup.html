@@ -384,13 +384,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective"><span class="header-section-number">1.1</span> Objective</a></li>
-  <li><a href="#getting-ready-to-connect-with-macos" id="toc-getting-ready-to-connect-with-macos" class="nav-link" data-scroll-target="#getting-ready-to-connect-with-macos"><span class="header-section-number">1.2</span> Getting ready to connect with MacOS</a></li>
-  <li><a href="#getting-ready-to-connect-with-windows" id="toc-getting-ready-to-connect-with-windows" class="nav-link" data-scroll-target="#getting-ready-to-connect-with-windows"><span class="header-section-number">1.3</span> Getting ready to connect with Windows</a></li>
-  <li><a href="#connecting" id="toc-connecting" class="nav-link" data-scroll-target="#connecting"><span class="header-section-number">1.4</span> Connecting</a>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">1.2</span> Prerequisites</a></li>
+  <li><a href="#getting-ready-to-connect-with-macos" id="toc-getting-ready-to-connect-with-macos" class="nav-link" data-scroll-target="#getting-ready-to-connect-with-macos"><span class="header-section-number">1.3</span> Getting ready to connect with MacOS</a></li>
+  <li><a href="#getting-ready-to-connect-with-windows" id="toc-getting-ready-to-connect-with-windows" class="nav-link" data-scroll-target="#getting-ready-to-connect-with-windows"><span class="header-section-number">1.4</span> Getting ready to connect with Windows</a></li>
+  <li><a href="#connecting" id="toc-connecting" class="nav-link" data-scroll-target="#connecting"><span class="header-section-number">1.5</span> Connecting</a>
   <ul class="collapse">
-  <li><a href="#breaking-it-down" id="toc-breaking-it-down" class="nav-link" data-scroll-target="#breaking-it-down"><span class="header-section-number">1.4.1</span> Breaking it down</a></li>
+  <li><a href="#breaking-it-down" id="toc-breaking-it-down" class="nav-link" data-scroll-target="#breaking-it-down"><span class="header-section-number">1.5.1</span> Breaking it down</a></li>
   </ul></li>
-  <li><a href="#linux-commands-in-this-section" id="toc-linux-commands-in-this-section" class="nav-link" data-scroll-target="#linux-commands-in-this-section"><span class="header-section-number">1.5</span> Linux Commands in This Section</a></li>
+  <li><a href="#linux-commands-in-this-section" id="toc-linux-commands-in-this-section" class="nav-link" data-scroll-target="#linux-commands-in-this-section"><span class="header-section-number">1.6</span> Linux Commands in This Section</a></li>
   </ul>
 </nav>
     </div>
@@ -425,7 +426,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
-<td>Connect to the Xanadu cluster</td>
+<td>Connect to the Mantis cluster</td>
 </tr>
 <tr class="odd">
 <td>Identify when a terminal window is connected to a remote computer</td>
@@ -434,11 +435,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="objective" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="objective"><span class="header-section-number">1.1</span> Objective</h2>
-<p>Our starting exercises, and indeed most of the work for the course, will take place on a remote computer cluster running a Linux operating system (the cluster is named “Xanadu”). So the first thing you’re going to do is connect your local machine to that server. We’ll get into many of the details to help you understand what’s going on later, but to start we’re going to have you follow some directions without a lot of explanation.</p>
+<p>Our starting exercises, and indeed most of the work for the course, will take place on a remote computer cluster running a Linux operating system (the cluster is named <code>Mantis</code>). So the first thing you’re going to do is connect your local machine to that server. We’ll get into many of the details to help you understand what’s going on later, but to start we’re going to have you follow some directions without a lot of explanation.</p>
 <p>You can connect to the server using a computer running Windows, MacOS, or any variety of Linux. We’ll cover how to do it with a machine running Windows or MacOS here, and assume that if you are running Linux as your primary operating system, you are savvy enough that you can piece this together on your own (or ask an instructor for help).</p>
+<p>We provide two primary ways to access HPC resources, terminal access via SSH and web-browser based access via Open OnDemand. Open OnDemand is simpler to use, but not very widespread, while terminal access using SSH is essentially universal. Early exercises will assume you are using a terminal application and some will not work in Open OnDemand, but as the course moves and you become comfortable with command-line work on you may switch between them as you see fit.</p>
+<p>Primary documentation for the <a href="https://cbc-uconn.github.io/hpc-docs">Mantis cluster</a>.</p>
 </section>
-<section id="getting-ready-to-connect-with-macos" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="getting-ready-to-connect-with-macos"><span class="header-section-number">1.2</span> Getting ready to connect with MacOS</h2>
+<section id="prerequisites" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">1.2</span> Prerequisites</h2>
+<ol type="1">
+<li>You must have applied for and set up <a href="https://cbc-uconn.github.io/hpc-docs/account.html">a CAM account</a>, including DUO 2-factor authentication set up on a mobile device. See HuskyCT for the details to include in your application.</li>
+<li>You must have set up <a href="https://cbc-uconn.github.io/hpc-docs/keys.html">SSH key authentication</a>. For SSH access, <em>password</em> authentication is not allowed and we require SSH keys instead (more on this later).</li>
+</ol>
+<p>Setting up SSH keys and connecting are also covered in a video in HuskyCT.</p>
+</section>
+<section id="getting-ready-to-connect-with-macos" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="getting-ready-to-connect-with-macos"><span class="header-section-number">1.3</span> Getting ready to connect with MacOS</h2>
 <p>Start by opening the app “Terminal” on your computer. It should already be installed. MacOS is a unix-like operating system (as is Linux) and as such, you can interact with it through the command-line in a terminal without installing any special software (again, more on this later). When you open a terminal, you’ll see a mostly empty window with a <strong>prompt</strong>. The prompt will be a single symbol, probably a <code>&gt;</code> or a <code>$</code>. Here is an example of a terminal with a customized prompt (giving the username and current working directory):</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -447,41 +458,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </section>
-<section id="getting-ready-to-connect-with-windows" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="getting-ready-to-connect-with-windows"><span class="header-section-number">1.3</span> Getting ready to connect with Windows</h2>
+<section id="getting-ready-to-connect-with-windows" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="getting-ready-to-connect-with-windows"><span class="header-section-number">1.4</span> Getting ready to connect with Windows</h2>
 <p>Connecting to a Linux-based cluster is a little more complicated on a machine running Windows than one running MacOS. There are a few different ways to do it, but our recommended approach is to use Windows Subsystem for Linux (WSL). WSL essentially allows a Windows machine to run Linux programs, and interact with the Linux operating system through a command-line terminal. Connecting to the cluster this way will mean that most future instruction will be identical, or nearly so, for Mac and Windows users.</p>
-<p>WSL first needs to be installed. Instructions for that are <a href="https://learn.microsoft.com/en-us/windows/wsl/setup/environment">here</a>. There are different flavors of Linux: Debian, Ubuntu, CentOS, which Xanadu runs on, and many others. the WSL default, Ubuntu, will be fine.</p>
+<p>WSL first needs to be installed. Instructions for that are <a href="https://learn.microsoft.com/en-us/windows/wsl/setup/environment">here</a>. There are different flavors of Linux: Debian, Ubuntu, CentOS, which Mantis runs on, and many others. the WSL default, Ubuntu, will be fine.</p>
 <p>After you’ve installed WSL, you should open a Ubuntu terminal window. When you open a terminal, you’ll see a mostly empty window with a <strong>prompt</strong>. The prompt will be a single symbol, probably a <code>&gt;</code> or a <code>$</code>. Above is an example of a terminal with a customized prompt (giving the username and current working directory).</p>
 </section>
-<section id="connecting" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="connecting"><span class="header-section-number">1.4</span> Connecting</h2>
-<p>You should now have a terminal window open. We’re going to use SSH (<em>S</em>ecure <em>SH</em>ell protocol) to connect to Xanadu. You should already have set up your Xanadu account with a username and password (if not, see <a href="https://health.uconn.edu/high-performance-computing/contact/">here</a>). The username is distinct from your netID, and is usually first initial, last name (i.e.&nbsp;the username for John Smith will often be <em>jsmith</em>).</p>
+<section id="connecting" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="connecting"><span class="header-section-number">1.5</span> Connecting</h2>
+<p>You should now have a terminal window open. We’re going to use SSH (<em>S</em>ecure <em>SH</em>ell protocol) to connect to Mantis. You should already have set up your Mantis account with a username and password (if not, see <a href="https://health.uconn.edu/high-performance-computing/contact/">here</a>). The username is distinct from your netID, and is usually first initial, last name (i.e.&nbsp;the username for John Smith will often be <em>jsmith</em>).</p>
 <p>To login type the following command at the prompt:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> username@xanadu-submit-ext.cam.uchc.edu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You will be prompted for your password. When you type your password, the cursor will not move, and you won’t see any characters on the screen. This is normal. Just hit enter when you’ve finished typing your password.</p>
-<p>If you were successful and made no mistakes your terminal window is now connected to a remote computer (i.e.&nbsp;Xanadu) and you should see a screen like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> username@mantis.hpc.cam.uchc.edu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should be asked if you want a Duo push:</p>
+<pre><code>Enter a passcode or select one of the following options:
+
+1. Duo Push to XXX-XXX-6964
+
+Passcode or option (1-1):</code></pre>
+<p>Enter <code>1</code> and then approve the connection you get from the Duo app on your mobile device.</p>
+<p>If you were successful and made no mistakes your terminal window is now connected to a remote computer (i.e.&nbsp;Mantis) and you should see a screen like this:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/loginscreen.jpg" class="img-fluid figure-img"></p>
-<figcaption>The usual Xanadu login message</figcaption>
+<p><img src="images/mantis_motd.jpg" class="img-fluid figure-img"></p>
+<figcaption>The usual Mantis login message</figcaption>
 </figure>
 </div>
-<p>Again, this particular terminal prompt has been customized (we’ll show you how to do that later) so your prompt won’t look the same, but you have now logged in to the Xanadu cluster.</p>
-<section id="breaking-it-down" class="level3" data-number="1.4.1">
-<h3 data-number="1.4.1" class="anchored" data-anchor-id="breaking-it-down"><span class="header-section-number">1.4.1</span> Breaking it down</h3>
-<p>Because this is our first command issued in the course, I want to break down what we did. When you typed <code>ssh username@xanadu-submit-ext.cam.uchc.edu</code>, you used the fundamental command-line syntax <code>&lt;command&gt; &lt;arguments&gt;</code>. You told <strong>your computer</strong> to execute the program <code>ssh</code>, which allows you to securely gain command-line access to another computer, and provided the details (“arguments”) <code>username@xanadu-submit-ext.cam.uchc.edu</code>, which are your username, and the server address of the computer you want to connect to.</p>
-<p>I want to take a moment to emphasize something that might not be entirely clear yet, but which is very important. When you first opened your terminal window, any commands you wrote there were commands directed to and executed by <strong>your computer</strong>. After you ran <code>ssh</code> on your computer to connect to Xanadu, your terminal window effectively became a terminal window on the <strong>Xanadu cluster</strong>. Any subsequent commands you enter at the prompt will be received and executed by <strong>Xanadu</strong>. It is as if you were actually sitting at a terminal physically connected to one of Xanadu’s nodes. Nothing you do at this terminal will impact your computer in any way, and <em>programs running on Xanadu cannot directly access your local system or any of its files</em>. Conversely, nothing you do outside this terminal window will impact Xanadu.</p>
-<p>Unless you are told directly, all the work for the Linux and HPC sections of this course should be conducted on Xanadu, after using <code>ssh</code> to connect.</p>
-<p>Now, without a customized prompt, it will not always be obvious <em>what computer</em> a given terminal is connected to. if you’re working in a terminal window and you’re not sure about this, you can always enter the command <code>hostname</code>. If the output is something like <code>hpc-ext-#</code>, <code>hpc-int-#</code>, or <code>xanadu-##</code>, then you’re connected to Xanadu. If it’s anything else you’re not! Try that now. This is especially useful because in some cases you may want to have multiple terminal windows open at a time.</p>
+<p>Again, this particular terminal prompt has been customized (we’ll show you how to do that later) so your prompt won’t look the same, but you have now logged in to the Mantis cluster.</p>
+<section id="breaking-it-down" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="breaking-it-down"><span class="header-section-number">1.5.1</span> Breaking it down</h3>
+<p>Because this is our first command issued in the course, I want to break down what we did. When you typed <code>ssh username@mantis.hpc.cam.uchc.edu</code>, you used the fundamental command-line syntax <code>&lt;command&gt; &lt;arguments&gt;</code>. You told <strong>your computer</strong> to execute the program <code>ssh</code>, which allows you to securely gain command-line access to another computer, and provided the details (“arguments”) <code>username@mantis.hpc.cam.uchc.edu</code>, which are your username, and the server address of the computer you want to connect to. When your computer reached out to Mantis with your user ID, Mantis sent back a message derived from the public SSH key you deposited there. <code>ssh</code> used your private key to interpret that message and send another back, confirming your identity. A Duo push was also triggered. When you also confirmed that, your identity having been established with two factors, the connection was established.</p>
+<p>I want to take a moment to emphasize something that might not be entirely clear yet, but which is very important. When you first opened your terminal window, any commands you wrote there were commands directed to and executed by <strong>your computer</strong>. After you ran <code>ssh</code> on your computer to connect to Mantis, your terminal window effectively became a terminal window on the <strong>Mantis cluster</strong>. Any subsequent commands you enter at the prompt will be received and executed by <strong>Mantis</strong>. It is as if you were actually sitting at a terminal physically connected to one of Mantis’s nodes. Nothing you do at this terminal will impact your computer in any way, and <em>programs running on Mantis cannot directly access your local system or any of its files</em>. Conversely, nothing you do outside this terminal window will impact Mantis.</p>
+<p>Unless you are told directly, all the work for the Linux and HPC sections of this course should be conducted on Mantis, after using <code>ssh</code> to connect.</p>
+<p>Now, without a customized prompt, it will not always be obvious <em>what computer</em> a given terminal is connected to. if you’re working in a terminal window and you’re not sure about this, you can always enter the command <code>hostname</code>. If the output is something like <code>mantis-duosub-#</code>, <code>mantis-sub-#</code>, or <code>mantis-###</code>, then you’re connected to Mantis. If it’s anything else you’re not! Try that now. This is especially useful because in some cases you may want to have multiple terminal windows open at a time.</p>
 <p>Ok, now that we’re connected, this exercise is nearly over. You can disconnect by typing <code>exit</code>. You should see a message like this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">logout</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Connection</span> to xanadu-submit-ext.cam.uchc.edu closed.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Type <code>hostname</code> to verify that you are working locally. Now any commands you type in the terminal will be executed by your computer. Alternatively, you can simply close the terminal window, and that will kill your connection to Xanadu.</p>
-<p>By now you’ve probably noticed the terms <strong>remote</strong> and <strong>local</strong> being used regularly. When we refer to doing something <em>locally</em>, we mean to do it on your personal computer, without connecting it to Xanadu, whereas <em>remote</em> means the opposite.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">logout</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Connection</span> to mantis-submit.cam.uchc.edu closed.</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Your</span> connection to the remote server has been terminated.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Type <code>hostname</code> to verify that you are working locally. Now any commands you type in the terminal will be executed by your computer. Alternatively, you can simply close the terminal window, and that will kill your connection to Mantis.</p>
+<p>By now you’ve probably noticed the terms <strong>remote</strong> and <strong>local</strong> being used regularly. When we refer to doing something <em>locally</em>, we mean to do it on your personal computer, without connecting it to Mantis, whereas <em>remote</em> means the opposite.</p>
 </section>
 </section>
-<section id="linux-commands-in-this-section" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="linux-commands-in-this-section"><span class="header-section-number">1.5</span> Linux Commands in This Section</h2>
+<section id="linux-commands-in-this-section" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="linux-commands-in-this-section"><span class="header-section-number">1.6</span> Linux Commands in This Section</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 19%">
