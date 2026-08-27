@@ -389,6 +389,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#scp" id="toc-scp" class="nav-link" data-scroll-target="#scp"><span class="header-section-number">3.1.2</span> <code>scp</code></a></li>
   <li><a href="#rsync" id="toc-rsync" class="nav-link" data-scroll-target="#rsync"><span class="header-section-number">3.1.3</span> <code>rsync</code></a></li>
   <li><a href="#ftp-clients-and-globus" id="toc-ftp-clients-and-globus" class="nav-link" data-scroll-target="#ftp-clients-and-globus"><span class="header-section-number">3.1.4</span> FTP clients and Globus</a></li>
+  <li><a href="#open-ondemand" id="toc-open-ondemand" class="nav-link" data-scroll-target="#open-ondemand"><span class="header-section-number">3.1.5</span> Open OnDemand</a></li>
   </ul></li>
   <li><a href="#file-compression" id="toc-file-compression" class="nav-link" data-scroll-target="#file-compression"><span class="header-section-number">3.2</span> File compression</a></li>
   <li><a href="#basic-file-inspection" id="toc-basic-file-inspection" class="nav-link" data-scroll-target="#basic-file-inspection"><span class="header-section-number">3.3</span> Basic file inspection</a>
@@ -481,14 +482,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="scp" class="level3" data-number="3.1.2">
 <h3 data-number="3.1.2" class="anchored" data-anchor-id="scp"><span class="header-section-number">3.1.2</span> <code>scp</code></h3>
 <p><code>scp</code> is a <em>secure</em> version of the <code>cp</code> command we learned in the previous chapter. We can use this to securely, i.e.&nbsp;in encrypted fashion, transfer data between computers. The usage is the same as <code>cp</code> (requiring the <code>-r</code> flag to copy a directory), except that with <code>scp</code> you also need to provide an address for a remote host in front of the path like this: <code>username@remotehostaddress:/path/to/target/file.txt</code> You can copy data to or from a remote host. You can use <code>.</code> if you want the file to simply transfer to the current working directory.</p>
-<p>On the Xanadu cluster, you cannot use the normal login nodes (i.e.&nbsp;<code>xanadu-submit-ext.cam.uchc.edu</code>) to transfer files. A special transfer host has been set up for this purpose. The address for that host is <code>transfer.cam.uchc.edu</code>. <strong>Try this now</strong>: Copy the <em>F. heteroclitus</em> genome we just downloaded from Xanadu to your local computer. Open a terminal window and <em>do not</em> connect to Xanadu. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Xanadu):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> nreid@transfer.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>On the Mantis cluster, you cannot use the normal login nodes (i.e.&nbsp;<code>mantis.hpc.cam.uchc.edu</code>) to transfer files. A special transfer host has been set up for this purpose. The address for that host is <code>transfer.hpc.cam.uchc.edu</code>. <strong>Try this now</strong>: Copy the <em>F. heteroclitus</em> genome we just downloaded from Mantis to your local computer. Open a terminal window and <em>do not</em> connect to Mantis. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Mantis):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> nreid@transfer.hpc.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Hopefully it is self-evident how to transfer files <strong>to</strong> the remote host with this method. You can feel free to delete the transferred file, as we will not be continuing to use it.</p>
 </section>
 <section id="rsync" class="level3" data-number="3.1.3">
 <h3 data-number="3.1.3" class="anchored" data-anchor-id="rsync"><span class="header-section-number">3.1.3</span> <code>rsync</code></h3>
-<p><code>rsync</code> is like a much more elaborate version of <code>scp</code>. While its usage is generally much more flexible, the key improvement over <code>scp</code> is that <code>rsync</code> can be used to “synchronize” directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they’ve changed and skip them if they haven’t. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch.</p>
-<p>The usage of <code>rsync</code> is similar to scp, except that when transferring a directory we recommend using the flags <code>a</code> <code>v</code> and <code>z</code>. To move your <code>killifishGenomes</code> directory from Xanadu to your local machine you can try: <code>rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes .</code> taking care to edit your username and ensuring the path on Xanadu to your directory is correct. This will transfer the entire directory.</p>
+<p><code>rsync</code> is like a much more elaborate version of <code>scp</code>. While its usage is generally much more flexible, the key improvement over <code>scp</code> is that <code>rsync</code> can be used to “synchronize” directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they’ve changed and skip them if they haven’t. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch (it can’t resume partial file transfers though).</p>
+<p>The usage of <code>rsync</code> is similar to scp, except that when transferring a directory we recommend using the flags <code>a</code> <code>v</code> and <code>z</code>. To move your <code>killifishGenomes</code> directory from Mantis to your local machine you can try: <code>rsync -avz nreid@transfer.hpc.cam.uchc.edu:~/killifishGenomes .</code> taking care to edit your username and ensuring the path on Mantis to your directory is correct. This will transfer the entire directory.</p>
 <p><code>rsync</code> has lots of options, use <code>man rsync</code> to read up on it.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -506,8 +507,12 @@ Note
 </section>
 <section id="ftp-clients-and-globus" class="level3" data-number="3.1.4">
 <h3 data-number="3.1.4" class="anchored" data-anchor-id="ftp-clients-and-globus"><span class="header-section-number">3.1.4</span> FTP clients and Globus</h3>
-<p>The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as <a href="https://filezilla-project.org">FileZilla</a>. You can use the transfer node <code>transfer.cam.uchc.edu</code> and your Xanadu credentials to move files this way.</p>
-<p>When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Xanadu we use Globus, a platform available on many institutional HPCs for moving data. We won’t cover it right now, but you can see a guide to getting started using it on Xanadu <a href="https://github.com/CBC-UCONN/CBC_Docs/wiki">here</a></p>
+<p>The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as <a href="https://filezilla-project.org">FileZilla</a>. You can use the transfer node <code>transfer.hpc.cam.uchc.edu</code> and your Mantis credentials to move files this way.</p>
+<p>When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Mantis we use Globus, a platform available on many institutional HPCs for moving data. We won’t cover it right now, but you can see a guide to getting started using it on Mantis <a href="https://cbc-uconn.github.io/hpc-docs/transfer.html#globus">here</a></p>
+</section>
+<section id="open-ondemand" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="open-ondemand"><span class="header-section-number">3.1.5</span> Open OnDemand</h3>
+<p>We will touch on Open OnDemand a bit more later, but if you log in at <code>https://ondemand.hpc.cam.uchc.edu/</code> there are also options for transferring files.</p>
 </section>
 </section>
 <section id="file-compression" class="level2" data-number="3.2">
@@ -537,7 +542,7 @@ Important
 </div>
 <p>You are likely to encounter a particular type of gzipped file known as a <strong>T</strong>ape <strong>AR</strong>chive (suffix <code>.tar</code>) or informally as a <strong>tarball</strong>. Tarballs are entire directories of files that have been put into an archive file and then gzipped (suffix <code>.tar.gz</code>. You will commonly encounter source code for uncompiled software distributed as tarballs, and sometimes large sets of raw data. To decompress them you can use the utility <code>tar</code> like this:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> <span class="at">-xvzf</span> mydir.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The <code>-xvzf</code> flags indicate you want to extract the tarball (<code>-x -f</code>) that the tarball is gzipped (<code>-z</code>) and that you want it to print out what it’s doing as it goes (<code>-v</code>, for <em>verbose</em>, a common option with command-line software). See the man page for more details.</p>
+<p>The <code>-xvzf</code> flags indicate you want to extract the tarball (<code>-x -f</code>) that the tarball is gzipped (<code>-z</code>) and that you want it to print out what it’s doing as it goes (<code>-v</code>, for <em>verbose</em>, a common option with command-line software). <code>tar</code> can do a lot of useful stuff, like list the files in a tarball without decompressing and unarchiving everything. See the man page for more details.</p>
 </section>
 <section id="basic-file-inspection" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="basic-file-inspection"><span class="header-section-number">3.3</span> Basic file inspection</h2>
@@ -710,7 +715,19 @@ Note
 <p><code>awk</code> has considerably more utility than this, however. I often use it to reformat files.</p>
 <p>Another common format used to store information about genomic regions is <code>BED</code>. <code>BED</code> has only 3 required columns: the sequence identifier, the start position and the end position. There is a wrinkle here though: the interval notation used is different from GTF. Whereas GTF intervals are 1-based and fully closed, BED intervals are 0-based and half-open. 0-based counting means the first element in a sequence is numbered “0”. A “closed” interval includes the interval boundaries in the interval. A half-open interval means one boundary is included and the other is not.</p>
 <p>So for a GTF file, an interval of 1-1000 refers to the first 1000 bases of a sequence, including the start (base 1) and end (base 1000) of the given interval. In BED format, however, this interval would be denoted 0-1000. The first base in a sequence is numbered 0, and the thousandth base is numbered 999. The start of the interval is included, but the end point in the interval is is <em>not</em>, making the BED interval 0-1000. See this <a href="https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/">blog</a> for a discussion of interval notations used in genomics.</p>
-<p>If you find this fully closed vs half-open, 0-based vs 1-based stuff confusing or irritating, know that it will come up repeatedly, as it has for many decades (see <a href="https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html">this</a> 40+ year old polemic).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you find this fully closed vs half-open, 0-based vs 1-based stuff confusing or irritating, know that it will come up repeatedly, as it has for many decades. See <a href="https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html">this 40+ year old polemic</a>.</p>
+</div>
+</div>
 <p>At any rate… we can easily output our GTF intervals in BED format like this:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span> <span class="st">"\t"</span> <span class="st">'{OFS="\t"}{newstart=$4-1}{print $1,newstart,$5}'</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.111.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Here we have grouped commands with <code>{}</code> and specified an “output field separator” (<code>OFS="\t"</code>) because <code>awk</code> will by default write spaces instead of tabs. We told awk to print field 1 (the sequence name), our new variable <code>newstart</code>, and field 5 (the original interval endpoint), thus converting our GTF coordinates into BED coordinates.</p>
@@ -803,7 +820,7 @@ Note
 </section>
 <section id="exercises" class="level2" data-number="3.10">
 <h2 data-number="3.10" class="anchored" data-anchor-id="exercises"><span class="header-section-number">3.10</span> Exercises</h2>
-<p>See Blackboard Ultra for this section’s exercises.</p>
+<p>See HuskyCT for this section’s exercises.</p>
 
 
 </section>
