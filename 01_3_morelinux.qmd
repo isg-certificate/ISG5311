@@ -37,19 +37,19 @@ curl ftp://ftp.ensembl.org/pub/release-105/fasta/fundulus_heteroclitus/dna/Fundu
 
 `scp` is a *secure* version of the `cp` command we learned in the previous chapter. We can use this to securely, i.e. in encrypted fashion, transfer data between computers. The usage is the same as `cp` (requiring the `-r` flag to copy a directory), except that with `scp` you also need to provide an address for a remote host in front of the path like this: `username@remotehostaddress:/path/to/target/file.txt` You can copy data to or from a remote host. You can use `.` if you want the file to simply transfer to the current working directory. 
 
-On the Xanadu cluster, you cannot use the normal login nodes (i.e. `xanadu-submit-ext.cam.uchc.edu`) to transfer files. A special transfer host has been set up for this purpose. The address for that host is `transfer.cam.uchc.edu`. **Try this now**: Copy the *F. heteroclitus* genome we just downloaded from Xanadu to your local computer. Open a terminal window and *do not* connect to Xanadu. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Xanadu):
+On the Mantis cluster, you cannot use the normal login nodes (i.e. `mantis.hpc.cam.uchc.edu`) to transfer files. A special transfer host has been set up for this purpose. The address for that host is `transfer.hpc.cam.uchc.edu`. **Try this now**: Copy the *F. heteroclitus* genome we just downloaded from Mantis to your local computer. Open a terminal window and *do not* connect to Mantis. Enter the following command (be sure to edit the command to reflect your username and the path containing the genome on Mantis):
 
 ```bash
-scp nreid@transfer.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .
+scp nreid@transfer.hpc.cam.uchc.edu:~/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.dna.toplevel.fa.gz .
 ```
 
 Hopefully it is self-evident how to transfer files **to** the remote host with this method. You can feel free to delete the transferred file, as we will not be continuing to use it. 
 
 ### `rsync`
 
-`rsync` is like a much more elaborate version of `scp`. While its usage is generally much more flexible, the key improvement over `scp` is that `rsync` can be used to "synchronize" directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they've changed and skip them if they haven't. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch. 
+`rsync` is like a much more elaborate version of `scp`. While its usage is generally much more flexible, the key improvement over `scp` is that `rsync` can be used to "synchronize" directories across machines. That is, if you have a copy of some analysis results on your local machine and then you update some part of the analysis on the remote cluster, if you tell rsync to copy the remote results directory to your local computer, it will check the individual files to see if they've changed and skip them if they haven't. This is a pretty useful feature. This also means it can resume failed transfers without having to start from scratch (it can't resume partial file transfers though). 
 
-The usage of `rsync` is similar to scp, except that when transferring a directory we recommend using the flags `a` `v` and `z`. To move your `killifishGenomes` directory from Xanadu to your local machine you can try: `rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes .` taking care to edit your username and ensuring the path on Xanadu to your directory is correct. This will transfer the entire directory. 
+The usage of `rsync` is similar to scp, except that when transferring a directory we recommend using the flags `a` `v` and `z`. To move your `killifishGenomes` directory from Mantis to your local machine you can try: `rsync -avz nreid@transfer.hpc.cam.uchc.edu:~/killifishGenomes .` taking care to edit your username and ensuring the path on Mantis to your directory is correct. This will transfer the entire directory. 
 
 `rsync` has lots of options, use `man rsync` to read up on it. 
 
@@ -59,9 +59,13 @@ A subtle but important detail: if you include a trailing `/` on the source direc
 
 ### FTP clients and Globus
 
-The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as [FileZilla](https://filezilla-project.org). You can use the transfer node `transfer.cam.uchc.edu` and your Xanadu credentials to move files this way. 
+The above options for transferring files are all command-line programs available on most, if not all, Linux distributions. Sometimes you may want to use other methods to move data. Some users employ GUI programs that use the file transfer protocol (FTP), such as [FileZilla](https://filezilla-project.org). You can use the transfer node `transfer.hpc.cam.uchc.edu` and your Mantis credentials to move files this way. 
 
-When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Xanadu we use Globus, a platform available on many institutional HPCs for moving data. We won't cover it right now, but you can see a guide to getting started using it on Xanadu [here](https://github.com/CBC-UCONN/CBC_Docs/wiki)
+When you have very large amounts of data to transfer, a more secure and fault tolerant program can be helpful. On Mantis we use Globus, a platform available on many institutional HPCs for moving data. We won't cover it right now, but you can see a guide to getting started using it on Mantis [here](https://cbc-uconn.github.io/hpc-docs/transfer.html#globus)
+
+### Open OnDemand
+
+We will touch on Open OnDemand a bit more later, but if you log in at `https://ondemand.hpc.cam.uchc.edu/` there are also options for transferring files. 
 
 ## File compression
 
@@ -103,7 +107,7 @@ You are likely to encounter a particular type of gzipped file known as a **T**ap
 tar -xvzf mydir.tar.gz
 ```
 
-The `-xvzf` flags indicate you want to extract the tarball (`-x -f`) that the tarball is gzipped (`-z`) and that you want it to print out what it's doing as it goes (`-v`, for *verbose*, a common option with command-line software). See the man page for more details. 
+The `-xvzf` flags indicate you want to extract the tarball (`-x -f`) that the tarball is gzipped (`-z`) and that you want it to print out what it's doing as it goes (`-v`, for *verbose*, a common option with command-line software). `tar` can do a lot of useful stuff, like list the files in a tarball without decompressing and unarchiving everything. See the man page for more details. 
 
 ## Basic file inspection
 
@@ -453,7 +457,9 @@ Another common format used to store information about genomic regions is `BED`. 
 
 So for a GTF file, an interval of 1-1000 refers to the first 1000 bases of a sequence, including the start (base 1) and end (base 1000) of the given interval. In BED format, however, this interval would be denoted 0-1000. The first base in a sequence is numbered 0, and the thousandth base is numbered 999. The start of the interval is included, but the end point in the interval is is *not*, making the BED interval 0-1000. See this [blog](https://genome-blog.gi.ucsc.edu/blog/2016/12/12/the-ucsc-genome-browser-coordinate-counting-systems/) for a discussion of interval notations used in genomics. 
 
-If you find this fully closed vs half-open, 0-based vs 1-based stuff confusing or irritating, know that it will come up repeatedly, as it has for many decades (see [this](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html) 40+ year old polemic). 
+::: {.callout-note}
+If you find this fully closed vs half-open, 0-based vs 1-based stuff confusing or irritating, know that it will come up repeatedly, as it has for many decades. See [this 40+ year old polemic](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html). 
+:::
 
 At any rate... we can easily output our GTF intervals in BED format like this:
 
@@ -499,6 +505,6 @@ We see here that 474,790,822 bases of our 1 gigabase genome falls inside of gene
 
 ## Exercises
 
-See Blackboard Ultra for this section's exercises. 
+See HuskyCT for this section's exercises. 
 
 
