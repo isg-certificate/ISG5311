@@ -348,12 +348,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -368,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Writing documents in Quarto</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Writing documents in Quarto</span></span></a>
   </div>
 </li>
       </ul>
@@ -453,13 +447,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Write loops to efficiently do repetitive tasks</td>
 </tr>
 <tr class="odd">
-<td>Edit files on Xanadu in <code>nano</code></td>
+<td>Edit files on Mantis in <code>nano</code></td>
 </tr>
 <tr class="even">
-<td>Connect Visual Studio Code to Xanadu to edit files</td>
+<td>Connect Visual Studio Code to Mantis to edit files</td>
 </tr>
 <tr class="odd">
-<td>Connect your desktop to Xanadu’s file system to access files</td>
+<td>Connect your desktop to Mantis’s file system to access files</td>
 </tr>
 <tr class="even">
 <td>Write and execute scripts</td>
@@ -530,7 +524,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>You’ll see a colon-separated list of paths. Every program you successfully execute (without specifying an explicit path) will be found in one of those paths. You can add to this list if you want bash to look somewhere new in addition like this:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:/path/to/my/new/favorite/software</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That is also generally how you can recursively modify variables, should you need to.</p>
-<p>When executing programs it can be really useful to know <em>which</em> copy of a program is being executed, as sometimes there will be multiple versions installed on a given system (this is definitely true of Xanadu). You can use the command <code>which</code> for this:</p>
+<p>When executing programs it can be really useful to know <em>which</em> copy of a program is being executed, as sometimes there will be multiple versions installed on a given system (this is definitely true of Mantis). You can use the command <code>which</code> for this:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> ls</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> grep</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> cat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -566,7 +560,7 @@ Note
 <p>Using variables like this can be especially useful in two cases:</p>
 <ol type="1">
 <li>When paths get extremely long and cumbersome and/or file names are not descriptive. Long paths can make code difficult to read. Obscuring them with descriptive variables allows you (and anyone else) to quickly see HOW you ran a program, instead of having to scan over multiple instances of <code>/the/very/long/and/convoluted/path/to/my/precious/input/data.txt</code>.</li>
-<li>When code must be repeated many times on many different input files. Copying, pasting and editing the same line over and over again is a really bad idea. Even the most conscientious people are prone to mistakes when doing dull repetitive tasks. If we get used to using variables like this, we gain the flexibility to use loops and other means of parallelization that make our code less error prone, faster, and prefigure the way workflow languages we will explore in the next semester require us to think about and write code.</li>
+<li>When code must be repeated many times on many different input files. Copying, pasting and editing the same line over and over again is a really bad idea. Even the most conscientious people are prone to mistakes when doing dull repetitive tasks. If we get used to using variables like this, we gain the flexibility to use loops and to parallelize in ways that make our code less error prone, faster, and prefigure the way workflow languages we will explore in the next semester require us to think about and write code.</li>
 </ol>
 </section>
 </section>
@@ -578,7 +572,7 @@ Note
   { command1
     command2
     command3 }</code></pre>
-<p>In BASH we typically use <code>for</code> and <code>while</code> loops. A <code>for</code> loop iterates over a list of fixed length executing the same code each time. A <code>while</code> loop executes code repeatedly until some condition is no longer met.</p>
+<p><code>condition</code> describes the logic of the loop, e.g.&nbsp;how many times it should iterate, or a rule under which it should stop. In BASH we typically use <code>for</code> and <code>while</code> loops. A <code>for</code> loop iterates over a list of fixed length executing the same code each time. A <code>while</code> loop executes code repeatedly until some condition is no longer met.</p>
 <section id="for-loops." class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="for-loops."><span class="header-section-number">4.3.1</span> <code>for</code> loops.</h3>
 <p>With <code>for</code> loops we can iterate over any sort of list. Let’s extract mentions of classic Darwin terms “species”, “forms”, and “varieties” from the Origin:</p>
@@ -605,7 +599,7 @@ Note
 <p>Or using <code>ls</code> or <code>find</code>, or <code>*</code> to grab files:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">(</span><span class="pp">*</span>mentions.txt<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="va">DARWIN</span><span class="op">=</span><span class="va">($(</span><span class="fu">ls</span> <span class="pp">*</span>mentions.txt<span class="va">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>In this last case the syntax <code>$(command)</code> is a command substitution. It means run the command and insert the output in place (in this case, inside the <code>()</code> used to define the array). Also note that the array elements will be parsed based on whitespace, so if file names contain whitespace (you should <em>avoid</em> this always) this approach will break.</p>
+<p>In this last case the syntax <code>$(command)</code> is a command substitution. It means run the command and insert the output in place (in this case, inside the <code>()</code> used to define the array). Also note that the array elements will be parsed based on whitespace, so if file names contain whitespace (you should <em>avoid</em> filenames wiht spaces always) this approach will break.</p>
 <p>bash arrays are zero-indexed, meaning the first element is element <code>0</code>. We can access elements with this syntax:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">${DARWIN</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To write out ALL the elements:</p>
@@ -664,7 +658,7 @@ Note
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="editors"><span class="header-section-number">4.4.1</span> Editors</h3>
 <section id="command-line-text-editors" class="level4" data-number="4.4.1.1">
 <h4 data-number="4.4.1.1" class="anchored" data-anchor-id="command-line-text-editors"><span class="header-section-number">4.4.1.1</span> Command-line text editors</h4>
-<p>The most straightforward approach to this is to use CLI text editors that are already available on Xanadu (and most Linux systems). Since you run them on Xanadu, they can directly create and access files. The most common ones are <code>nano</code>, <code>vim</code> and <code>emacs</code>. <code>vim</code> and <code>emacs</code> are very powerful editors. They are highly customizable and have large user communities. They have steep learning curves, however, and there are accessible and powerful alternatives to CLI editors, so in this course we are only going to introduce <code>nano</code>. <code>nano</code> is simple to use and suitable for quick edits and copy-paste operations.</p>
+<p>The most straightforward approach to this is to use CLI text editors that are already available on Mantis (and most Linux systems). Since you run them on Mantis, they can directly create and access files. The most common ones are <code>nano</code>, <code>vim</code> and <code>emacs</code>. <code>vim</code> and <code>emacs</code> are very powerful editors. They are highly customizable and have large user communities. They have steep learning curves, however, and there are accessible and powerful alternatives to CLI editors, so in this course we are only going to introduce <code>nano</code>. <code>nano</code> is simple to use and suitable for quick edits and copy-paste operations.</p>
 <p>If you simply type <code>nano</code> on the command line, it will open a new text document. You can immediately begin typing whatever you like. When you’re done, you can type <code>ctrl-x</code> and it will ask you if you want to save the file. If you do, type <code>y</code>, then when prompted, write a file name and hit <code>enter</code>. That’s it. If you want to edit an existing file, type <code>nano filename</code>. Save and exit the same way. <code>ctrl-c</code> cancels.</p>
 <p>You can navigate around with the arrows on your keyboard (and some keyboard shortcuts covered in a video). That’s it. If you use <code>nano</code> a bit, you’ll get a feeling for the pretty big tradeoff <code>nano</code> makes between power and simplicity.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -688,36 +682,16 @@ Note
 </section>
 <section id="integrated-development-environments." class="level4" data-number="4.4.1.3">
 <h4 data-number="4.4.1.3" class="anchored" data-anchor-id="integrated-development-environments."><span class="header-section-number">4.4.1.3</span> Integrated development environments.</h4>
-<p>IDEs are dedicated code editors with <em>lots</em> more features. <a href="https://code.visualstudio.com">Visual Studio Code</a> is another program we recommend you download and install locally. It also has syntax highlighting, but you’ll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. There is a plugin that will let you connect VS Code to Xanadu and open and edit files remotely (discussed below). Xanadu’s operating system is a bit old (it will soon be replaced by a new cluster, Mantis), so for remote editing you will need to install an older version of VS Code, <code>1.85</code>, which is available <a href="https://code.visualstudio.com/updates/v1_85">here</a>.</p>
+<p>IDEs are dedicated code editors with <em>lots</em> more features. <a href="https://code.visualstudio.com">Visual Studio Code</a> is another program we recommend you download and install locally. It also has syntax highlighting, but you’ll notice you can open up projects and see the entire directory structure, and if you want you can even open a terminal inside it. There is a plugin that will let you connect VS Code to Mantis and open and edit files remotely (discussed below).</p>
 </section>
 </section>
 <section id="conveniently-accessing-files." class="level3" data-number="4.4.2">
 <h3 data-number="4.4.2" class="anchored" data-anchor-id="conveniently-accessing-files."><span class="header-section-number">4.4.2</span> Conveniently accessing files.</h3>
-<p>Ok, so aside from using <code>nano</code> (or learning to be a <code>vim</code> power user), how can you conveniently access and edit files on Xanadu? There are two relatively straightforward ways:</p>
+<p>Ok, so aside from using <code>nano</code> (or learning to be a <code>vim</code> power user), how can you conveniently access and edit files on Mantis? There are two relatively straightforward ways:</p>
 <ol type="1">
-<li>Visual Studio Code has an extension <a href="https://code.visualstudio.com/docs/remote/ssh-tutorial">Remote - SSH</a>. This is <strong>highly</strong> recommended. You can connect VS Code to Xanadu directly via SSH. You can open windows focusing on specific directories, visualize the directory structure, and create and edit files directly on Xanadu. You can also open a Xanadu terminal window so that you can test and execute code, all in VS Code.</li>
+<li><p>Visual Studio Code has an extension. This is <strong>highly</strong> recommended. You can connect VS Code to Mantis directly via SSH. You can open windows focusing on specific directories, visualize the directory structure, and create and edit files directly on Mantis. You can also open a Mantis terminal window so that you can test and execute code, all in VS Code. The <a href="https://cbc-uconn.github.io/hpc-docs/software.html#vscode">instructions for setting up VSCode on Mantis</a> are a little ahead of this point in the course, but probably manageable if you want to try it. To connect it to Mantis also requires a <a href="https://github.com/">GitHub</a> account.</p></li>
+<li><p>You can use the <a href="https://ondemand.hpc.cam.uchc.edu">Open OnDemand desktop</a>. Log in with your CAM credentials and have a look. The desktop can be opened with <code>Interactive Apps -&gt; Mantis Desktop</code>. As of 2026, this is pretty new, so we’re not sure how folks will make use of it. Note that you can also open a terminal window there.</p></li>
 </ol>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Please don’t use language-specific code extensions (python, R, etc) to run code on Xanadu from within VS Code. We’ll cover this in the next chapter, but VS Code connects to a <strong>login</strong> node, which has few resources and is shared by many users. To run code on Xanadu, it must be submitted through the batch scheduler, <code>SLURM</code>. A VS Code extension that runs code for you can only run it on the login node, which will cause problems for everyone (something we will discuss in more detail in chapter 5).</p>
-</div>
-</div>
-<ol start="2" type="1">
-<li>You can mount the Xanadu file system on your local computer. You can get your operating system to “see” Xanadu’s filesystem, and access files as if they were local. You can then edit them using Sublime, VS Code, or anything else. To do this, you <strong>must</strong> be connected to the CAM VPN (<a href="https://health.uconn.edu/high-performance-computing/tutorials/cam-vpn/">instructions</a>).</li>
-</ol>
-<ul>
-<li>From a mac, you can select from your top dropdown menu <code>Go:Connect to Server</code> and enter <code>smb://cfs09.cam.uchc.edu/home/FCAM/&lt;username&gt;</code>.</li>
-<li>From Windows, you can map a network filesystem using <a href="https://health.uconn.edu/high-performance-computing/tutorials/mapping-a-network-resource/">these directions</a> and the address formatted like this: <code>\\cfs09.cam.uchc.edu\home\FCAM\&lt;username&gt;</code></li>
-</ul>
-<p>When prompted, enter your CAM credentials (not your netID/password). For paths on <code>/core</code>, replace <code>cfs09</code> with <code>cfs12</code>. <code>df -h</code> will tell you which file systems various important system directories are found on.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -735,11 +709,11 @@ Warning
 </section>
 <section id="scripts" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="scripts"><span class="header-section-number">4.5</span> Scripts</h2>
-<p>Ok, now we’ve got all the pieces, we can start writing longer bits of code into <strong>scripts</strong> so that we can run them as batches instead of interactively, line-by-line. Scripts can be as simple as a series of commands that you <em>could</em> execute interactively, or as complicated as computer programs that run entire analyses that take hours, days or weeks.</p>
-<p>In this course, we’ll aim for the simpler end of the spectrum. We want to write code in chunks that we can pass off to Xanadu’s job scheduler and that will serve as the most fundamental documentation of the analyses we do. While keeping notes on what you do (or try) is important, the code itself is the ultimate documentation of your final analysis, so it should be complete and well organized into scripts.</p>
+<p>Now we’ve got all the pieces we can start writing longer bits of code into <strong>scripts</strong> so that we can run them as batches instead of interactively, line-by-line. Scripts can be as simple as a series of commands that you <em>could</em> execute interactively, or as complicated as computer programs that run entire analyses that take hours, days or weeks.</p>
+<p>In this course, we’ll aim for the simpler end of the spectrum. We want to write code in chunks that we can pass off to Mantis’s job scheduler and that will serve as the most fundamental documentation of the analyses we do. While keeping notes on what you do (or try) is important, the code itself is the ultimate documentation of your final analysis, so it should be complete and well organized into scripts.</p>
 <section id="the-shebang" class="level3" data-number="4.5.1">
 <h3 data-number="4.5.1" class="anchored" data-anchor-id="the-shebang"><span class="header-section-number">4.5.1</span> The shebang</h3>
-<p>A script can be written in any language, so typically the way we start one off in a Linux environment is to tell Linux what interpreter to use. Right now we’re writing bash code (rather than R, python, perl or something else), so we need to tell Linux that. To do that, the first line of the script will always be what’s referred to as a <strong>shebang</strong>, or <code>#!</code> followed by the interpreter we wish to use, in this case <code>/bin/bash</code> so:</p>
+<p>A script can be written in any language, so typically the way we start one off in a Linux environment is to tell Linux what programming language interpreter to use. Right now we’re writing bash code (rather than R, python, perl or something else), so we need to tell Linux that. To do that, the first line of the script will always be what’s referred to as a <strong>shebang</strong>, or <code>#!</code> followed by the interpreter we wish to use, in this case <code>/bin/bash</code> so:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If we were writing python code we might write:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/env python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -765,7 +739,7 @@ Warning
 <ol type="1">
 <li><code>source commonWords.sh</code> This method <em>ignores</em> the shebang (it begins with <code>#</code> after all) and executes all the code in the current shell session as if you had typed it on the command line. If you created any variables in the current environment <em>they will be available in the script</em>.</li>
 <li><code>bash commonWords.sh</code> This method also ignores the shebang and explicitly invokes bash, but it creates a <em>subshell</em>. The execution context is mostly isolated from the environment you submitted the script from, and environment variables you created there are not available unless you <code>export</code> them (see below).</li>
-<li><code>./commonWords.sh</code> This will execute the script, and Linux looks for the shebang to see which intepreter should be used. It also creates an isolated execution context. For options 1 and 2, the script does not need to have execute permission. To run it this way, execute permission is required.</li>
+<li><code>./commonWords.sh</code> This will execute the script, and Linux looks for the shebang to see which interpreter should be used. It also creates an isolated execution context. For options 1 and 2, the script does not need to have execute permission. To run it this way, execute permission is required.</li>
 <li>Passing the script to a job scheduler (in our case SLURM). This will be covered in the next chapter.</li>
 </ol>
 <p>What does it mean to have an isolated environment? Modify the <code>commonWords.sh</code> script so that the variable definition is <em>commented out</em> and thus ignored by the interpreter:</p>

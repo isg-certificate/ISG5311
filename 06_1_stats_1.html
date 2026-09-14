@@ -348,12 +348,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Differential Expression Analysis</span></span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Functional Interpretation</span></span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -368,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08_1_writing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Writing documents in Quarto</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Writing documents in Quarto</span></span></a>
   </div>
 </li>
       </ul>
@@ -716,7 +710,7 @@ $y
         }
     }
 }
-&lt;bytecode: 0x1487ea430&gt;
+&lt;bytecode: 0x138c29e30&gt;
 &lt;environment: namespace:methods&gt;</code></pre>
 </div>
 </div>
@@ -866,18 +860,18 @@ lm(formula = y ~ x, data = z)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--26.485  -7.089  -0.283   6.909  37.848 
+-29.008  -6.560   0.197   6.019  32.184 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 24.80041    0.84115   29.48   &lt;2e-16 ***
-x            5.05969    0.06171   81.99   &lt;2e-16 ***
+(Intercept)  23.6913     0.7928   29.88   &lt;2e-16 ***
+x             5.0221     0.0524   95.85   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 10.53 on 298 degrees of freedom
-Multiple R-squared:  0.9575,    Adjusted R-squared:  0.9574 
-F-statistic:  6722 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 10.09 on 298 degrees of freedom
+Multiple R-squared:  0.9686,    Adjusted R-squared:  0.9685 
+F-statistic:  9187 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Add a trendline to our scatter plot:</p>
@@ -905,18 +899,18 @@ lm(formula = y ~ x, data = z)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--26.485  -7.089  -0.283   6.909  37.848 
+-29.008  -6.560   0.197   6.019  32.184 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 24.80041    0.84115   29.48   &lt;2e-16 ***
-x            5.05969    0.06171   81.99   &lt;2e-16 ***
+(Intercept)  23.6913     0.7928   29.88   &lt;2e-16 ***
+x             5.0221     0.0524   95.85   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 10.53 on 298 degrees of freedom
-Multiple R-squared:  0.9575,    Adjusted R-squared:  0.9574 
-F-statistic:  6722 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 10.09 on 298 degrees of freedom
+Multiple R-squared:  0.9686,    Adjusted R-squared:  0.9685 
+F-statistic:  9187 on 1 and 298 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>For many years, a different pipe operator was the only one available: <code>%&gt;%</code> It was part of the package <code>magrittr</code>, and then later the <code>tidyverse</code> set of packages. You will probably still see it around a lot and there are <a href="https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/">some differences</a>.</p>
