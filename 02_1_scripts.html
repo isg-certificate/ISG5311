@@ -528,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> ls</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> grep</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> cat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You’ll note that each of these is found in a path found in your <code>PATH</code> variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Xanadu.</p>
+<p>You’ll note that each of these is found in a path found in your <code>PATH</code> variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Mantis.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -678,7 +678,7 @@ Note
 <section id="gui-code-editors" class="level4" data-number="4.4.1.2">
 <h4 data-number="4.4.1.2" class="anchored" data-anchor-id="gui-code-editors"><span class="header-section-number">4.4.1.2</span> GUI code editors</h4>
 <p>Another approach suitable for users starting up is to write code using a locally installed, dedicated code editor such as <a href="https://www.sublimetext.com">Sublime Text</a>. There are others, but for this course I recommend you download and use Sublime for at least some cases. Unlike <code>nano</code>, it has lots of features and user-created plugins. It has <strong>syntax highlighting</strong>, which means if you select the language you are writing in from a dropdown menu in the bottom right corner, it will recognize syntactic features of the language and change the color of the text in ways that greatly help with editing.</p>
-<p>A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using <code>nano</code>, or use <code>scp</code>/<code>rsync</code> to upload the documents to Xanadu. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Xanadu, but we haven’t yet shown you the tools to do that, and we’ll introduce another, easier approach in a moment.</p>
+<p>A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using <code>nano</code>, or use <code>scp</code>/<code>rsync</code> to upload the documents to Mantis. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Mantis, but we haven’t yet shown you the tools to do that, and we’ll introduce another, easier approach in a moment.</p>
 </section>
 <section id="integrated-development-environments." class="level4" data-number="4.4.1.3">
 <h4 data-number="4.4.1.3" class="anchored" data-anchor-id="integrated-development-environments."><span class="header-section-number">4.4.1.3</span> Integrated development environments.</h4>
@@ -702,7 +702,7 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You should only use dedicated software for editing code (or CLI editors on Xanadu). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try <code>cat -A myscript.sh</code>. If <code>myscript.sh</code> contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them.</p>
+<p>You should only use dedicated software for editing code (or CLI editors on Mantis). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try <code>cat -A myscript.sh</code>. If <code>myscript.sh</code> contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them.</p>
 </div>
 </div>
 </section>
@@ -731,7 +731,7 @@ Warning
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># this line extracts and prints the word list</span></span>
 <span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="at">-P</span> <span class="st">"\b[A-Za-z]{4,}\b"</span> <span class="va">$ORIGIN</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-g</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Create this script with the title <code>commonWords.sh</code> on Xanadu and change the permission so that you can execute it.</p>
+<p>Create this script with the title <code>commonWords.sh</code> on Mantis and change the permission so that you can execute it.</p>
 </section>
 <section id="executing-scripts" class="level3" data-number="4.5.3">
 <h3 data-number="4.5.3" class="anchored" data-anchor-id="executing-scripts"><span class="header-section-number">4.5.3</span> Executing scripts</h3>
