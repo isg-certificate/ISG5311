@@ -12,19 +12,19 @@ title: "SLURM: the job scheduler"
 
 ## High performance computing review
 
-Now that we've covered connecting to a remote server, basic command-line interface usage, and the fundamentals of writing a script, we're ready to explore how to actually use the Xanadu computer cluster. You should be familiar with this already from ISG5301, but Xanadu is not a single computer. It is a large number of computers networked together, most of which are far more powerful than a standard consumer-grade laptop or desktop. These individual computers are often referred to as **nodes**. Each of the nodes is connected to several **network-attached file systems** (NFS) which store user data. Because all the nodes are connected to these file systems, no matter which of the nodes you may be working on at any given moment, you will have access to your data. 
+Now that we've covered connecting to a remote server, basic command-line interface usage, and the fundamentals of writing a script, we're ready to explore how to actually use the Mantis computer cluster. You should be familiar with this already from ISG5301, but Mantis is not a single computer. It is a large number of computers networked together, most of which are far more powerful than a standard consumer-grade laptop or desktop. These individual computers are often referred to as **nodes**. Each of the nodes is connected to several **network-attached file systems** (NFS) which store user data. Because all the nodes are connected to these file systems, no matter which of the nodes you may be working on at any given moment, you will have access to your data. 
 
 There are three main categories of nodes. 
 
 1. **Compute nodes**: These are the workhorses of the cluster. They typically have many CPUs (24-96) and memory ranging from 256G to 2TB (even a good consumer laptop won't usually have more than 8 CPUs 16G of memory). 
-2. **Login nodes**: These are much smaller computers, often with only 2 CPUs and 8G of memory. They may not even be physical machines, but virtual ones. They are meant to serve as portals to more powerful resources. When users connect to Xanandu, they are assigned to one of several login nodes. 
+2. **Login nodes**: These are much smaller computers, often with only 2 CPUs and 8G of memory. They may not even be physical machines, but virtual ones. They are meant to serve as portals to more powerful resources. When users connect to Mantis, they are assigned to one of several login nodes. 
 3. **The head node**: A head node is typically used only by system administrators to manage the system. It is usually the place where key workload manager software is running. 
 
-Thus far, when we have connected to Xanadu we have connected to a **login node**. Because login nodes have few resources, which are shared among many users, **you should not use them for analysis**. The kind of light work we have done (navigating the file system, inspecting files) is suitable for a login node, but if you ever run the kind of command that has you thinking, "I'll just check social media for for a moment while this runs" then you have exceeded what you should be doing on a login node. For that kind of work, you should use a **compute node**
+Thus far, when we have connected to Mantis we have connected to a **login node**. Because login nodes have few resources which are shared among many users, **you should not use them for analysis**. The kind of light work we have done (navigating the file system, inspecting files) is suitable for a login node, but if you ever run the kind of command that has you thinking, "I'll just check social media for for a moment while this runs" then you have exceeded what you should be doing on a login node. And certainly forget about doing anything that takes hours or days on a login node. For that kind of work, you should use a **compute node**
 
 ## SLURM
 
-Computer clusters like Xanadu have many users. To prevent conflicts they use software that we will variously refer to as a **workload manager** or **job scheduler** to control access to compute resources. On Xanadu, we use the software [`SLURM`](https://slurm.schedmd.com/overview.html). It is one of the most commonly used on HPCs, but there others such as [`PBS`](https://en.wikipedia.org/wiki/Portable_Batch_System) and [`LSF`](https://en.wikipedia.org/wiki/IBM_Spectrum_LSF). From a user perspective, these systems have many features in common, and in fact, Xanadu is set up to interpret `PBS` commands if necessary, though using them is not recommended. 
+Computer clusters like Mantis have many users. To prevent conflicts they use software that we will variously refer to as a **workload manager** or **job scheduler** to control access to compute resources. On Mantis, we use the software [`SLURM`](https://slurm.schedmd.com/overview.html). It is one of the most commonly used on HPCs, but there others such as [`PBS`](https://en.wikipedia.org/wiki/Portable_Batch_System) and [`LSF`](https://en.wikipedia.org/wiki/IBM_Spectrum_LSF). From a user perspective, these systems have many features in common, and in fact, Mantis is set up to interpret `PBS` commands if necessary, though using them is not recommended. 
 
 In this chapter we will cover how to use `SLURM` to ask what resources are available, request resources to do work, monitor the status of running jobs, and evaluate jobs when they have completed. 
 
@@ -37,7 +37,7 @@ When you have to do some computational work that requires cluster resources (and
 3. Submit the work with a resource request to the job scheduler (or simply request resources in the case of interactive work), which will start the work immediately if required resources are available, or put it in a queue if they are occupied.
 4. Periodically monitor job progress until completion or failure (or if interactive work, do the work). 
 5. Evaluate the work. 
-6. (Possibly) Go back to (1) to redo your failed analysis, or for the next step of your analysis. 
+6. (Possibly) Go back to (1) to redo your failed analysis, or move on to the next step of your analysis. 
 
 We'll cover each of these below. 
 
@@ -54,35 +54,21 @@ The two primary SLURM commands used here are `sinfo` and `squeue`. We can also l
 `sinfo` prints information about available compute nodes and their status. At the moment of writing, running `sinfo` with no options prints the following output:
 
 ```
+$ sinfo
 PARTITION  AVAIL  TIMELIMIT  NODES  STATE NODELIST
-general*      up   infinite      1  drain xanadu-05
-general*      up   infinite     23    mix xanadu-[01,03-04,08,10,25,39,50-52,57-61,64-66,69-70,72-74]
-general*      up   infinite      4  alloc xanadu-[02,62-63,67]
-general*      up   infinite      5   idle xanadu-[46-47,49,53-54]
-vcell         up   infinite      4  drain xanadu-[78-81]
-vcell         up   infinite      3   idle xanadu-[76-77,82]
-vcellpu       up   infinite      1   idle xanadu-32
-himem         up   infinite      2    mix xanadu-[40,44]
-himem         up   infinite      2   idle xanadu-[06,43]
-himem2        up   infinite      2    mix xanadu-[07,75]
-xeon          up   infinite      1  drain xanadu-05
-xeon          up   infinite     18    mix xanadu-[03-04,08,39,50-52,57-61,64-66,69-70,72]
-xeon          up   infinite      4  alloc xanadu-[02,62-63,67]
-xeon          up   infinite      5   idle xanadu-[46-47,49,53-54]
-amd           up   infinite      2    mix xanadu-[10,25]
-mcbstudent    up   infinite      2    mix xanadu-[68,71]
-gpu           up   infinite      1  drain xanadu-05
-gpu           up   infinite      5    mix xanadu-[01,03-04,07-08]
-gpu           up   infinite      1  alloc xanadu-02
-gpu           up   infinite      3   idle xanadu-[06,84-85]
-crbm          up   infinite      2   idle xanadu-[55-56]
+general*      up   infinite     49    mix mantis-[001-005,007-009,012,014-016,019-020,022-030,033,035-037,045,048-049,051-052,054-067,070,072,075]
+general*      up   infinite     15  alloc mantis-[006,010-011,013,017-018,021,046-047,053,068-069,071,073,077]
+himem         up   infinite      4    mix mantis-[031-032,050,076]
+vcell         up   infinite      1    mix mantis-040
+vcell         up   infinite      4   idle mantis-[041-044]
+rabbithole    up   infinite      1    mix mantis-038
 ```
 
 Nodes on clusters are sometimes, though not always divided into **partitions**, which are groups of hardware. The groups may correspond to nodes with similar characteristics, or they may belong to different user groups. They need not be mutually exclusive. 
 
-You can see above there are 10 different partitions on Xanadu. The notation `xanadu-[01,03-04,07-08]` refers to five nodes. `xanadu-01`, for example, is in both the `gpu` and `general` partitions. When partitions are present, you must decide which partition you want to submit to. Partitions need not be mutually exclusive. 
+You can see above there are 4 different partitions on Mantis. The notation `mantis-[001,003-004,007-008]` refers to five nodes. `mantis-001`, for example, is in`general` partition. When partitions are present, you must decide which partition you want to submit to. Partitions can be overlapping, though currently on Mantis they are not. You will have access to `general` and `himem`, and under limited conditions, `rabbithole`. `vcell` and `rabbithole` are owned by particular user group and access is restricted. 
 
-Key partitions we will use in this course on Xanadu are `general` and `himem`. In the basic `sinfo` output, you see that some partitions are split across multiple entries according to the `STATE` field: **alloc** = allocated, i.e. all resources on these nodes have been assigned; **mix** = some resources on these nodes have been assigned and some remain available; **idle** = these nodes are currently unused; **drain** = these nodes are not accepting new jobs (probably they require maintenance and will be rebooted when currently assigned jobs finish). 
+Key partitions we will use in this course on Mantis are `general` and `himem`. In the basic `sinfo` output, you see that some partitions are split across multiple entries according to the `STATE` field: **alloc** = allocated, i.e. all resources on these nodes have been assigned; **mix** = some resources on these nodes have been assigned and some remain available; **idle** = these nodes are currently unused. You will sometimes see the state **drain** which means these nodes are not accepting new jobs (probably they require maintenance and will be rebooted when currently assigned jobs finish). 
 
 You will frequently want to see more detail than this. The following command will print information for each node individually, formatted according to the obscure syntax found in the `sinfo` man page. 
 
@@ -94,45 +80,44 @@ The first few lines of output:
 
 ```
 PARTITION  STATE  CPU_LOAD        CPUS(A/I/O/T)   NODES(A/I/O/T)  MEMORY     FREE_MEM   HOSTNAMES       REASON                         USER      
-general*   drain  0.01            0/0/36/36       0/0/1/1         225612     16760      xanadu-05       Kill task failed               root      
-general*   mix    18.37           28/8/0/36       1/0/0/1         257669     9569       xanadu-01       none                           Unknown   
-general*   mix    11.49           35/1/0/36       1/0/0/1         257845     45859      xanadu-03       none                           root      
-general*   mix    8.34            34/2/0/36       1/0/0/1         257845     1307       xanadu-04       none                           Unknown   
-general*   mix    2.41            9/27/0/36       1/0/0/1         257669     50949      xanadu-08       none                           Unknown   
-general*   mix    10.76           15/33/0/48      1/0/0/1         386972     52520      xanadu-10       none                           Unknown   
-general*   mix    12.61           44/4/0/48       1/0/0/1         257949     7961       xanadu-25       none                           Unknown   
-general*   mix    6.03            8/8/0/16        1/0/0/1         128825     26234      xanadu-39       none                           Unknown   
-general*   mix    0.06            8/32/0/40       1/0/0/1         257914     119938     xanadu-50       none                           Unknown   
-general*   mix    0.08            8/32/0/40       1/0/0/1         192032     13437      xanadu-51       none                           Unknown   
+general*   plnd   2.74            0/128/0/128     0/1/0/1         192765     185866     mantis-034      none                           Unknown   
+general*   mix    7.60            41/87/0/128     1/0/0/1         515791     324427     mantis-001      none                           Unknown   
+general*   mix    33.79           28/100/0/128    1/0/0/1         515791     32146      mantis-002      none                           Unknown   
+general*   mix    1.00            64/64/0/128     1/0/0/1         515791     496843     mantis-003      none                           Unknown   
+general*   mix    3.18            100/28/0/128    1/0/0/1         515791     97218      mantis-004      none                           Unknown   
+general*   mix    3.28            48/80/0/128     1/0/0/1         515791     226387     mantis-005      none                           Unknown   
+general*   mix    11.36           48/16/0/64      1/0/0/1         515350     426985     mantis-007      none                           Unknown   
+general*   mix    4.65            54/10/0/64      1/0/0/1         515350     111562     mantis-008      none                           Unknown   
 ```
 
 Here you get lots of useful information. The column `CPUS(A/I/O/T)` tells you how many cpus are **allocated**/**idle**/**other**/**total** on each node. You can also see the amount of memory and free memory (in megabytes) on each node. This can give you a pretty fine-grained sense of what resources currently exist in terms of CPU and memory, and how many resources are **idle** on the cluster. 
 
 #### `scontrol show nodes`
 
-To get pretty much ALL the information for each node, try `scontrol show nodes`, or for a specific node, e.g. `xanadu-01`, try 
+To get pretty much ALL the information for each node, try `scontrol show nodes`, or for a specific node, e.g. `mantis-001`, try 
 
 ```bash
-scontrol show node xanadu-01
+scontrol show node mantis-001
 ```
 
 ```
-NodeName=xanadu-01 Arch=x86_64 CoresPerSocket=18 
-   CPUAlloc=16 CPUTot=36 CPULoad=7.23
-   AvailableFeatures=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
-   ActiveFeatures=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
-   Gres=(null)
-   NodeAddr=xanadu-01 NodeHostName=xanadu-01 Version=18.08
-   OS=Linux 3.10.0-1160.45.1.el7.x86_64 #1 SMP Wed Oct 13 17:20:51 UTC 2021 
-   RealMemory=338508 AllocMem=102400 FreeMem=40690 Sockets=2 Boards=1
-   State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=1 Owner=N/A MCS_label=N/A
-   Partitions=general,xeon,gpu 
-   BootTime=2025-07-01T17:13:07 SlurmdStartTime=2025-07-01T17:23:26
-   CfgTRES=cpu=36,mem=338508M,billing=36
-   AllocTRES=cpu=16,mem=100G
+NodeName=mantis-001 Arch=x86_64 CoresPerSocket=64 
+   CPUAlloc=41 CPUEfctv=128 CPUTot=128 CPULoad=7.17
+   AvailableFeatures=cpu_amd,amd_epyc_7713,gpu_A100
+   ActiveFeatures=cpu_amd,amd_epyc_7713,gpu_A100
+   Gres=gpu:A100:1
+   NodeAddr=mantis-001 NodeHostName=mantis-001 Version=24.05.4
+   OS=Linux 5.15.0-164-generic #174-Ubuntu SMP Fri Nov 14 20:25:16 UTC 2025 
+   RealMemory=515791 AllocMem=509952 FreeMem=323883 Sockets=2 Boards=1
+   State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=100 Owner=N/A MCS_label=N/A
+   Partitions=general 
+   BootTime=2026-01-05T14:53:04 SlurmdStartTime=2026-09-08T14:58:33
+   LastBusyTime=2026-09-15T08:03:11 ResumeAfterTime=None
+   CfgTRES=cpu=128,mem=515791M,billing=202,gres/gpu=1
+   AllocTRES=cpu=41,mem=498G,gres/gpu=1
    CapWatts=n/a
-   CurrentWatts=0 LowestJoules=0 ConsumedJoules=0
-   ExtSensorsJoules=n/s ExtSensorsWatts=0 ExtSensorsTemp=n/s
+   CurrentWatts=0 AveWatts=0
+   ExtSensorsJoules=0 ExtSensorsWatts=0 ExtSensorsTemp=0
 ```
 
 The command `scontrol show <entity> <ID>` allows you to look at a variety of features of a SLURM cluster. 
@@ -143,17 +128,19 @@ SLURM has a configuration file `/etc/slurm/slurm.conf` that lists features of ea
 
 ```
 # COMPUTE NODES
-NodeName=xanadu-01 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257669 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
-NodeName=xanadu-02 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257669 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
-NodeName=xanadu-03 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257845 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_M10,gpu_cc_5.2,gpu_A10,gpu_cc_8.6,simulations
-NodeName=xanadu-04 CPUs=36 SocketsPerBoard=2 CoresPerSocket=18 ThreadsPerCore=1 RealMemory=257845 Features=cpu_xeon,xeon_E52697,AES,AVX,AVX2,F16C,FMA3,MMX,SSE,SSE2,SSE3,SSE4,SSSE3,gpu_A10,gpu_cc_8.6,simulations
+NodeName=mantis-001 CPUs=128 Boards=1 SocketsPerBoard=2 CoresPerSocket=64 ThreadsPerCore=1 RealMemory=515791 Features=cpu_amd,amd_epyc_7713,gpu_A100 Gres=gpu:A100:1 Weight=100
+NodeName=mantis-002 CPUs=128 Boards=1 SocketsPerBoard=2 CoresPerSocket=64 ThreadsPerCore=1 RealMemory=515791 Features=cpu_amd,amd_epyc_7713,gpu_A100 Gres=gpu:A100:1 Weight=100
+NodeName=mantis-003 CPUs=128 Boards=1 SocketsPerBoard=2 CoresPerSocket=64 ThreadsPerCore=1 RealMemory=515791 Features=cpu_amd,amd_epyc_7713,gpu_A100 Gres=gpu:A100:1 Weight=100
+NodeName=mantis-004 CPUs=128 Boards=1 SocketsPerBoard=2 CoresPerSocket=64 ThreadsPerCore=1 RealMemory=515791 Features=cpu_amd,amd_epyc_7713,gpu_A100 Gres=gpu:A100:1 Weight=100
+NodeName=mantis-005 CPUs=128 Boards=1 SocketsPerBoard=2 CoresPerSocket=64 ThreadsPerCore=1 RealMemory=515791 Features=cpu_amd,amd_epyc_7713,gpu_A100 Gres=gpu:A100:1 Weight=100
+NodeName=mantis-006 CPUs=64 Boards=1 SocketsPerBoard=2 CoresPerSocket=32 ThreadsPerCore=1 RealMemory=515350 Features=cpu_xeon,xeon_platinum_8462Y+
 ```
 
-Here you can see that node xanadu-01 has 36 CPUs, ~256G of memory, a Xeon cpu and an NVIDIA A10 GPU. 
+Here you can see that node mantis-001 has 128 CPUs, ~512G of memory, an AMD cpu and an NVIDIA A100 GPU. 
 
 #### `squeue`
 
-We have seen how you can see the type and availability of compute resources. The `squeue` command lets users see what jobs have been submitted to the queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available and currently running jobs. Depending on SLURM configuration, this command may show *only* jobs you have submitted, or it may show *every* job. At the time of writing, Xanadu was configured to show *every* job. 
+We have seen how you can see the type and availability of compute resources. The `squeue` command lets users see what jobs are in the queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available and currently running jobs. Depending on SLURM configuration, this command may show *only* jobs you have submitted, or it may show *every* job. At the time of writing, Xanadu was configured to show *every* job. 
 
 Some example output from `squeue`:
 
@@ -164,58 +151,57 @@ Some example output from `squeue`:
 7949954   general nf-MAIN_ vvuruput PD       0:00      1 (Priority)
 7953478   general slow59.s mhossein PD       0:00      1 (Priority)
 7953479   general slow60.s mhossein PD       0:00      1 (Priority)
-7946600   general    busco shillima  R 2-20:56:08      1 xanadu-52
-7945409   general     bash    shird  R 3-01:21:06      1 xanadu-74
-7917445     himem R_divers pmartine  R 6-01:31:02      1 xanadu-40
-7953261 mcbstuden     bash meds5420  R    3:46:07      1 xanadu-68
+7946600   general    busco shillima  R 2-20:56:08      1 mantis-052
+7945409   general     bash    shird  R 3-01:21:06      1 mantis-074
+7917445     himem R_divers pmartine  R 6-01:31:02      1 mantis-040
 ```
 
 - `JOBID` is a unique numerical identifier assigned by SLURM to *every* job it runs. This is important information we'll discuss later. 
 - `NAME` is the name the user gave SLURM for the job (truncated in this view). 
 - `USER` is user who submitted the job. 
-- `ST` is the status: PD = pending; R = running. NODELIST(REASON) is either the list of compute nodes the job was assigned to (e.g. xanadu-52 for job 7946600) or the reason the job is not yet running: "Priority" essentially means the job will start at any moment; "Resources" means the requested resources are busy; "QOSMaxMemoryPerUser" means the running the job would exceed the the maximum memory allotment. Xanadu has resource limits so that no one person can dominate the system. 
+- `ST` is the status: PD = pending; R = running. NODELIST(REASON) is either the list of compute nodes the job was assigned to (e.g. mantis-052 for job 7946600) or the reason the job is not yet running: "Resources" means the requested resources are busy, but the job will start as soon as they are available; "Priority" means the job is pending because other pending jobs have higher priority and will run before it ; "QOSMaxMemoryPerUser" means the running the job would exceed the the maximum memory allotment for that user and the Quality of Service (QoS) they chose (see below for more about QoS). Mantis has resource limits so that no one person can dominate the system. 
 
-You can use the flag `-u <user>` to restrict to a given userid. You can try `squeue -o "%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R"` for a little more spacious formatting. 
+You can use the flag `-u <user>` to restrict squeue output to a given userid. You can try `squeue -o "%.12i %.9P %.30j %.8u %.2t %.10M %.6D %R"` for a little more spacious formatting. 
 
 #### `scontrol show job`
 
-As we saw above with `scontrol show nodes` we can also get lots of details about specific jobs, in this example the JOBID `9344808`:
+As we saw above with `scontrol show nodes` we can also get lots of details about specific jobs, in this example the JOBID `2468201`:
 
 ```bash
-scontrol show job 9344808
-```
-
-```
-JobId=9344808 JobName=featurecounts
-   UserId=svoggu(801460) GroupId=govonilab(10210) MCS_label=N/A
-   Priority=8858 Nice=0 Account=pi-govoni QOS=general
+$ scontrol show job 2468201
+JobId=2468201 JobName=hifiasm
+   UserId=vvuruputoor(688903) GroupId=ebpproject(11120) MCS_label=N/A
+   Priority=3002 Nice=0 Account=pi-wegrzyn QOS=himem
    JobState=RUNNING Reason=None Dependency=(null)
-   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
-   RunTime=16-23:07:52 TimeLimit=21-00:00:00 TimeMin=N/A
-   SubmitTime=2025-08-26T12:29:46 EligibleTime=2025-08-26T12:29:46
-   AccrueTime=2025-08-26T12:29:46
-   StartTime=2025-08-26T12:29:47 EndTime=2025-09-16T12:29:47 Deadline=N/A
-   PreemptTime=None SuspendTime=None SecsPreSuspend=0
-   LastSchedEval=2025-08-26T12:29:47
-   Partition=xeon AllocNode:Sid=xanadu-54:3194841
+   Requeue=1 Restarts=1 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=13-17:09:05 TimeLimit=32-12:00:00 TimeMin=N/A
+   SubmitTime=2026-08-24T16:10:11 EligibleTime=2026-08-24T16:12:12
+   AccrueTime=2026-08-24T16:12:12
+   StartTime=2026-09-01T19:39:42 EndTime=2026-10-04T07:39:42 Deadline=N/A
+   PreemptEligibleTime=2026-09-01T19:39:42 PreemptTime=None
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-01T19:39:42 Scheduler=Main
+   Partition=himem AllocNode:Sid=mantis-sub-9:1679705
    ReqNodeList=(null) ExcNodeList=(null)
-   NodeList=xanadu-70
-   BatchHost=xanadu-70
-   NumNodes=1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:*
-   TRES=cpu=2,mem=20G,node=1,billing=2
+   NodeList=mantis-050
+   BatchHost=mantis-050
+   NumNodes=1 NumCPUs=32 NumTasks=1 CPUs/Task=32 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=32,mem=2000G,node=1,billing=2820
+   AllocTRES=cpu=32,mem=2000G,node=1,billing=2820
    Socks/Node=* NtasksPerN:B:S:C=0:0:*:1 CoreSpec=*
-   MinCPUsNode=2 MinMemoryNode=20G MinTmpDiskNode=0
+   MinCPUsNode=32 MinMemoryNode=2000G MinTmpDiskNode=0
    Features=(null) DelayBoot=00:00:00
    OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
-   Command=/home/FCAM/svoggu/RNA_Seq/gz_files/alignment6.sh
-   WorkDir=/home/FCAM/svoggu/RNA_Seq/gz_files
-   StdErr=/home/FCAM/svoggu/RNA_Seq/gz_files/hello_9344808.err
+   Command=/core/labs/Wegrzyn/ConiferGenomes/Psme/Psme_hifiasm/hifiasm.sh
+   WorkDir=/core/labs/Wegrzyn/ConiferGenomes/Psme/Psme_hifiasm
+   StdErr=/core/labs/Wegrzyn/ConiferGenomes/Psme/Psme_hifiasm/hifiasm_2468201.err
    StdIn=/dev/null
-   StdOut=/home/FCAM/svoggu/RNA_Seq/gz_files/hello_9344808.out
+   StdOut=/core/labs/Wegrzyn/ConiferGenomes/Psme/Psme_hifiasm/hifiasm_2468201.out
    Power=
+   TresPerTask=cpu:32
+   MailUser=vsv@uconn.edu MailType=INVALID_DEPEND,BEGIN,END,FAIL,REQUEUE,STAGE_OUT
 ```
 
-We won't dig into this now, but once you're a little further along, it is helpful to remember this exists. 
+We won't dig into this now, but once you're a little further along, it is extremely helpful to remember this exists. 
 
 ### Request resources (and submit work)
 
@@ -243,13 +229,19 @@ grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
 
 Save it to `commonWords.sh`. Note that because we are passing this file to SLURM, not directly to bash, we *definitely* need the shebang at the top. 
 
-On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and a quality of service (or QOS). Not all SLURM clusters require a QOS to be specified, but Xanadu does.
+On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and a quality of service (or QoS). Not all SLURM clusters require a QoS to be specified, but Mantis does.
 
 :::{.callout-note}
 ### Quality of Service (QOS)
-In SLURM, "Quality of Service" categories allow different jobs to be subject to different policies. Those policies may include access to hardware, resource limitations, or changes to job prioritization in the queue. On Xanadu, the two QOS'es you are likely to use are `general` and `himem`. To get access to high-memory nodes (1-2TB) you must request the QOS `himem`. Jobs with that QOS can use up to 2TB of memory, but users can only have jobs on two nodes at a time. Jobs submitted with the `general` QOS cannot access the high memory nodes, but users can run up to 100 jobs simultaneously, using up to a total of 400 CPUs and 1TB of memory. 
+In SLURM, partitions define groups of hardware and "Quality of Service" categories define the policies that apply to a job. Those policies may include access to partitions, resource limitations, or priority. The QoS'es [you may use on Mantis](https://cbc-uconn.github.io/hpc-docs/running.html#partitions):
 
-`sacctmgr show qos` will list each QOS and its policies. `sacctmgr show assoc user=$USER` will show QOS access for `$USER`. 
+- `general`: Like the name says. Intended for general usage. Can only submit to `general` partition. 
+- `himem`: Again, self-explanatory. Allows access to high memory nodes (1-2TB). Has a very low limit of concurrent jobs. 
+- `interactive`: A good QoS to use when you need resources to work interactively. You can only run one job, but it has extremely high priority, so jobs with this QoS jump to the head of the queue. 
+- `preemptible`: For users who want to use far more than the resource limits in `general` QoS when the cluster has idle resources. Jobs in `preemptible` will be instantly cancelled (preempted) by SLURM if the resources are needed by jobs from any other QoS. 
+- `debug`: If you want to test a script quickly before running it for real. Very low number of concurrent jobs allowed and jobs can only run for 5 minutes. These jobs have very high priority, however, so they go to the head of the queue. 
+
+`sacctmgr show qos --parsable` will list each QOS and its policies (priority and resource limits). `sacctmgr show assoc user=$USER` will show QOS access for `$USER`. 
 :::
 
 To submit the script to be run on the general partition you can do:
@@ -271,7 +263,7 @@ sbatch -p general --qos=general -c 12 --mem=10G commonWords.sh
 Now we're asking for 12 CPUs with `-c` and 10 gigabytes of memory with `--mem=10G`. Far more than is needed for this tiny job. What happens if you request more memory than is available on any node in `general` partition?
 
 ```bash
-sbatch -p general --qos=general -c 12 --mem=1000G commonWords.sh
+sbatch -p general --qos=general -c 12 --mem=5000G commonWords.sh
 ```
 
 An error which is pretty straightforward to interpret:
@@ -283,7 +275,7 @@ sbatch: error: Batch job submission failed: Requested node configuration is not 
 
 We saw that our script's stdout was written to the log file. Where would output from stderr go? Can we direct that to a file? Can we name the jobs so we can identify them in the queue? Or rename these slurm-JOBID files so that they are a little easier to sort through when we run are running lots of jobs?
 
-The answer is yes. But you can imagine if we do this using command-line flags our command-line is going to start getting very long and cumbersome. To solve this, we typically specify SLURM options in a **header** at the top of our script. 
+The answer is yes to all of these. But you can imagine if we do this using command-line flags our command-line is going to start getting very long and cumbersome. To solve this, we typically specify SLURM options in a **header** at the top of our script. 
 
 Let's put one in our script:
 
@@ -313,13 +305,13 @@ ORIGIN=darwin1859.txt
 grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
 ```
 
-Any command-line option we can pass to `sbatch` can also be placed in a header that immediately follows the shebang. Each header line begins with `#SBATCH` and a command-line flag follows. If we need to, we can override any of these header lines with new values on the command-line, without altering the script. 
+Any command-line option we can pass to `sbatch` can also be placed in a header that immediately follows the shebang. Each header line begins with `#SBATCH` and a command-line flag follows. If we need to, we can override any of these header lines with new values on the command-line, without altering the script.
 
 Here we name the job `commonWords`, request 10 cpus and 20G of memory. The mail options are optional, but if you provide an e-mail, then SLURM will let you know when your job starts and ends. The last two options specify the file name format for any output written to stdout or stderr. The format is `jobname_jobid{.out,.err}`
 
 We also specify a few other options that aren't necessary and that we rarely change: `-n 1`, saying that we want SLURM to launch 1 task, and `-N 1` saying that we want the resources for the task to be on a single node. We won't get into applications where a single job needs multiple SLURM tasks, or jobs that require communication between nodes in this course.
 
-You may also notice we added two extra lines to the top of the script `hostname` and `date`. These will write out which compute node the job ran on, and the date it began to the stdout. This can be helpful information if you need to seek help when troubleshooting. Sometimes individual nodes on the cluster, rather than user errors, can be the source of problems. 
+You may also notice we added two extra lines to the top of the script `hostname` and `date`. These will write out which compute node the job ran on, and the date it began to stdout. This can be helpful information if you need to seek help when troubleshooting. Sometimes individual nodes on the cluster, rather than user errors, can be the source of problems. 
 
 Update `commonWords.sh` with this header and run it again. Now you can simply enter:
 
@@ -329,21 +321,28 @@ sbatch commonWords.sh
 
 Now, instead of seeing a single file `slurm-<JOBID>.out`, you should see a pair of files corresponding to our two potential output streams: `commonWords_<JOBID>.out` and `commonWords_<JOBID>.err`. The `.out` file should contain the output from our script, along with the results of `hostname` and `date`, and `.err` should be empty (unless there were any errors). 
 
+Note that you can *override* the slurm header in the script by supplying command-line options. 
+
+```bash
+# this will ignore the header and submit to debug
+sbatch --qos=debug commonWords.sh
+```
+
 So, to sum up we request resources and submit work to be run on the cluster by SLURM. Putting SLURM options in the script header is extremely useful, as it keeps a record of *how* we ran our code, not just what code we ran. 
 
 #### Starting interactive sessions with `srun`. 
 
 It is sometimes the case that we want to do analysis on the cluster that is more intensive than what is permissible on the login nodes, but we don't want, or are unable to write all the steps into a batch script. This might be an exploratory analysis, where we don't know what the steps are yet, or we might be putting together a complicated set of piped commands and we want to test that the pipe is doing what we expect before we run the entire job.
 
-For this we use an **interactive session**.  In an interactive session, we request resources on a compute node, and SLURM drops us into a bash session on that node, rather than a login node. On the compute node we no longer have to worry about gumming things up for everyone else. SLURM will not let us exceed our CPU request, and if we run a program that attempts to exceed the memory request, the session will simply be canceled. 
+For this we use an **interactive session**.  In an interactive session, we request resources on a compute node, and SLURM drops us into a bash session on that node, rather than a login node. On the compute node we no longer have to worry about gumming things up for everyone else. SLURM will not let us exceed our CPU request, and if we run a program that attempts to exceed the memory request, the session will simply be canceled by SLURM. 
 
 We use the `srun` command for this. The syntax for requesting an interactive session is:
 
 ```bash
-srun -p general --qos=general -c 2 --mem=10G --pty bash
+srun -p general --qos=interactive -c 2 --mem=10G --pty bash
 ```
 
-Try it. To ensure that you have successfully started an interactive session, type `hostname` at the prompt. You should see the name of a compute node that can be found in `sinfo`, something like `xanadu-01`, rather than a login host name like `hpc-ext-1`. 
+Try it. To ensure that you have successfully started an interactive session, type `hostname` at the prompt. You should see the name of a compute node that can be found in `sinfo`, something like `mantis-001`, rather than a login host name like `mantis-duosub-2`. 
 
 You can exit back to the login node with `exit`
 
@@ -371,10 +370,10 @@ When it comes to program- or script-specific files, you'll have to understand a 
 
 There are lots of cases where you might want to get a more direct look at how your job is going. SLURM doesn't have good tools for this. The solution here is to actually log directly in to the compute node and have a look. First, check which node your job is running on using `squeue`. Then you have two options to get into the node. 
 
-First, you can use `srun` and request the node with, e.g. `-w xanadu-01`:
+First, you can use `srun` and request the node with, e.g. `-w mantis-001`:
 
 ```bash
-srun -w xanadu-01 -p general --qos=general -c 1 --mem=500M --pty bash
+srun -w mantis-001 -p general --qos=interactive -c 1 --mem=500M --pty bash
 ```
 
 Here we request minimal resources so that we are more likely to quickly get the session started.  
@@ -382,17 +381,18 @@ Here we request minimal resources so that we are more likely to quickly get the 
 Second, if the node is fully subscribed and you can't get an interactive session, you can still get in from a login node with `ssh`:
 
 ```bash
-ssh xanadu-01
+ssh mantis-001
 ```
 
-If you go this route, you should not do **anything** else other than check on your job. If you couldn't get an interactive session on your node, then all CPU or all memory has been requested, and you are essentially oversubscribing the node by logging in this way. You should check on your job quickly and type `exit` to log out. 
+If you go this second route, you should not do **anything** else other than check on your job. If you couldn't get an interactive session on your node, then all CPU or all memory has been allocated, and you are essentially oversubscribing the node by logging in this way. You should check on your job quickly and type `exit` to log out. 
 
 With either method, once you're on the compute node, you can use the program `top` to see running processes. You will see ALL running processes on the node in a constantly updating list, including user and system processes. To see your own processes type `u` and then your username followed by `enter`. To sort processes by memory usage, type `shift-m` and by processor usage `shift-p`. `%CPU` refers to the percentage of a single CPU, so if you requested 10 cpus, you may see up to %1000 CPU usage. `%MEM` refers to the percentage of the total memory on the node. The `S` column indicates whether your process is running (R) or sleeping (S). 
 
 In an ideal world, whatever you're running would be using all the CPU and all the memory you requested. In reality this is rarely the case. 
+
 - Resource usage often fluctuates. Some stages of an analysis may require the full allocation, while others do not. 
 - You may have requested too many resources. This is often a matter of experience. Especially with memory, it can be hard to know exactly how much software will need, especially when you first start using a given package. 
-- You may have forgotten to tell your software how many CPUs to use. For almost all analysis software capable of using more than one CPU, you will need to tell the software how many to use. If you request 10 cpus with `-c 10`, then you probably also have to use a command line option telling the software to use those 10 CPUs, other wise it will likely just use 1. 
+- You may have forgotten to tell your software how many CPUs to use. For almost all analysis software capable of using more than one CPU, you will need to tell the software how many to use. If you request 10 cpus with `-c 10`, then you probably also have to use a command line option telling the software to use those 10 CPUs, otherwise it will likely just use 1. 
 
 In `top`, if you see that your processes are often sleeping, that can be a sign they aren't running efficiently and that something may be wrong. 
 
@@ -400,7 +400,7 @@ Type `q` to quit `top`.
 
 ### Evaluate the work
 
-When the job is no longer in the queue, it has completed, failed, or been canceled. You first need to figure out which this is! The two main approaches are to use the slurm commands `seff` and/or `sacct`, and to look at the same output files you looked at when monitoring the job's progress. 
+When the job is no longer in the queue, it has completed, failed, or been canceled. You first need to figure out which it is! The two main approaches are to use the slurm commands `seff` and/or `sacct`, and to look at the same output files you looked at when monitoring the job's progress. 
 
 #### `seff` and `sacct`
 
@@ -408,7 +408,7 @@ When the job is no longer in the queue, it has completed, failed, or been cancel
 
 ```
 Job ID: 7953646
-Cluster: xanadu
+Cluster: mantis
 User/Group: nreid/cbc
 State: COMPLETED (exit code 0)
 Nodes: 1
@@ -420,7 +420,7 @@ Memory Utilized: 1.56 MB
 Memory Efficiency: 0.01% of 20.00 GB
 ```
 
-Some of this is self-explanatory at this point. `CPU Utilized` is the sum of the CPU-hours used by the job. `Wall-clock time` means the actual time span over which the job ran. `CPU Efficiency` is `CPU Utilized` / (`cores per node` * `wall-clock time`), the average rate of CPU usage. `Memory Efficiency` is the **peak** memory usage divided by the memory requested. This job was very simple and used virtually none of the resources we requested. This is *not* what you generally want to see, but because our job only took 1 second, it's not that big of a deal. If every job on the cluster had efficiencies ranging from 1-10%, it would be a pretty big waste. If your jobs hit 80% efficiency, you're doing pretty good. 
+Some of this is self-explanatory at this point. `CPU Utilized` is the sum of the CPU-hours used by the job. `Wall-clock time` means the actual time span over which the job ran. `CPU Efficiency` is `CPU Utilized` / (`cores per node` * `wall-clock time`), the average rate of CPU usage. `Memory Efficiency` is the **peak** memory usage divided by the memory requested. This job was very simple and used virtually none of the resources we requested. This is *not* what you generally want to see, but because our job only took 1 second, it's not that big of a deal. If every job on the cluster had efficiency ranging from 1-10%, it would be a pretty big waste. In a bioinformatics research context, if your jobs hit 80% efficiency, you're doing pretty good. If you were doing high throughput analysis at a large company, you might want to get that efficiency number much higher. 
 
 `sacct` is pretty large and complicated SLURM function that can extract all kinds of job information. We won't get into it too much here except to say this command can provide some detail on a job:
 
@@ -433,7 +433,7 @@ For this job we get this output:
 ```
       JobID                        JobName        NodeList         User           Group  Partition      State     ReqMem     MaxRSS  ReqCPUS    Elapsed  Timelimit              Submit 
 ----------- ------------------------------ --------------- ------------ --------------- ---------- ---------- ---------- ---------- -------- ---------- ---------- ------------------- 
-7953646                        commonWords       xanadu-25        nreid             cbc    general  COMPLETED       20Gn                  10   00:00:01 21-00:00:+ 2024-04-28T15:57:09 
+7953646                        commonWords       mantis-025        nreid             cbc    general  COMPLETED       20Gn                  10   00:00:01 21-00:00:+ 2024-04-28T15:57:09 
 ```
 
 #### Checking output files
@@ -451,9 +451,7 @@ That said, we have some general guidelines:
 1. Check the software documentation. It's quite possible there is a critical variable that defines how much memory or CPU the program requires, or can utilize, and that the developer has actually explained it for you quite clearly. 
 2. When you run the job for the first time, check the CPU and memory efficiency. See if the job failed because it ran out of memory usually `oom-kill` is somewhere in the `.err` file. Request more memory if so. Request fewer resources if efficiency was low. 
 3. Remember that when requesting CPUs, you **almost always** have to tell the actual program you are running how many CPUs are available to it. If you tell SLURM you want 10 CPUs, you usually have to provide an option (sometimes `-p` or `-t` or `-c`) telling the program how many it can use. 
-4. Try to tune your resource requests to your actual analyses. If you just copy-paste the same SLURM header requesting 24 CPUs and 100G of memory for every job, sometimes it won't be enough, and most of the time it will be way too much. Either way wastes resources for everyone, and your time. Bigger jobs often sit longer in the queue. Rerunning failed jobs is a huge pain. 
-
-The UConn Computational Biology Core has a document you can reference about resource requests (much of which is covered here) [here](https://github.com/CBC-UCONN/CBC_Docs/wiki/Requesting-resource-allocations-in-SLURM). 
+4. Try to tune your resource requests to your actual analyses. If you just copy-paste the same SLURM header requesting 24 CPUs and 100G of memory for every job, sometimes it won't be enough, and most of the time it will be way too much. Either way wastes resources for everyone, and your time. Bigger jobs often sit longer in the queue. Rerunning failed jobs is a huge hassle.  
 
 
 ## Exercises

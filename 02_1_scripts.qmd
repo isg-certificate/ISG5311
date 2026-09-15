@@ -132,7 +132,7 @@ which grep
 which cat
 ```
 
-You'll note that each of these is found in a path found in your `PATH` variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Xanadu.  
+You'll note that each of these is found in a path found in your `PATH` variable. This will be less trivial and more important to be able to check when it comes to software used for data analysis on Mantis.  
 
 :::{.callout-note}
 If you accidentally overwrite your `PATH` variable, you will suddenly find yourself unable to do anything useful at all, as bash will no longer know where to look for even simple commands like `ls`:
@@ -340,7 +340,7 @@ If you're determined to learn a CLI editor (not necessarily a bad idea!) `vim` a
 
 Another approach suitable for users starting up is to write code using a locally installed, dedicated code editor such as [Sublime Text](https://www.sublimetext.com). There are others, but for this course I recommend you download and use Sublime for at least some cases. Unlike `nano`, it has lots of features and user-created plugins. It has **syntax highlighting**, which means if you select the language you are writing in from a dropdown menu in the bottom right corner, it will recognize syntactic features of the language and change the color of the text in ways that greatly help with editing. 
 
-A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using `nano`, or use `scp`/`rsync` to upload the documents to Xanadu. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Xanadu, but we haven't yet shown you the tools to do that, and we'll introduce another, easier approach in a moment. 
+A straightforward way to use Sublime to write scripts is to write code locally, and then paste it into documents using `nano`, or use `scp`/`rsync` to upload the documents to Mantis. These solutions are not exactly ideal, but they work in a pinch. It is possible to connect Sublime through an ssh tunnel to give it access to documents on Mantis, but we haven't yet shown you the tools to do that, and we'll introduce another, easier approach in a moment. 
 
 #### Integrated development environments. 
 
@@ -355,7 +355,7 @@ Ok, so aside from using `nano` (or learning to be a `vim` power user), how can y
 2. You can use the [Open OnDemand desktop](https://ondemand.hpc.cam.uchc.edu). Log in with your CAM credentials and have a look. The desktop can be opened with `Interactive Apps -> Mantis Desktop`. As of 2026, this is pretty new, so we're not sure how folks will make use of it. Note that you can also open a terminal window there. 
 
 ::: {.callout-warning}
-You should only use dedicated software for editing code (or CLI editors on Xanadu). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try `cat -A myscript.sh`. If `myscript.sh` contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them. 
+You should only use dedicated software for editing code (or CLI editors on Mantis). Editing using word processors (such as MS Word) will often lead to difficult to diagnose problems. Word processors often insert hidden characters and/or use line break characters incompatible with Linux. These will cause confusing errors when executing code. The first place to start if you think this might be the issue is to try `cat -A myscript.sh`. If `myscript.sh` contains any weird hidden characters, this will print them. Compare to a script you know works. Non-standard line breaks are often the culprit and this will reveal them. 
 :::
 
 ## Scripts
@@ -397,7 +397,7 @@ ORIGIN=darwin1859.txt
 grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
 ```
 
-Create this script with the title `commonWords.sh` on Xanadu and change the permission so that you can execute it. 
+Create this script with the title `commonWords.sh` on Mantis and change the permission so that you can execute it. 
 
 ### Executing scripts
 

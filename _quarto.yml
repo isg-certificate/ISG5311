@@ -42,7 +42,7 @@ book:
     - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_1_overview.qmd
     - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_2_count_data.qmd
     - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_3_differential_expression.qmd
-    - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.qmd
+    # - 07_1-3_chapters/rnseq_erkc/scripts/quarto_chapters/07_4_enrichment.qmd
   - part: 08_0_writing.qmd
     chapters:
     - 08_1_writing.qmd
