@@ -140,7 +140,7 @@ Here you can see that node mantis-001 has 128 CPUs, ~512G of memory, an AMD cpu 
 
 #### `squeue`
 
-We have seen how you can see the type and availability of compute resources. The `squeue` command lets users see what jobs are in the queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available and currently running jobs. Depending on SLURM configuration, this command may show *only* jobs you have submitted, or it may show *every* job. At the time of writing, Xanadu was configured to show *every* job. 
+We have seen how you can see the type and availability of compute resources. The `squeue` command lets users see what jobs are in the queue, what their status is, and why. This includes pending jobs that are waiting for resources to become available and currently running jobs. Depending on SLURM configuration, this command may show *only* jobs you have submitted, or it may show *every* job. At the time of writing, Mantis was configured to show *every* job. 
 
 Some example output from `squeue`:
 
@@ -229,7 +229,7 @@ grep -o -P "\b[A-Za-z]{4,}\b" $ORIGIN | sort | uniq -c | sort -g | tail -n 10
 
 Save it to `commonWords.sh`. Note that because we are passing this file to SLURM, not directly to bash, we *definitely* need the shebang at the top. 
 
-On Xanadu, you must minimally specify the partition you want SLURM to run the job on, and a quality of service (or QoS). Not all SLURM clusters require a QoS to be specified, but Mantis does.
+On Mantis, you must minimally specify the partition you want SLURM to run the job on, and a quality of service (or QoS). Not all SLURM clusters require a QoS to be specified, but Mantis does.
 
 :::{.callout-note}
 ### Quality of Service (QOS)
