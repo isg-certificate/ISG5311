@@ -5,23 +5,23 @@ title: "Data Storage and Software on HPC"
 |                                                                       |
 |-----------------------------------------------------------------------|
 | **Learning Objectives:**                                              |
-| Distinguish types of data storage available on Xanadu |
+| Distinguish types of data storage available on Mantis |
 | Compile simple software from source |
 | Install software in an isolated environment using `conda` | 
 | Run software inside a Singularity container | 
 
-We have two more important topics to cover before we move on to actually starting to analyze some real data. How we manage data storage and software on Xanadu. 
+We have two more important topics to cover before we move on to actually starting to analyze some real data: managing data storage and installing/using software. 
 
 
 ## Data storage and access
 
-This is a complicated topic, and it's hard to generalize in a way that will apply across organizations, or between HPC and cloud platforms. In general with big 'omic data sets, data storage can grow expensive and unwieldy over time. At many (perhaps most?) organizations, data storage for multi-user systems is regularly in flux, as technologies, cost, and the preferences of users and system administrators evolve. Storage systems may come very close to full before funding and approval come through for expansion, or addition of a new system. Cost models may shift, necessitating changes in user behavior or system policies. These issues can crop up rapidly, even in well run organizations with good communication. Because of this it will pay dividends for users to keep their data organized-to know exactly what they have and where-so they can respond nimbly to requests by system administrators or collaborators. 
+This is a complicated topic, and it's hard to generalize in a way that will apply across organizations, or between HPC and cloud platforms. In general with big 'omic data sets, data storage can grow expensive and unwieldy over time. At many (perhaps most?) organizations, data storage for multi-user systems is regularly in flux as technologies, cost, and the preferences of users and system administrators evolve. Storage systems may come very close to full before funding and approval come through for expansion, or the addition of a new system. Cost models may shift, necessitating changes in user behavior or system policies. These issues can crop up rapidly, even in well run organizations with good communication. Because of this it will pay dividends for users to keep their data organized-to know exactly what they have and where-so they can respond nimbly to requests by system administrators or collaborators. 
 
-What does keeping data organized mean? First we'll talk about storage on Xanadu, then we'll talk about organization. In this section, "data" will refer to both raw data and the products of analysis, which can both be quite large in many cases. The term "large" is quite vague, but here we'll refer to data on the scale of 10s of gigabytes to 1-2 terabytes, the kind of data that would be likely to challenge a typical consumer-grade computer's storage. This is the range that most typical 'omic experiments fall in. There are certainly cases where researchers wish to analyze data from tens or hundreds of experiments, or massive datasets produced by large consortia (e.g. containing genome sequencing data from hundreds of thousands of individuals), but that sort of analysis requires specialized strategies and won't be covered in this course. 
+What does keeping data organized mean? First we'll talk about storage on Mantis, then we'll talk about organization. In this section, "data" will refer to both raw data and the products of analysis, which can both be quite large in many cases. The term "large" is quite vague, but here we'll refer to data on the scale of 10s of gigabytes to 1-2 terabytes, the kind of data that would be likely to challenge a typical consumer-grade computer's storage. This is the range that most typical 'omic experiments fall in. There are certainly cases where researchers wish to analyze data from tens or hundreds of experiments, or massive datasets produced by large consortia (e.g. containing genome sequencing data from hundreds of thousands of individuals), but that sort of analysis requires specialized strategies and won't be covered in this course. 
 
-### Types of storage on Xanadu
+### Types of storage on Mantis
 
-Storage space falls into four main categories on Xanadu:
+Storage space falls into four main categories on Mantis:
 
 1. Space allocated to specific users/groups. 
 2. Shared temporary space. 
@@ -32,7 +32,7 @@ We'll talk about each in turn.
 
 #### User/group-allocated space
 
-`/home/FCAM/<username>`: All new users on receive a home directory with 50GB of storage. This is located in `/home/FCAM/<username>` on file system `cfs09`. You can see this size of this file system and how much space remains by `df -h`. Home directories can **only** be accessed by the owner. On Xanadu, attempts to open home directory permissions to share files with other users are a security risk and will be met with a stern lecture from a system administrator. 
+`/home/FCAM/<username>`: All new users on receive a home directory with 50GB of storage. This is located in `/home/FCAM/<username>` on file system `cfs09`. You can see this size of this file system and how much space remains by `df -h`. Home directories can **only** be accessed by the owner. On Mantis, attempts to open home directory permissions to share files with other users are a security risk and will be met with a stern lecture from a system administrator. When you log in, you should see a message telling you how much space is left in your home. You can also do `df -h ~`. 
 
 `/labs`: Principal investigators or collaborative research groups can also be assigned a space on file system `cfs15` in the directory `/labs`. These directories typically start at 5-10TB and can be expanded if necessary. Each of these directories is assigned to a Linux user group and are accessible to that group. Typically this will be members of the PI's lab, or everyone in a collaborative research project. 
 
@@ -40,15 +40,15 @@ We'll talk about each in turn.
 
 #### Shared temporary space
 
-Many analyses have large short-term storage needs. Sometimes raw data are duplicated 3-4 times during successive processing steps (it's best to avoid doing this where possible though!) but the duplicates can be quickly deleted when the analysis completes. In those cases it doesn't make sense to permanently increase storage allocations to users to accommodate the temporary data. Instead we have shared spaces. 
+Many analyses have large short-term storage needs. Sometimes raw data are essentially duplicated 3-4 times during successive processing steps (it's best to avoid doing this where possible though!) but the duplicates can be quickly deleted when the analysis completes. In those cases it doesn't make sense to permanently increase storage allocations to users to accommodate the temporary data. Instead we have shared spaces. 
 
 `/scratch`: This directory is on the NFS `cfs08` is a shared temporary storage location. Again, with `df -h` you can see how large it is and how much space is available. Any user can create any directory, or series of directories, and store anything they want there. 
 
-`/sandbox`: This is another shared temporary storage space, on file system `cfs10`. It may not mount unless you visit it with `cd /sandbox`, so do that before using `df -h` to see how much storage it has and how much is available. 
+`/sandbox`: This is another shared temporary storage space, on file system `cfs07`. It may not mount unless you visit it with `cd /sandbox`, so do that before using `df -h` to see how much storage it has and how much is available. 
 
-You should definitely use `/scratch` and `/sandbox` for temporary data storage, but you should never keep anything there you can't afford to lose. Files that haven't been used for 90 days are subject to deletion. That may seem like a lot, but it's really not.  Lots of bioinformatic projects drag on much longer than that. 
+You should definitely use `/scratch` and `/sandbox` for temporary data storage, but you should never keep anything there you can't afford to lose. Files that haven't been used for 90 days will be deleted. That may seem like a lot, but it's really not.  Lots of bioinformatic projects drag on much longer than that. 
 
-`/tmp`: This is another shared temporary storage location. `/tmp` is a place lots of software is configured to try to write temporary files to by default. On Xanadu `/tmp` is **local** to nodes. This means whatever is stored there during an analysis is **only** available to that node. `/tmp` is also small on Xanadu and can fill up quickly. Software may quietly try to write there and fail with the error `No space left on device`. If you think this is the problem, you can often either tell the software to use a different directory with a command-line option (depending on the specific software), or set the environment variable `TMPDIR` and export it like this:
+`/tmp`: This is another shared temporary storage location. `/tmp` is a place lots of software is configured to try to write temporary files to by default. On Mantis `/tmp` is **local** to nodes. This means whatever is stored there during an analysis is **only** available to that node. `/tmp` is also small on Mantis and can fill up quickly. Software may quietly try to write there and fail with the error `No space left on device`. If you think this is the problem, you can often either tell the software to use a different directory with a command-line option (depending on the specific software), or set the environment variable `TMPDIR` and export it like this:
 
 ```bash
 export TMPDIR="/scratch/$USER"
@@ -63,19 +63,19 @@ Lots of software will simply check that variable to see where it should write te
 
 `/isg/shared`: This location is where we keep globally installed software packages and commonly used databases. Users have read access to all of it, but for the most part do not have write access. This is on `cfs09`. 
 
-`/seqdata`: This directory houses raw data only. Mainly that produced by UConn's sequencing core. It's on the NFS `cfs15`. Only core staff have write access. 
+`/seqdata`: This directory houses raw data only, mainly that produced by UConn's sequencing core. It's on the NFS `cfs15`. Only core staff have write access. 
 
 #### Archival space
 
 `/archive`: This space is meant for cold storage of raw data and/or finished analyses. Users and groups can offload finished projects or raw data that is no longer needed for active analyses here to free up space for on-going work. It is not meant to be read from or written to with high frequency. 
 
-As of Fall 2025, the HPC team is working on setting up magnetic tape archives for cheap, longer-term archiving of data, but these have not been brought online yet. 
+As of Fall 2025, the HPC team is working on setting up magnetic tape archives for cheap, longer-term archiving of data, but these have not been brought online yet [update for fall 2026: the tape system is still in limbo!]. 
 
 ### How to manage your data:
 
 We will return to this again when we talk about project organization, but we have some general principles:
 
-1. Keep your raw data separate from analysis outputs. Set the raw data permissions to read-only. 
+1. Keep your raw data separate from analysis outputs. Set the raw data permissions to read-only so you do not accidentally alter or delete it. 
 2. Keep your home directory organized. Each project should have its own directory. You might consider a single directory to house all raw datasets. 
 2. Storage is limited. Be mindful to structure analyses to minimize the creation of large intermediate products (e.g. using pipes where possible), and delete them when they are no longer useful. 
 3. Periodically assess how much storage you're using (`du -sh *` in your home directory is a good start). 
@@ -89,16 +89,15 @@ Software is another complicated topic in bioinformatics. There is an ever-increa
 Even in the best case scenario, however, where important software is written and maintained with the support of expert software engineers, the ecosystem of scientific software is becoming incredibly complex, with new software being built in a modular way out of pre-existing pieces. This often leads to a complex web of software dependencies that can be challenging to resolve. 
 
 In this course we are aiming to teach you some fundamental ways for obtaining and using diverse pieces of software. The strategies we suggest will probably get you to a point where you can access 95-99% of what you need pretty easily. The reality, unfortunately, is that last 1-5% can be a hugely frustrating time sink, and you will need to get used to going through a process of trying to install something yourself, hitting a wall, and seeking help. Help will often need to come from somebody with system administration skills and deeper knowledge of Linux software than most scientists doing data analysis have. 
-
 Below, we'll cover some types of software you might use, how to run them, and some strategies for software installation. 
 
 ### Software types
 
-Broadly speaking, when doing analysis we work with two types of software: software with command-line interfaces (CLI), and software with graphical user interfaces (GUI). 
+Broadly speaking, when doing analysis we work with two types of software: software with *command-line interfaces* (CLI), and software with *graphical user interfaces* (GUI). 
 
-Almost all powerful computational analysis is built around software with a CLI. This is because you need to be able to script an analysis and hand it off to be processed by a job scheduler on an HPC or in the cloud. There are, however, cases where a GUI is extremely helpful. These are things like integrated development environments (RStudio, VSCode), software for data exploration (Integrated Genomics Viewer, a.k.a. IGV, which we'll cover later), or commercial data analysis packages meant to provide accessibility (e.g. Ingenuity Pathway Analysis). 
+Almost all powerful computational analysis is built around software with a CLI. This is because you typically want to be able to script an analysis and hand it off to be processed by a job scheduler on an HPC or in the cloud. There are, however, cases where a GUI is extremely helpful. These are things like integrated development environments (RStudio, VSCode), software for data exploration (Integrated Genomics Viewer, a.k.a. IGV, which we'll cover later), or commercial data analysis packages meant to provide easy accessibility or high quality visualization (e.g. Ingenuity Pathway Analysis). 
 
-If a piece of software has a GUI, it has usually been professionally developed. Installing it on your local machine will probably be pretty smooth. Getting it to run on the cluster, or access data stored on the cluster, however, is where things get sticky, and solutions are usually software-specific. We talked about this a bit earlier, when we covered connecting VS Code to Xanadu, and mounting the Xanadu file system locally, but we will cover this more later. 
+If a piece of software has a GUI, it has usually been professionally developed. Installing it on your local machine will probably be pretty smooth. Getting it to run on the cluster, or access data stored on the cluster, however, is where things get sticky, and solutions are usually software-specific. We talked about this a bit earlier, when we covered connecting VS Code to Mantis, and mounting the Mantis file system locally, but we will cover this more later. 
 
 CLI software is the main focus of this course and managing it is what we'll cover below. 
 
@@ -107,7 +106,7 @@ CLI software is the main focus of this course and managing it is what we'll cove
 To review: we have been running CLI software all through this course so far (`grep`, `sed`, `awk`, etc). When we invoke these pieces of software by name, BASH searches directories in our `PATH` variable to see if they exist. Software does not *have* to be in your path to run it though, you can also simply invoke it by name (with a path pointing to it). For example, type this on the command-line:
 
 ```bash
-/isg/shared/apps/samtools/1.16.1/bin/samtools
+/isg/shared/mantis/apps/samtools/1.19.2/samtools
 ```
 
 This should print the usage for the program `samtools`. If you wanted to be able to just type `samtools` to execute the program, you could append the directory to your path like this:
@@ -134,24 +133,24 @@ Running a piece of software with no options, or with `-h` or `--help` will in mo
 
 ### The module system
 
-`samtools` is installed for all users of Xanadu. If you have a look at the enveloping directory `/isg/shared/apps/`, you will see more than 700 software packages that have been installed on Xanadu. Within a given software directory, there are subdirectories named by after the software version number, so accounting for different versions, there are many more than 700 packages. We keep older software versions around for reproducibility. When users build up their analyses, we don't want them to get the rug pulled out from under them if a piece of software changes significantly between versions (this happen regularly). 
+`samtools` is installed for all users of Mantis If you have a look at the enveloping directory `/isg/shared/apps/`, you will see more than 700 software packages that have been installed on Mantis. Within a given software directory, there are subdirectories named by after the software version number, so accounting for different versions, there are many more than 700 packages. We keep older software versions around for reproducibility. When users build up their analyses, we don't want them to get the rug pulled out from under them if a piece of software changes significantly between versions (this happen regularly). 
 
 While having software on your PATH is super convenient, you can imagine that adding each software/version directory (plus any subdirectories containing essential accessory utilities) to the PATH variable would be extremely cumbersome, not to mention that having `samtools/1.16.1/bin/samtools` and `/samtools/1.9/bin/samtools` means that simply invoking `samtools` will only ever execute whichever one comes first.
 
 For this reason, we use a [`module` system](https://modules.readthedocs.io/en/latest/). The module system allows users to **load** specific software versions they want to use in an analysis. At its simplest, the module system simply adds the software to your PATH variable in the current shell. If any other environment variables need to be configured, the module system will set those up too. 
 
-Try loading `samtools` version 1.16.1 like this:
+Try loading `samtools` version 1.19.2 like this:
 
 ```bash
-module load samtools/1.16.1
+module load samtools/1.19.2
 ```
 
-Then type `samtools`. You should get the usage. Type `echo $PATH` and you should see that the path to the samtools executable file should be added to your `PATH` variable. 
+Then type `samtools`. You should get the usage. Type `echo $PATH` and you should see that the path to the samtools executable file has been added to your `PATH` variable. 
 
 You can unload the module with 
 
 ```bash
-module unload samtools/1.16.1
+module unload samtools/1.19.2
 ```
 
 Or to get rid of all loaded modules:
@@ -163,13 +162,13 @@ module purge
 To see what changes a module makes to your environment you can do:
 
 ```bash
-module display samtools/1.16.1
+module display samtools/1.19.2
 ```
 
 Or look directly at the module file:
 
 ```bash
-cat /isg/shared/modulefiles/samtools/1.16.1
+cat /isg/shared/mantis/modulefiles/samtools/1.19.2
 ```
 
 To see a more complex module, look at this old version of the transcriptome assembly software Trinity:
@@ -186,11 +185,13 @@ You can list all available modules with:
 module avail
 ```
 
-You can add any bit of text to narrow the search like this:
+There are a ton. Page through with `space` or type `q` to exit. You can add any bit of text to narrow the search like this:
 
 ```bash
 module avail sam
 ```
+
+Note that there are THREE module subsections. The first two (`/isg/shared/spack/...` and `/isg/shared/mantis/...`) are modules installed for Mantis. `/isg/shared/modulefiles` were installed for the older Xanadu cluster. You can load them, but not all of them work on Mantis. (try `module load samtools/1.16.1` and then `samtools`. You should get a missing library error.)
 
 You can load as many modules as you like simultaneously, but be aware that some may have conflicting dependencies or environmental variables, and this may cause problems. 
 
@@ -200,13 +201,18 @@ Note that while you *can* invoke modules without version numbers like this:
 module load samtools
 ```
 
-you *should not*. This version of the module system sorts the module versions alphanumerically and loads the last one. In reality, version "1.16.1" is *higher* than "1.9", but "1.9" will sort last and thus be loaded. If you do `ls -l /isg/shared/apps/samtools/` you'll note that version 1.9 was installed in *2019*. This document was originally written in *2024*. Also, if `samtools/1.91` ever was installed, any script loading samtools without a version number would suddenly and silently switch samtools versions. Lastly, if you use modules in your scripts, writing the version number will help you be explicit and keep track of which versions you have run. 
+you *should not*. If a new version of a piece of software is installed, the bare module call will load that without giving you any kind of warning. You definitely don't want to be switching software versions without being aware of it. Changes to software can produce different results. Usage might be updated. This is bad for reproducibility. If you use modules in your scripts, writing the version number will help you be explicit and keep track of which versions you have run. 
 
-For Xanadu, you can request that new software modules be globally installed by filling out a form [here](bioinformatics.uconn.edu). 
+For Mantis, you can request that new software modules be globally installed by filling out a form [here](bioinformatics.uconn.edu). 
+
+::: {.callout-note}
+### A note on software versioning. 
+Based on your undoubtedly expert knowledge of real numbers, you might expect version `1.10` to be older than `1.2`, and the same as `1.1`. You would be wrong. Software versioning does not work that way. By convention, version *one point one** is one revision behind **one point two** which is eight revisions behind than version **one point ten**. The current version of the module system recognizes this and sorts accordingly. 
+:::
 
 ### Compiling software
 
-While you can request that software be installed for you on Xanadu (and other clusters as well), there may be a long queue, or you may not even be sure you're going to use the software yet and so installing a module would be premature. In those cases you can try installing it yourself. For some programs, you may be able to download a **binary** executable file that will work on most or all Linux distributions. In such cases, you only have to do something like below, to get the variant caller [freebayes](https://github.com/freebayes/freebayes/releases):
+While you can request that software be installed for you on Mantis (and other clusters as well), there may be a long queue, or you may not even be sure you're going to use the software yet and so installing a module would be premature. In those cases you can try installing it yourself. For some programs, you may be able to download a **binary** executable file that will work on most or all Linux distributions. In such cases, you only have to do something like below, to get the variant caller [freebayes](https://github.com/freebayes/freebayes/releases):
 
 ```bash
 # download the binary
@@ -214,7 +220,7 @@ wget https://github.com/freebayes/freebayes/releases/download/v1.3.6/freebayes-1
 # decompress it
 gunzip freebayes-1.3.6-linux-amd64-static.gz
 # add execute permission
-chmod ugo+x freebayes-1.3.6-linux-amd64-static.gz
+chmod ugo+x freebayes-1.3.6-linux-amd64-static
 
 # run the program
 ./freebayes-1.3.6-linux-amd64-static --help
@@ -255,7 +261,7 @@ We may see some warnings, but if compilation was successful we should have an ex
 
 So what did we do here? `make` is a piece of software for automating things. It's mostly used for software compilation, but also sometimes in data analysis (the concept has been expanded into a python-based workflow language `snakemake`). The author of this software provided a file named `Makefile`, containing instructions for the compilation of `psmc`. When we ran `make`, it automatically looked for `Makefile` and followed the instructions. We *usually* do not need to inspect or alter the makefile. 
 
-Compiling software can get more complicated than this sometimes. If you look at `Makefile` you'll see the variable `CC=gcc`. `gcc` is a compiler for `C`. The version installed on Xanadu is *very old* (`gcc --version` will tell you it is `gcc (GCC) 4.8.5 20150623`). Some software will require a more recent version (which you can `module load`. the most recent version installed is 10.2.0). Other software will require different build tools (such as `CMake`). Many pieces of software will require dependencies to be installed already, and expect to find them in a specific place. 
+Compiling software can get more complicated than this sometimes. If you look at `Makefile` you'll see the variable `CC=gcc`. `gcc` is a compiler for `C`. Other software will require different build tools (such as `CMake`). Many pieces of software will require dependencies to be installed already, and expect to find them in a specific place. 
 
 The takeaway here is that if you look at a code repository and it contains some relatively straightforward instructions for compilation, installing it yourself is probably worth a shot. Even without any real understanding of how dependencies are managed in Linux, you can often get things working with a minimum of frustration or tinkering. 
 
@@ -265,19 +271,28 @@ Some pieces of software will not be so simple, however. They may require particu
 
 For cases like these, we use the very popular package manager `conda`. `conda` has a two main features. First, it manages the creation of mostly isolated software environments into which you can install one or more pieces of software and dependencies. This prevents conflicts with existing software installed on the system. If we think back to the `trinity` module we inspected above, all those specific pieces of software required by that version of trinity could be installed inside the conda environment. 
 
-The second main feature of conda is its dependency solving algorithm. There are multiple repositories, including [anaconda](https://anaconda.org/anaconda/repo), [conda-forge](https://conda-forge.org), and [bioconda](https://bioconda.github.io) that house "recipes" for software installations. These recipes list required software versions. If you ask conda to install one of these recipes in an environment, it will figure out the web of dependencies that are required to make it work on your system, collect them, and install them. This works remarkably well in many cases. 
+The second main feature of conda is that it employs a dependency solving algorithm. There are multiple repositories, including [anaconda](https://anaconda.org/anaconda/repo), [conda-forge](https://conda-forge.org), and [bioconda](https://bioconda.github.io) that house packages and associated metadata for software installations. These packages contain required software versions. If you ask conda to install one of these packages in an environment, it will figure out the web of dependencies compatible with your OS and hardware, collect them, and install them. This works remarkably well in many cases. 
 
-`conda` manages packages at the user level, so each user creates their own conda environments (though these can be shared). Xanadu doesn't have "global" conda environments as we do with modules. 
+`conda` manages packages at the user level, so each user creates their own conda environments (though these can be shared). Mantis doesn't have centrally managed conda environments as we do with modules. 
 
-#### Installing miniconda
+#### Installing miniforge
 
-To use `conda`, we're going to install a version of it called `miniconda` in your home directory. The instructions are [here](https://docs.anaconda.com/free/miniconda/miniconda-install/), but we'll also reproduce them below:
+`conda` has several distributions. We're going to use the [`Miniforge`](https://github.com/conda-forge/miniforge) distribution. `Miniforge` is a lightweight installation of `conda`. One important feature is that it is configured by default not to use any repositories that might incur charges. 
+
+The instructions are [here](https://cbc-uconn.github.io/hpc-docs/software.html#installing-conda), but we'll also reproduce them below:
+
+Log in to Mantis and start and interactive session:
+
+```bash
+srun --qos=general --mem=8gb --pty bash
+```
 
 Download and run the installer. 
 
 ```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
+wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+
+bash Miniforge3.sh
 ```
 
 Follow the prompts and let it install in your home directory and automatically initialize conda in your shell. 
@@ -286,19 +301,10 @@ Then, to stop conda from opening a base environment automatically:
 
 ```bash
 source .bashrc
-conda config --set auto_activate_base false
+conda config --set auto_activate false
 ```
 
-Let's also configure some of those repositories we discussed above:
-
-```bash
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-```
-
-Now exit your bash session / log out of Xanadu and log back in. 
+Now exit your bash session / log out of Mantis and log back in. 
 
 Ok, so what have we done here? We've created a few files and directories. To see them type `ls -la`. Files beginning with `.` are hidden by default. The `-a` flag in `ls` shows them. 
 
@@ -306,10 +312,10 @@ Ok, so what have we done here? We've created a few files and directories. To see
 -rw-r--r--  1 usr domain users  577 May  1 15:25 .bashrc
 drwxr-xr-x  2 usr domain users  512 May  1 15:19 .conda
 -rw-r--r--  1 usr domain users   26 May  1 15:27 .condarc
-drwxr-xr-x 19 usr domain users  10K May  1 15:19 miniconda3
+drwxr-xr-x 19 usr domain users  10K May  1 15:19 miniforge3
 ```
 
-The directory `miniconda3` will contain all the environments we create. `.conda` and `.condarc` are a conda cache directory and a configuration file respectively. We don't need to edit `.condarc` by hand, we just use the command `conda config` (as we did above). `.bashrc` is a bash configuration file. If you `cat` that out, you'll see the conda initialization code This sets up some environment variables and puts `conda` in your `PATH` variable. Every time you log in `.bashrc` is `source`-ed by the shell. Any changes you wish to be made to your shell environment can be specified here. We'll revisit the `.bashrc` file again in the future. 
+The directory `miniforge3` will contain all the environments we create. `.conda` and `.condarc` are a conda cache directory and a configuration file respectively. We don't need to edit `.condarc` by hand, we just use the command `conda config` (as we did above). `.bashrc` is a bash configuration file. If you `cat` that out, you'll see the conda initialization code This sets up some environment variables and puts `conda` in your `PATH` variable. Every time you log in `.bashrc` is `source`-ed by the shell. Any changes you wish to be made to your shell environment can be specified here. We'll revisit the `.bashrc` file again in the future. 
 
 When you submit scripts via SLURM, you start a non-interactive shell and `.bashrc` is not `source`-ed. For now, you will have to add `source ~/.bashrc` to any scripts you want to use a conda environment in. 
 
@@ -317,25 +323,31 @@ When you submit scripts via SLURM, you start a non-interactive shell and `.bashr
 
 Ok, so we've installed it, now how do we actually use conda? Let's install a newer version of [`samtools`](https://anaconda.org/bioconda/samtools) than the one we discussed above. If you check the link above in the Files tab you'll get a sense of which versions are available. The syntax is pretty flexible, but let's be as explicit as possible about the steps:
 
-First create a new environment and name it `samtools-1.20`:
+This is best done in an interactive session:
+
 ```bash
-conda create -n samtools-1.20
+srun -p general --qos=interactive --mem=8gb --pty bash
+```
+
+First create a new environment and name it `samtools-1.24`:
+```bash
+conda create -n samtools-1.24
 ```
 
 Then activate the environment:
 ```bash
-conda activate samtools-1.20
+conda activate samtools-1.24
 ```
 
 You should see your prompt change, indicating the environment is active. Then install samtools:
 ```bash
-conda install samtools=1.20
+conda install samtools=1.24
 ```
 
 You can also create an environment and install software in one step:
 
 ```bash
-conda create -n samtools-1.20 samtools=1.20
+conda create -n samtools-1.24 samtools=1.24
 ```
 
 If the environment is active, you should be able to type `samtools` and get the usage. Type:
@@ -344,7 +356,7 @@ If the environment is active, you should be able to type `samtools` and get the 
 which samtools
 ```
 
-And you should get something like `~/miniconda3/envs/samtools-1.20/bin/samtools`. And in your `PATH` variable you should see something like `/home/FCAM/<username>/miniconda3/envs/samtools-1.20/bin`. 
+And you should get something like `/home/FCAM/nreid/miniforge3/envs/samtools-1.24/bin/samtools`. And in your `PATH` variable you should see something like `/home/FCAM/nreid/miniforge3/envs/samtools-1.24/bin`. 
 
 You can deactivate the environment with:
 
@@ -371,7 +383,7 @@ conda env remove -n <NAME>
 To create a `.yml` file defining the environment:
 
 ```bash
-conda export -n samtools-1.20 >samtools_env.yml
+conda export -n samtools-1.24 >samtools_env.yml
 ```
 
 The yml file is a simple file listing all the software installed as part of the environment. If you give that file to someone else, they can recreate your environment with:
@@ -384,31 +396,31 @@ For more, the [conda user guide](https://conda.io/projects/conda/en/latest/user-
 
 ### Software containers
 
-For our last topic in this section, we're going to introduce **software containers**. We have discussed strategies for installing and using software of increasing complexity (complexity not necessarily of the applications of the software, but of its structure). In extreme cases, package managers installing in isolated environments sometimes still can't quite get you where you want to be. This may be because there are fundamental features of the operating system you're working on that make installing software challenging, or perhaps differences among operating system features cause slight inconsistencies in the outputs of software, harming reproducibility, or maybe available conda recipes are broken (this does happen sometimes). Package managers may also be a challenge when you are running a pipeline that requires dozens of pieces of software in particular versions to be installed. In these cases, you may want to try using a software container. 
+For our last topic in this section, we're going to introduce **software containers**. We have discussed strategies for installing and using software of increasing complexity (complexity not necessarily of the applications of the software, but of its structure). In extreme cases, package managers installing in isolated environments sometimes still can't quite get you where you want to be. This may be because there are fundamental features of the operating system you're working on that make installing software challenging, or perhaps differences among operating system features cause slight inconsistencies in the outputs of software, harming reproducibility, or maybe available conda packages are broken (this does happen sometimes). Package managers may also be a challenge when you are running a pipeline that requires dozens of pieces of software in particular versions to be installed. In these cases, you may want to try using a software container. 
 
-A software container is very nearly a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine). They differ from VMs in that they still use the core operating system kernel instead of completely emulating it. This means they are "lightweight" and carry a much lower performance burden than VMs. Because they virtualize the operating system and user interface though, they provide a greater level of isolation and consistency among systems than an environment managed by conda. 
+A software container is very nearly a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine). They differ from VMs in that they still use the core operating system kernel instead of completely emulating it. This means they are "lightweight" and carry a much lower performance burden than VMs. Because they virtualize the operating system and user interface though, they provide a greater level of isolation and portability between systems than an environment managed by conda. 
 
 I've framed this in terms of easing the burden of software installation, but containers have the added advantage of improving reproducibility and portability of analyses. This has been critical for the development and distribution of complex software pipelines like those in the [nf-core repository](https://nf-co.re). It is very nearly a requirement that those pipelines be run using container systems. 
 
 In this section we're going to discuss *using existing software containers*, but not building them. 
 
-There are two main pieces of containerization software: [`Docker`](https://www.docker.com) and [`Singularity`](https://docs.sylabs.io/guides/3.5/user-guide/introduction.html). They both have generally similar features and performance. Docker, however, requires **root access** to run containers. Root access is access to the most basic functions of a computer system, and it cannot be granted to users on HPC systems, as it represents a massive security risk and an operational vulnerability (a well meaning but inexperienced user doing something wrong as the root user could take down the whole cluster). Because cloud services use virtualized machines, they can offer users root access, so Docker is popular in that context. Singularity, however, does not require that level of access to run a container, making it much more compatible with HPC systems. Fortunately, software containers built using Docker can be converted to Singularity (though not vice versa), so being limited to using Singularity on an HPC is not a huge burden. 
+There are two main pieces of containerization software: [`Docker`](https://www.docker.com) and [`Singularity`](https://docs.sylabs.io/guides/3.5/user-guide/introduction.html). `Singularity` has been divided into two projects, `Singularity` and `Apptainer`. For the moment they are largely interchangeable. Docker and Singularity/Apptainer have generally similar features and performance. Docker, however, requires **root access** to run containers. Root access is access to the most basic functions of a computer system, and it cannot be granted to users on HPC systems, as it represents a massive security risk and an operational vulnerability (a well meaning but inexperienced user doing something wrong as the root user could take down the whole cluster). Cloud services use virtualized machines. As a result they can offer users root access, so Docker is popular in that context. Singularity, however, does not require that level of access to run a container, making it much more compatible with HPC systems. Fortunately, software containers built using Docker can be converted to Singularity (though not vice versa), so being limited to using Singularity on an HPC is not a huge burden. 
 
 #### Obtaining a singularity container
 
 Let's explore what it practically means to use Singularity. Let's start an interactive session (you should *not* use singularity on login nodes):
 
 ```bash
-srun -p general --qos=general -c 2 --mem=20G --pty bash
+srun -p general --qos=interactive -c 2 --mem=20G --pty bash
 ```
 
-And then load a singularity module:
+And then load an Apptainer module:
 
 ```bash
 module load singularity/vcell-3.10.0
 ```
 
-Now we'll use the command `singularity pull` to retrieve a container for a very commonly used QC program for high throughput sequence data `fastqc`:
+Now we'll use the command `singularity pull` (or `apptainer pull`, they will point to the same executable file) to retrieve a container for a very commonly used QC program for high throughput sequence data `fastqc`:
 
 ```bash
 singularity pull https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0
@@ -439,7 +451,7 @@ Type:
 cat /etc/os-release 
 ```
 
-You should see that Xanadu is running the `CentOS` Linux distribution. 
+You should see that Xanadu is running the `"Ubuntu 22.04.5 LTS"` Linux distribution. 
 
 Lastly type:
 
@@ -469,7 +481,7 @@ The second way we can use the container is by passing a command with `singularit
 singularity exec fastqc:0.12.1--hdfd78af_0 fastqc --help
 ```
 
-It should print the usage. Keep in the back of your mind that things can get a little bit wonky when quoting and shell variables are necessary when passing a command to a container. 
+It should print the usage. Keep in the back of your mind that things can get a little bit wonky when quoting and shell variables are necessary in passing a command to a container. 
 
 
 ## Exercises
