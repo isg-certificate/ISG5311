@@ -377,10 +377,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ssh-keys" id="toc-ssh-keys" class="nav-link active" data-scroll-target="#ssh-keys"><span class="header-section-number">7.1</span> SSH keys</a>
-  <ul class="collapse">
-  <li><a href="#the-ssh-config" id="toc-the-ssh-config" class="nav-link" data-scroll-target="#the-ssh-config"><span class="header-section-number">7.1.1</span> The SSH config</a></li>
-  </ul></li>
+  <li><a href="#the-ssh-config" id="toc-the-ssh-config" class="nav-link active" data-scroll-target="#the-ssh-config"><span class="header-section-number">7.0.1</span> The SSH config</a></li>
   </ul>
 </nav>
     </div>
@@ -415,62 +412,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><strong>Learning Objectives:</strong></td>
 </tr>
 <tr class="even">
-<td>Make logging in to Xanadu easier</td>
+<td>Make logging in to Mantis easier</td>
 </tr>
 </tbody>
 </table>
-<p>So far logging in to Xanadu has required significant typing: <code>ssh username@xanadu-submit-ext.cam.uchc.edu</code> followed by your password. But we can make this easier in a few ways! First, we can create <strong>ssh keys</strong> that will authenticate you, so you won’t have to enter a password. Second, we can edit a configuration file to create a shortcut (or several shortcuts) to Xanadu login nodes.</p>
-<section id="ssh-keys" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="ssh-keys"><span class="header-section-number">7.1</span> SSH keys</h2>
-<p>We at the CBC are certainly not experts in cryptography, so we won’t try to explain the details. In simple form, an ssh key is a means of verifying your identity that does not require a password. It consists of a pair of files, a <strong>public</strong> key, and a <strong>private</strong> key. You place the public key on a remote server, and keep the private key on your local machine. When you try to log in to the remote server, it essentially asks your machine a question that can only be answered by the private key. It’s extremely important that you keep your private key <em>private</em> and secure, as in some ways it serves as a password. The public key is less sensitive.</p>
-<p>So how do we create and use SSH keys? Linux-based systems come with software for creating and managing SSH keys.</p>
-<p>For this, we’ll start in a local terminal window (i.e.&nbsp;one that is <em>not</em> logged in to Xanadu). Go to the hidden directory <code>.ssh</code> that should be found in your home directory.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/.ssh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>If you don’t have this directory, create it with <code>mkdir ~/.ssh</code>, and then <code>cd</code> into it. Any files in the Linux file system that begin with <code>.</code> are hidden by default from directory listings. You can see them with <code>ls -a</code>.</p>
-<p>Now, to create an ssh key pair type:</p>
-<pre><code>ssh-keygen -b 2048</code></pre>
-<p>First will ask you to name the file, but you don’t have to. It will use the default name in parentheses.</p>
-<p>Then it will ask you to create a passphrase. You don’t have to do this, but it will make the key more secure. If you don’t, anyone who gets your key pair will be able to log in to Xanadu.</p>
-<p>If you used the default names, and you type <code>ls</code> you should have the files:</p>
-<pre><code>id_rsa 
-id_rsa.pub </code></pre>
-<p><code>id_rsa.pub</code> is the public key and <code>id_rsa</code>, the private one. Depending on your OS and shell, you may alternatively have produced files with different names, such as <code>id_ed25519</code> and <code>id_ed25519.pub</code>, <code>.pub</code> still indicates the public key. Now, use <code>scp</code> to upload the public key to Xanadu (you’ll have to make sure you <em>also</em> have a <code>.ssh</code> directory in your home on Xanadu):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> id_rsa.pub username@transfer.cam.uchc.edu:~/.ssh/ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>If you don’t have a <code>.ssh</code> directory on Xanadu, log in and create one, then try uploading again.</p>
-<p>Now <strong>log in to Xanadu</strong> and, in the <code>.ssh</code> directory, create a file called <code>authorized_keys</code> and paste the contents of your public key there. You could do this in one go with</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> id_rsa.pub <span class="op">&gt;</span>authorized_keys</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Finally, back on your local machine, to avoid having to enter the ssh key passphrase (if you created one), you should do:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-add</span> id_rsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>And enter your passphrase at the prompt if you created one.</p>
-<p>Now when you log in, you should not have to enter your password.</p>
-<section id="the-ssh-config" class="level3" data-number="7.1.1">
-<h3 data-number="7.1.1" class="anchored" data-anchor-id="the-ssh-config"><span class="header-section-number">7.1.1</span> The SSH config</h3>
-<p>The second thing we can do to ease connecting to Xanadu is to modify our ssh configuration file, simply called <code>config</code>.</p>
-<p>This file, if it already exists will also be in the <code>.ssh</code> hidden directory. Go there now. If the file does not exist, create it with</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>So far logging in to Mantis has required significant typing: <code>ssh username@xanadu-submit-ext.cam.uchc.edu</code>. We can make this a little bit easier! We can edit a configuration file to create a shortcut (or several shortcuts) to the Mantis login node or the transfer node.</p>
+<section id="the-ssh-config" class="level3" data-number="7.0.1">
+<h3 data-number="7.0.1" class="anchored" data-anchor-id="the-ssh-config"><span class="header-section-number">7.0.1</span> The SSH config</h3>
+<p>Because you set up SSH-key based authentication to get into Mantis, you should have a hidden directory on your <em>local machine</em> called <code>.ssh</code>. In that directory will be your SSH keys.</p>
+<p>For this we’ll work with a file in that directory that is simply called <code>config</code>.</p>
+<p>Go to that directory now. If the file does not exist, create it with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>I’m going to suggest using <code>nano</code> to edit this file for now, but you can use any editor you like.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Then enter:</p>
-<pre><code>Host xanadu
-Hostname xanadu-submit-ext.cam.uchc.edu
-User username
-IdentityFile ~/.ssh/id_rsa</code></pre>
-<p>Remember to subsitute <code>username</code> for your own username, and if you renamed the ssh keys, change the name here as well.</p>
-<p><code>xanadu</code> will be the name of the shortcut, you can change this if you want. You could cut it down to just <code>x</code> if you want to absolutely minimize typing.</p>
-<p>Now you should be able to log in with <code>ssh xanadu</code>.</p>
-<p>You can set one of these up for the transfer node as well:</p>
+<pre><code>Host mantis
+Hostname login.hpc.cam.uchc.edu
+User &lt;your username&gt;
+ForwardX11 yes
+SetEnv LANG=en_US.UTF-8</code></pre>
+<p>Remember to subsitute <code>&lt;your username&gt;</code> for your own username.</p>
+<p><code>mantis</code> will be the name of the shortcut, you can change this if you want. You could cut it down to just <code>m</code> if you want to absolutely minimize typing.</p>
+<p>Now you should be able to log in with <code>ssh mantis</code>.</p>
+<p>You can set one of these up for the transfer node as well (this will work with <code>scp</code> and <code>rsync</code>:</p>
 <pre><code>Host transfer
-Hostname transfer.cam.uchc.edu
-User username
-IdentityFile ~/.ssh/id_rsa</code></pre>
-<p>Or if you want to have shortcuts for specific login nodes (numbers 1-5):</p>
-<pre><code>Host hpc1
-Hostname hpc-ext-1.cam.uchc.edu
-User username
-IdentityFile ~/.ssh/id_rsa</code></pre>
+Hostname transfer.hpc.cam.uchc.edu
+User &lt;your username&gt;</code></pre>
+<p>And lastly, to prevent premature logouts</p>
+<p><code>Host *     ServerAliveInterval 180</code></p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
