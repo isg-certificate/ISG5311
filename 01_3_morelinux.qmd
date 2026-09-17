@@ -54,7 +54,7 @@ The usage of `rsync` is similar to scp, except that when transferring a director
 `rsync` has lots of options, use `man rsync` to read up on it. 
 
 ::: {.callout-note}
-A subtle but important detail: if you include a trailing `/` on the source directory like this: `rsync -avz nreid@transfer.cam.uchc.edu:~/killifishGenomes/ .` Then the **contents** of the source directory will be transferred to the target directory, but not the enveloping directory. 
+A subtle but important detail: if you include a trailing `/` on the source directory like this: `rsync -avz nreid@transfer.hpc.cam.uchc.edu:~/killifishGenomes/ .` Then the **contents** of the source directory will be transferred to the target directory, but not the enveloping directory. 
 :::
 
 ### FTP clients and Globus

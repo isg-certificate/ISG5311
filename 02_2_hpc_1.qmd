@@ -346,6 +346,11 @@ Try it. To ensure that you have successfully started an interactive session, typ
 
 You can exit back to the login node with `exit`
 
+:::{.callout-note}
+### Connecting VSCode to Mantis
+It is at this point that the approach for connecting VSCode to Mantis should probably make a bit more sense. It will make your life a bit easier to know how to use it, so I would go ahead and try it now if you haven't. [Instructions here!](https://cbc-uconn.github.io/hpc-docs/software.html#vscode)
+:::
+
 ### Monitor job progress
 
 There are several strategies for monitoring job progress. We will talk about them here, and practice them later when we start doing longer-running jobs. 

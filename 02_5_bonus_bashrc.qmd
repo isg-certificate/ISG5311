@@ -11,7 +11,7 @@ There are a number of ways you can customize your shell to make working at the c
 
 If you went through the chapter on software installation and installed conda, you will already have `.bashrc`, but you may not have `.bash_profile`. 
 
-Log in to Xanadu and check to see if either exist with `ls -a` to list all files (including hidden ones) in your home directory. If you don't have them, create them with:
+Log in to Mantis and check to see if either exist with `ls -a` to list all files (including hidden ones) in your home directory. If you don't have them, create them with:
 
 ```bash
 touch .bashrc .bash_profile
