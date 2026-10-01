@@ -451,7 +451,7 @@ Note
 <p>We typically use <code>fastqc</code> to characterize Illumina data. It’s been around a long time, and it does a fine job of covering summaries we want to look at for most applications. It flags statistics when they are worrisome, but this flagging is not always useful, because it is tuned to apply to whole genome sequencing data (WGS). If you have a sequencing library that has different characteristics (e.g.&nbsp;RNA-seq), fastqc will often flag it as problematic though it may not be.</p>
 <p>Paired-end sequence is typically delivered in two separate files, which we analyze separately with fastqc.</p>
 <p>The usage for fastqc is very simple:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.11.7</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.12.1-v36ge7l</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-o</span> output_dir input_dir/mysequences.fastq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can glob the command like this and it will churn through all the files matching the glob pattern:</p>
@@ -468,7 +468,7 @@ Note
 <p>If you download Nanopore sequence data from a public archive, the raw signal data, sequencing_summary.txt, and report.html are unlikely to have been archived alongside the basecalls.</p>
 <p>For Nanopore data, we typically use either <a href="https://github.com/a-slide/pycoQC">pycoQC</a> or <a href="https://github.com/wdecoster/NanoPlot">NanoPlot</a> to summarize because they emphasize length variation and show its relationship to sequence quality.</p>
 <p>To run NanoPlot on fastq files:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load NanoPlot/1.41.6</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load NanoPlot/1.44.0</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">NanoPlot</span> <span class="at">--fastq</span> input_dir/mysample.fastq.gz <span class="at">-o</span> output_dir <span class="at">-p</span> mysample <span class="at">-t</span> 4 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Or on <code>sequencing_summary.txt</code>:</p>
@@ -491,9 +491,10 @@ Note
 </div>
 </div>
 <p><code>pycoQC</code> can only accept the summary file like this:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load pycoQC/2.5.2</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pycoQC</span> <span class="at">-f</span> sequencing_summary.txt <span class="at">-o</span> pycoQC_output.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># you'll need to install pycoQC via conda as there is no module for it</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://anaconda.org/channels/bioconda/packages/pycoqc/overview</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pycoQC</span> <span class="at">-f</span> sequencing_summary.txt <span class="at">-o</span> pycoQC_output.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Both NanoPlot and pycoQC produce HTML files as their primary outputs (but also some useful text summaries). Both of these programs can produce additional summaries if you provide an alignment file (we have not covered alignment yet!).</p>
 <p>For NanoPlot, please read through the author’s <a href="https://gigabaseorgigabyte.wordpress.com/2017/06/01/example-gallery-of-nanoplot/">gallery of example plots</a>. There is not a ton of documentation for pycoQC’s output, so you’ll have to puzzle it out yourself. It’s fairly self-explanatory.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -571,7 +572,7 @@ Note
 <p>In this section we’ll talk about how to use metagenomic classification software to try to identify the extent of mixing of more distantly related species. For the case of cross-contaminationm, there is a wide variety of software for different use cases. <a href="https://www.sciencedirect.com/science/article/pii/S1532046424000431"><code>CalculateContamination</code></a> and <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7050530/">verifyBamId</a> are a couple examples.</p>
 <p>Metagenomic classification essentially takes “query” sequences of interest and maps them to a database of “target” sequences. When matches are found, they are reported. In the software we use, both detailed match information for each sequence (which can be quite a large file) and summary information about the taxonomic distribution of matches is produced. The key element in all classification analyses is the database. A match can only be identified if it is present in the database. There are publicly available databases for the software we recommend, but they won’t apply to all use cases, so users can also build their own composed of potential contaminants.</p>
 <p>For Illumina short-read data we recommend using <a href="https://ccb.jhu.edu/software/kraken2/"><code>kraken2</code></a>. Databases can be obtained <a href="https://benlangmead.github.io/aws-indexes/">here</a>, but the standard database is already available on the Xanadu cluster here: <code>/isg/shared/databases/kraken/v06.2025/standard</code>. This database contains bacterial, viral, archaeal and human sequences. There are several other databases in the parent directory.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load kraken/2.1.2 </span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load kraken/2.1.6 </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kraken2</span> <span class="at">-db</span> /isg/shared/databases/kraken/v06.2025/standard <span class="dt">\</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">--paired</span> indir/mysample_R1.fq.gz indir/mysample_R2.fq.gz <span class="dt">\</span></span>
@@ -585,7 +586,7 @@ Note
 <p>In this case the output file format <code>unclassified#.fastq</code> will cause kraken to produce R1 and R2 fastq files without having to specify them both by name. <code>kraken_general.out</code> will give the classification status of ALL reads (or read pairs in this case). <code>kraken_report.txt</code> will give a taxonomic summary.</p>
 <p>We recommend <a href="https://ccb.jhu.edu/software/centrifuge/manual.shtml#obtaining-centrifuge">centrifuge</a> for long reads from PacBio and ONT. You can run it like this:</p>
 <p>Outputs are</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load centrifuge/1.0.4</span>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load centrifuge/1.0.4.1</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">centrifuge</span> <span class="at">-q</span> <span class="dt">\</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">-x</span> /isg/shared/databases/centrifuge/b+a+v+h/p_compressed+h+v <span class="dt">\</span></span>
@@ -602,7 +603,7 @@ Note
 <p><a href="https://multiqc.info"><code>MultiQC</code></a> is a fantastic tool for aggregating quality reports across samples and pieces of software. It can read in reports from most things we’ll use and digest them into a readable format. This is particularly useful when you have many samples. You can imagine that checking fastqc html files individually for 20 or 30 (or 800) samples can range from tedious to virtually impossible. MultiQC gives you a quick overview of everything that can key you into problems when they exist.</p>
 <p>MultiQC has very simple usage:<br>
 </p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.15</span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.33</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="at">-f</span> <span class="at">-o</span> multiqc_out input_dir</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>-o</code> specifies an output directory. <code>-f</code> means “force-overwrite” if the directory already exists and contains results (handy when re-running or testing scripts). MultiQC will search <code>input_dir</code> and subdirectories for summary files it recognizes.</p>
