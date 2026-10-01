@@ -33,7 +33,7 @@ Paired-end sequence is typically delivered in two separate files, which we analy
 The usage for fastqc is very simple:
 
 ```bash
-module load fastqc/0.11.7
+module load fastqc/0.12.1-v36ge7l
 
 fastqc -o output_dir input_dir/mysequences.fastq.gz
 ```
@@ -66,7 +66,7 @@ For Nanopore data, we typically use either [pycoQC](https://github.com/a-slide/p
 To run NanoPlot on fastq files: 
 
 ```bash
-module load NanoPlot/1.41.6
+module load NanoPlot/1.44.0
 
 NanoPlot --fastq input_dir/mysample.fastq.gz -o output_dir -p mysample -t 4 
 ```
@@ -86,7 +86,8 @@ Here we use `-t 4` to specify 4 cpus. Remember:
 `pycoQC` can only accept the summary file like this:
 
 ```bash
-module load pycoQC/2.5.2
+# you'll need to install pycoQC via conda as there is no module for it
+# https://anaconda.org/channels/bioconda/packages/pycoqc/overview
 
 pycoQC -f sequencing_summary.txt -o pycoQC_output.html
 ```
@@ -180,7 +181,7 @@ Metagenomic classification essentially takes "query" sequences of interest and m
 For Illumina short-read data we recommend using [`kraken2`](https://ccb.jhu.edu/software/kraken2/). Databases can be obtained [here](https://benlangmead.github.io/aws-indexes/), but the standard database is already available on the Xanadu cluster here: `/isg/shared/databases/kraken/v06.2025/standard`. This database contains bacterial, viral, archaeal and human sequences. There are several other databases in the parent directory. 
 
 ```bash
-module load kraken/2.1.2 
+module load kraken/2.1.6 
 
 kraken2 -db /isg/shared/databases/kraken/v06.2025/standard \
         --paired indir/mysample_R1.fq.gz indir/mysample_R2.fq.gz \
@@ -200,7 +201,7 @@ We recommend [centrifuge](https://ccb.jhu.edu/software/centrifuge/manual.shtml#o
 Outputs are
 
 ```bash
-module load centrifuge/1.0.4
+module load centrifuge/1.0.4.1
 
 centrifuge -q \
         -x /isg/shared/databases/centrifuge/b+a+v+h/p_compressed+h+v \
@@ -221,7 +222,7 @@ The stdout captured by `outdir/centrifuge_results.txt` will give the classificat
 MultiQC has very simple usage:\
 
 ```bash
-module load MultiQC/1.15
+module load MultiQC/1.33
 
 multiqc -f -o multiqc_out input_dir
 ```
