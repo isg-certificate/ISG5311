@@ -25,7 +25,7 @@ As we walk through this RNA-seq workflow you will do the following at each step:
 
 The scripts you'll run and modify are in a code repository on [GitHub](https://github.com). GitHub is a web platform that hosts code repositories. It's built on the version control software [`git`](https://git-scm.com). We will cover git extensively next semester. 
 
-You can see our scripts [here](https://github.com/isg-certificate/rnaseq). Note that this repository already has the skeletal project organization we discussed in the previous chapter. To download the scripts to your home directory on Xanadu, we're going to use `git`, specifically the subcommand `clone`, to create a local copy of this repository. Git is available by default on Xanadu nodes, including the login node, so we don't need load any modules. 
+You can see our scripts [here](https://github.com/isg-certificate/rnaseq). Note that this repository already has the skeletal project organization we discussed in the previous chapter. To download the scripts to your home directory on Mantis, we're going to use `git`, specifically the subcommand `clone`, to create a local copy of this repository. Git is available by default on Mantis nodes, including the login node, so we don't need load any modules. 
 
 To clone any git repository you have access to, you can go to the repository's GitHub site, click on the big green button in the upper right that says `<> Code`, select "HTTPS", and copy the URL. Then, in general:
 
@@ -81,7 +81,7 @@ The expression data are **unstranded, paired-end sequenced RNA-seq**. You should
 
 ### Running tasks in parallel
 
-We're going to download the data using the script `scripts/01_rawdata/01_downloadSRA.sh`. But before we do that, we need to talk about running tasks in **parallel**. Part of the reason we use computer clusters for bioinformatics is that consumer laptops and desktops don't have the computational power required to accomplish some tasks. In truth, however, individual CPU cores on a consumer machine might not be much slower, if at all, than the individual CPU cores on Xanadu. Xanadu, however, is composed of many nodes, and on each of these nodes are 32-96 CPU cores, compared with 8-12 on a high end consumer computer. The increased computing speed we get from using a cluster primarily comes from the ability to divide work up into pieces and use many CPU cores simultaneously, or *in parallel*. 
+We're going to download the data using the script `scripts/01_rawdata/01_downloadSRA.sh`. But before we do that, we need to talk about running tasks in **parallel**. Part of the reason we use computer clusters for bioinformatics is that consumer laptops and desktops don't have the computational power required to accomplish some tasks. In truth, however, individual CPU cores on a consumer machine might not be much slower, if at all, than the individual CPU cores on Mantis. Mantis, however, is composed of many nodes, and on each of these nodes are 32-128 CPU cores, compared with 8-12 on a high end consumer computer. The increased computing speed we get from using a cluster primarily comes from the ability to divide work up into pieces and use many CPU cores simultaneously, or *in parallel*. 
 
 There are two general types of parallel computing applications:
 
@@ -92,9 +92,9 @@ Many programs that require parallel operations to be coupled are written so that
 
 This type of within-machine parallelism is **very common** in bioinformatics software. The main thing to know about this is that though many programs can be sped up by allowing them to use more processors, the speedup is seldom linear. Adding more processors comes with increasing overhead for managing them. How quickly returns diminish depends on the program. We rarely use more than 8-12 CPUs for a single program. 
 
-In some coupled applications, however, even the 96 CPUs on Xanadu's are insufficient. In those cases, coupled parallel processes need to be able to communicate *across nodes*. That adds an extra layer of complexity, which is often handled by [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface), or "Message Passing Interface". Applications requiring this large scale parallelism are often written to use MPI to manage it. Between-node coupled parallelism is *fairly uncommon* in bioinformatics, and we won't cover it in this course. 
+In some coupled applications, however, even the 128 CPUs on Mantis's biggest node are insufficient. In those cases, coupled parallel processes need to be able to communicate *across nodes*. That adds an extra layer of complexity, which is often handled by [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface), or the "Message Passing Interface". Applications requiring this large scale parallelism are often written to use MPI to manage it. Between-node coupled parallelism is *fairly uncommon* in bioinformatics, and we won't cover it in this course. 
 
-There are some cases where extremely high coupled parallelism is required, and the overhead of MPI is inefficient. For those cases, we often use graphical processing units (`GPUs`). These days, the most common use cases involve machine learning models. Basecalling raw Nanopore signal data requires a GPU to complete in a reasonable amount of time. Multiple nodes on Xanadu have GPUs available. Next semester we will use GPU resources in some of our workflows. 
+There are some cases where extremely high coupled parallelism is required, and the overhead of MPI is inefficient. For those cases, we often use graphical processing units (`GPUs`). These days, the most common use cases involve machine learning or artificial intelligence models. Basecalling raw Nanopore signal data requires a GPU to complete in a reasonable amount of time. Multiple nodes on Mantis have GPUs available. Next semester we will use GPU resources in some of our workflows. 
 
 **Embarrassingly parallel** problems are **extremely common** in bioinformatics. It is very often the case that a large analysis can be broken up into many small, independent pieces. Most commonly, we break these problems up by sample (think of running `fastqc` on, say, 75 RNA-seq samples) or by genomic region (think of searching for genetic variants in 10,000 genomic windows). In both of these cases, the small pieces of the larger job don't need to be combined until they are all complete. 
 
@@ -109,7 +109,7 @@ We're going to cover `GNU parallel` in this section, and SLURM arrays just a few
 
 Usually just called [`parallel`](http://www.gnu.org/software/parallel), this program is one of the most commonly used Linux utilities. It's a very powerful and flexible program. We'll cover only a couple of approaches to using it here, but there is an [extensive tutorial](https://www.gnu.org/software/parallel/parallel_tutorial.html). 
 
-The basic idea is that given a list of inputs, parallel can be used to operate on multiple element of the list simultaneously. 
+The basic idea is that given a list of inputs, parallel can be used to operate on multiple elements of the list simultaneously. 
 
 Let's create a test file:
 
@@ -174,7 +174,7 @@ parallel -j 2
 
 ### Finally, the download script
 
-Ok, so you're logged into Xanadu, you've cloned the git repository, you get the gist of `parallel`. You're ready to walk through our script and run it. The script is found in `scripts/01_rawdata/01_downloadSRA.sh`. It's written to be run from that directory, so `cd` there to have a look. 
+Ok, so you're logged into Mantis, you've cloned the git repository, you get the gist of `parallel`. You're ready to walk through our script and run it. The script is found in `scripts/01_rawdata/01_downloadSRA.sh`. It's written to be run from that directory, so `cd` there to have a look. 
 
 We'll go through the script in chunks. 
 
@@ -182,7 +182,7 @@ First, the SLURM header. We're requesting 12 cpus and 15G. We're going to run tw
 
 ```bash
 #!/bin/bash
-#SBATCH --job-name=fasterq_dump_xanadu
+#SBATCH --job-name=fasterq_dump_mantis
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -c 12
@@ -195,7 +195,7 @@ First, the SLURM header. We're requesting 12 cpus and 15G. We're going to run tw
 #SBATCH -e %x_%j.err
 ```
 
-This next part is not required, but we often start scripts with these commands to make it simpler to keep track of when and where (on xanadu) they ran. 
+This next part is not required, but we often start scripts with these commands to make it simpler to keep track of when and where (on mantis) they ran. 
  
 ```bash
 hostname
@@ -206,8 +206,8 @@ We're loading `parallel` and `sratoolkit` here. `sratoolkit` has the tool we'll 
 
 ```bash
 # load software
-module load parallel/20180122
-module load sratoolkit/3.0.1
+module load parallel/20240322
+module load sratoolkit/3.4.1-wm6ntf4
 ```
 
 Oooh look! Comments that help us keep track of what data exactly we're going to download. 
@@ -259,7 +259,7 @@ This is going to sound silly, *but check that you have the correct number of fil
 
 Notes:
 
-- There are THREE files per sample. This is because these data were uploaded after an initial QC step, and orphaned reads were included. We're going to ignore these. 
+- There are THREE files per sample, not two as you might expect with paired-end data. This is because these data were uploaded after an initial QC step, and orphaned reads were included. We're going to ignore these. 
 - From the moment you get your hands on data, you should start treating it skeptically. Ask if it meets your expectations. Look at the file sizes for our data. `SRR12475446` has comparatively *very* little data. Ultimately we will have to drop this sample. 
 
 ## Downloading genomes from ENSEMBL
@@ -270,7 +270,7 @@ While NCBI, which shares data with its European ([ENA](https://www.ebi.ac.uk/ena
 
 We're going to get our genome and annotation from [ENSEMBL](https://useast.ensembl.org/index.html). ENSEMBL is a database for vertebrate genomes and annotations. They generate their own annotations and resources for comparing genes and genomes among species. Using ENSEMBL will allow us to easily extract functional information for *F. heteroclitus* genes that we would otherwise have to infer ourselves with a separate pipeline. 
 
-ENSEMBLE releases new versions periodically. Annotated genes have accession numbers that are tied to ENSEMBLE release versions. Automated gene annotation is a constantly improving field, so gene models can change, even if the underlying genome assembly does not. It's important when getting data from ENSEMBL to get it from a specific version of the database, and to keep track of which version you're using. 
+ENSEMBLE releases new versions periodically. Annotated genes have accession numbers that are tied to ENSEMBLE release versions. Automated gene annotation is a constantly improving field, so gene models can change, even if the underlying genome assembly does not. It's important when getting data from ENSEMBL to be specific about the version of the database you're using (and keep track of it). 
 
 Note also that ENSEMBL doesn't sequence genomes. They pull genomes in from other organizations. Our genome is identical to an NCBI accessioned genome, for which they provide an NCBI accession number ([GCA_000826765.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000826765.1/)). 
 
@@ -297,7 +297,7 @@ We're going to index the genome with samtools (more in a moment).
 
 ```bash
 # load software
-module load samtools/1.16.1
+module load samtools/1.21-gcc-11.4.0-7lu5xjn
 ```
 
 As before, we're going to create our output directory as part of the script. 
@@ -374,8 +374,8 @@ echo `hostname`
 #################################################################
 # FastQC
 #################################################################
-module load fastqc/0.12.1       #<2>
-module load parallel/20180122   #<2>
+module load fastqc/0.12.1-v36ge7l       #<2>
+module load parallel/20240322   #<2>
 
 # set input/output directory variables
 INDIR=../../data/fastq/                           #<3>
@@ -395,7 +395,7 @@ cat $ACCLIST | parallel -j 10 \                   #<5>
 
 Run this script with `sbatch 01_fastqc.sh`. Monitor it and ensure that it produces the output you expect with no errors. Run `seff <jobid>` when it completes to see how efficiently we used our resource request. 
 
-Download (or connect to Xanadu's file system) and look at a few of the HTML reports. You don't need to check them all because...
+Download (or connect to Mantis's file system) and look at a few of the HTML reports. You don't need to check them all because...
 
 ### MultiQC on raw data
 
@@ -456,17 +456,17 @@ We get results:
 /isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-SE.fa:AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
 ```
 
-`TruSeq` is a common library prep kit. We've got paired end reads `PE`. Let's use `/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa` in Trimmomatic. 
+`TruSeq` is a common library prep kit. We've got paired end reads, `PE`. Let's use `/isg/shared/apps/Trimmomatic/0.39/adapters/TruSeq3-PE-2.fa` in Trimmomatic. 
 
 ### Running Trimmomatic in a SLURM array
 
-Quality trimming requires a bit more resources for each job than than FastQC, and it takes longer to do. Here we'll use a SLURM array to run each trimming job independently. SLURM arrays are a feature of SLURM that allows you to essentially write a single script and have it run repeatedly. There is a [guide to running SLURM arrays on Xanadu](https://github.com/CBC-UCONN/Job-Arrays-on-Xanadu). Please read through it, try out the simple examples there, and then come back here. 
+Quality trimming requires a bit more resources for each job than than FastQC, and it takes longer to do. Here we'll use a SLURM array to run each trimming job independently. SLURM arrays are a feature of SLURM that allows you to essentially write a single script and have it run repeatedly. There is a [guide to running SLURM arrays on Mantis](https://cbc-uconn.github.io/hpc-docs/running.html#job-arrays). Please read through it, try out the simple example there, and then come back here. 
 
 So the idea is that, much like a bash loop, or running GNU parallel, in an array job script, we write generic code, and then figure out how to substitute in the specific files or parameters for each instance of the array. The advantage of arrays over using parallel, is that each instance of the array (or "array task") will be scheduled independently, receive its own resource allocation, and can run on any node where there is space for that job. This makes arrays better suited than parallel for repetitive jobs that require substantial resources. 
 
-For example, if you had 30 tasks that each required 1 cpu and 10G of RAM, running that job with GNU parallel would require the majority of resources on a single node (30 CPUs and 300G of RAM), and there might be a wait for those resources to become available. If you run the job as an array, however, each task can be slotted in on any node where 1 CPU and 10G of RAM are available, so your tasks will fan out and soak up smaller chunks of unused resources. If you have 1000 jobs, each requiring 20G of RAM and 10 CPUs, restricting yourself to a single node with GNU parallel will take *much* longer than allowing those jobs to spread out over the cluster. Only 4-6 could run at a time, depending on the node, whereas 40 could run simultaneously with an array (user max CPU limit on general partition is 400). 
+For example, if you had 30 tasks that each required 1 cpu and 10G of RAM, running that job with GNU parallel would require the majority of resources on a single node (30 CPUs and 300G of RAM), and there might be a wait for those resources to become available all at once. If you run the job as an array, however, each task can be slotted in on any node where 1 CPU and 10G of RAM are available, so your tasks will fan out and soak up smaller chunks of unused resources. If you have 1000 jobs, each requiring 20G of RAM and 10 CPUs, restricting yourself to a single node with GNU parallel will take *much* longer than allowing those jobs to spread out over the cluster. Generally only 4-6 could run at a time (on some nodes up to 12), depending on the node, whereas 40 could run simultaneously with an array (user max CPU limit on general partition is 400). 
 
-So, to sum up, SLURM arrays are a key means to execute parallel jobs on Xanadu. 
+So, to sum up, SLURM arrays are a key means to execute parallel jobs on Mantis. 
 
 For a SLURM array, every instance (or task) has a unique numerical value assigned to the environment variable `SLURM_ARRAY_TASK_ID`. We're going to use that variable to make substitutions into our generic code. Our script is `scripts/02_QC/03_trimmomatic.sh`. It looks like this:
 
@@ -493,7 +493,7 @@ date
 #################################################################
 
 module load Trimmomatic/0.39
-module load parallel/20180122
+module load parallel/20240322
 
 # set input/output directory variables
 INDIR=../../data/fastq/
@@ -551,7 +551,7 @@ date
 #################################################################
 
 module load Trimmomatic/0.39
-module load parallel/20180122
+module load parallel/20240322
 
 # set input/output directory variables
 INDIR=../../data/fastq/

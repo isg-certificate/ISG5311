@@ -66,7 +66,7 @@ You are almost certainly going to produce wrong or problematic results at some p
 
 The next layer of documentation is **code comments**. You may have all your code written down in nice, clean scripts, but sometimes interpreting that code without running it can be challenging (both for your collaborators and future you). At key moments in your scripts, you should add comment lines to explain what the code is doing in plain language. 
 
-A final layer of documentation is to create one or more README files that explain clearly what the project is trying to accomplish, what the steps are and where to find code and results. It may also contain notes about various abandoned pieces of software, parameter combinations, etc that may explain the final form of the analysis. 
+A final layer of documentation is to create one or more README files that explain clearly what the project is trying to accomplish, what the steps are and where to find code and results. These may also contain notes about various approaches, parameter combinations, pieces of software etc that you tried and that may explain the final form of the analysis. 
 
 ### Documenting data
 
