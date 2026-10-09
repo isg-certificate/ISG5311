@@ -101,9 +101,9 @@ Perhaps it's now a bit clear why GFF3 and GTF are not the easiest file formats t
 3. Filter GFF/GTF file.
 4. Other types of manipulations and comparisons. 
 
-Let's try a few of the scripts. AGAT is easiest to use as a container. We have a copy of the container on Xanadu here: `/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img`, but you can use `singularity pull docker://quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0` to grab your own copy if you like (a newer version may be available [here](https://quay.io/repository/biocontainers/agat?tab=tags&tag=latest)). 
+Let's try a few of the scripts. AGAT is easiest to use as a container. We have a copy of the container on Mantis here: `/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img`, but you can use `singularity pull docker://quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0` to grab your own copy if you like (a newer version may be available [here](https://quay.io/repository/biocontainers/agat?tab=tags&tag=latest)). 
 
-Log in to Xanadu, start an interactive session and try the following. 
+Log in to Mantis, start an interactive session and try the following. 
 
 We've been working with *Fundulus heteroclitus*, so let's go to the `genome` directory in our RNAseq project and download the GFF3 version of the annotation from ENSEMBL (previously we grabbed the GTF). 
 
@@ -245,8 +245,8 @@ date
 #################################################################
 # Generate Counts 
 #################################################################
-module load htseq/0.13.5
-module load parallel/20180122
+module load htseq/2.0.5
+module load parallel/20240822-yoeeumh
 
 INDIR=../../03_align/alignments
 OUTDIR=../../04_counts/counts
