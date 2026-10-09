@@ -466,7 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># load software</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1-4wkufzn</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># input/output directories</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../genome/hisat2_index</span>
@@ -508,8 +508,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="annotated-cell-2-18"><a href="#annotated-cell-2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
 <span id="annotated-cell-2-19"><a href="#annotated-cell-2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Align reads to genome</span></span>
 <span id="annotated-cell-2-20"><a href="#annotated-cell-2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
-<span id="annotated-cell-2-21"><a href="#annotated-cell-2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1</span>
-<span id="annotated-cell-2-22"><a href="#annotated-cell-2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span>
+<span id="annotated-cell-2-21"><a href="#annotated-cell-2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load hisat2/2.2.1-4wkufzn</span>
+<span id="annotated-cell-2-22"><a href="#annotated-cell-2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.21-gcc-11.4.0-mcohq7c</span>
 <span id="annotated-cell-2-23"><a href="#annotated-cell-2-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="annotated-cell-2-24"><a href="#annotated-cell-2-24" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../results/02_qc/trimmed_fastq</span>
 <span id="annotated-cell-2-25"><a href="#annotated-cell-2-25" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../results/03_align/alignments</span>
@@ -689,7 +689,7 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 </section>
 <section id="manipulating-alignments" class="level3" data-number="15.3.3">
 <h3 data-number="15.3.3" class="anchored" data-anchor-id="manipulating-alignments"><span class="header-section-number">15.3.3</span> Manipulating alignments</h3>
-<p>To manipulate SAM/BAM files we typically use <a href="http://www.htslib.org"><code>samtools</code></a>, a large toolkit with functions for viewing, editing and summarizing. We’re going to cover a few key modules here, but you should skim the documentation afterward to get a sense of what else you can do with it. Log in to Xanadu and start an interactive session now. Load samtools:</p>
+<p>To manipulate SAM/BAM files we typically use <a href="http://www.htslib.org"><code>samtools</code></a>, a large toolkit with functions for viewing, editing and summarizing. We’re going to cover a few key modules here, but you should skim the documentation afterward to get a sense of what else you can do with it. Log in to Mantis and start an interactive session now. Load samtools:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Type <code>samtools</code> to see all available submodules. To see the usage and options for any one of them, try, e.g.&nbsp;<code>samtools view --help</code>.</p>
 <section id="samtools-view" class="level4" data-number="15.3.3.1">
@@ -764,9 +764,21 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 </section>
 <section id="visualizing-alignments" class="level3" data-number="15.3.4">
 <h3 data-number="15.3.4" class="anchored" data-anchor-id="visualizing-alignments"><span class="header-section-number">15.3.4</span> Visualizing alignments</h3>
-<p>To visualize alignments, samtools has a function called <code>tview</code>, but it’s a pretty miserable experience in general. We usually use a GUI program <a href="https://igv.org"><code>IGV</code></a>, which we will demonstrate here.</p>
-<p>You’ll need to run IGV <strong>locally</strong>, not on Xanadu, so first download it from the link above.</p>
-<p>To view data hosted on Xanadu, you’ll need to either download what you want to view (not ideal), or connect your computer’s file system to Xanadu’s (see Chapter 4.4.4 for instructions on that). Remember, to connect to Xanadu this way you’ll need to be connected to the CAM VPN.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It may seem like this is not required, but you should <em>definitely</em> do this. It will dramatically help your understanding of the alignment data to see it visualized. Also it is sometimes the case that you will want to investigate in detail alignments to a particular region and this is the best tool for doing that.</p>
+</div>
+</div>
+<p>To visualize alignments, samtools has a function called <code>tview</code>, but it’s a pretty miserable experience in general. We usually use a GUI program called <a href="https://igv.org"><code>IGV</code></a>, which we will demonstrate here.</p>
+<p>You’ll need to run IGV <a href="https://ondemand.hpc.cam.uchc.edu"><strong>via Open OnDemand</strong></a>. Log in there and start an IGV app session. It is available from the main page.</p>
 <p>To visualize alignments you need:</p>
 <ol type="1">
 <li>One or more BAM files and their <code>.bai</code> indexes (if the .bai file is in the same directory IGV will find it automatically).</li>
@@ -774,7 +786,7 @@ SRR12475447.2735    147 KN805525.1  223716  60  10M2350N43M =   221834  -1935   
 <li>A GTF annotation file</li>
 </ol>
 <p>Open IGV and begin loading the files.</p>
-<p>First the genome. Select the menu <code>Genomes</code> and <code>Load genome from file</code>. If you’re connecting to Xanadu, you’ll connect to the appropriate file system: cfs09 for your home directory, cfs10 for <code>/sandbox</code>, cfs08 for <code>/scratch</code>, then the desired path <code>home/FCAM/username/...</code> to get to your RNAseq tutorial directory and the <code>genome</code> subdirectory. Load the <code>.fa</code> reference genome file.</p>
+<p>First the genome. Select the menu <code>Genomes</code> and <code>Load genome from file</code>. If you’re connecting to Mantis, you’ll connect to the appropriate file system: cfs09 for your home directory, cfs10 for <code>/sandbox</code>, cfs08 for <code>/scratch</code>, then the desired path <code>home/FCAM/username/...</code> to get to your RNAseq tutorial directory and the <code>genome</code> subdirectory. Load the <code>.fa</code> reference genome file.</p>
 <p>Next select <code>File</code> and <code>Load from file</code> and load the <code>gtf</code> annotation file you downloaded. If IGV complains that this file needs to be indexed and/or sorted, it will tell you the menu options in IGV to accomplish this. Do that, then load the sorted, indexed GTF file. ENSEMBL really should sort these.</p>
 <p>Finally, select <code>File</code> and <code>Load from file</code> and load a bam file. We’ll go with <code>SRR12475447.bam</code> because that’ what we’ve been using (definitely don’t select <code>...446.bam</code>, as it has almost no reads).</p>
 <p>After all this is done, you won’t see much because we’ll be too zoomed out. Put our focal region <code>KN811289.1:1050000-1100000</code> in the navigation bar at the top.</p>
@@ -859,8 +871,8 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <span id="annotated-cell-32-20"><a href="#annotated-cell-32-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate alignment statistics for each bam file using samtools</span></span>
 <span id="annotated-cell-32-21"><a href="#annotated-cell-32-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="annotated-cell-32-22"><a href="#annotated-cell-32-22" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
-<span id="annotated-cell-32-23"><a href="#annotated-cell-32-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.16.1</span>
-<span id="annotated-cell-32-24"><a href="#annotated-cell-32-24" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="annotated-cell-32-23"><a href="#annotated-cell-32-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load samtools/1.21-gcc-11.4.0-mcohq7c</span>
+<span id="annotated-cell-32-24"><a href="#annotated-cell-32-24" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20240822-yoeeumh</span>
 <span id="annotated-cell-32-25"><a href="#annotated-cell-32-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="annotated-cell-32-26"><a href="#annotated-cell-32-26" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
 <span id="annotated-cell-32-27"><a href="#annotated-cell-32-27" aria-hidden="true" tabindex="-1"></a></span>
@@ -955,8 +967,8 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co"># this time we'll use qualimap</span></span>
 <span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># load software--------------------------------------------------------------------------</span></span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load qualimap/2.2.1</span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load qualimap/2.3</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20240822-yoeeumh</span>
 <span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="co"># input, output directories--------------------------------------------------------------</span></span>
 <span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
@@ -970,15 +982,18 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="co"># accession list</span></span>
 <span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="va">ACCLIST</span><span class="op">=</span>../../metadata/accessionlist.txt</span>
 <span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="co"># run qualimap in parallel</span></span>
-<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 5 <span class="dt">\</span></span>
-<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>    qualimap <span class="dt">\</span></span>
-<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>        rnaseq <span class="dt">\</span></span>
-<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">-bam</span> <span class="va">$INDIR</span>/{}.bam <span class="dt">\</span></span>
-<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">-gtf</span> <span class="va">$GTF</span> <span class="dt">\</span></span>
-<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">-outdir</span> <span class="va">$OUTDIR</span>/{} <span class="dt">\</span></span>
-<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">--java-mem-size</span><span class="op">=</span>2G  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="co"># set java to headless mode so it doesn't try to open a GUI</span></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">JAVA_OPTS</span><span class="op">=</span><span class="st">"-Djava.awt.headless=true"</span></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a><span class="co"># run qualimap in parallel</span></span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="va">$ACCLIST</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel</span> <span class="at">-j</span> 5 <span class="dt">\</span></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>    qualimap <span class="dt">\</span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>        rnaseq <span class="dt">\</span></span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">-bam</span> <span class="va">$INDIR</span>/{}.bam <span class="dt">\</span></span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">-gtf</span> <span class="va">$GTF</span> <span class="dt">\</span></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">-outdir</span> <span class="va">$OUTDIR</span>/{} <span class="dt">\</span></span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">--java-mem-size</span><span class="op">=</span>2G  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Most of this should look familiar. We are telling <code>qualimap</code> to operate in <code>rnaseq</code> mode. We provide a bam file and a GTF annotation file. It will output an HTML formatted report.</p>
 </section>
 <section id="multiqc" class="level3" data-number="15.4.3">
@@ -1004,7 +1019,7 @@ percentage of properly paired reads (%):    71.2</code></pre>
 <span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate reports using MultiQC</span></span>
 <span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
 <span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.9</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load MultiQC/1.33</span>
 <span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="va">STATS</span><span class="op">=</span>../../results/03_align/samtools_stats</span>
 <span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a><span class="va">QUALIMAP</span><span class="op">=</span>../../results/03_align/qualimap_reports</span>

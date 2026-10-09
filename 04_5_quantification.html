@@ -499,8 +499,8 @@ JXMV01047516.1  ensembl three_prime_UTR 7930    8092    .   +   .   Parent=trans
 <li>Filter GFF/GTF file.</li>
 <li>Other types of manipulations and comparisons.</li>
 </ol>
-<p>Let’s try a few of the scripts. AGAT is easiest to use as a container. We have a copy of the container on Xanadu here: <code>/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img</code>, but you can use <code>singularity pull docker://quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0</code> to grab your own copy if you like (a newer version may be available <a href="https://quay.io/repository/biocontainers/agat?tab=tags&amp;tag=latest">here</a>).</p>
-<p>Log in to Xanadu, start an interactive session and try the following.</p>
+<p>Let’s try a few of the scripts. AGAT is easiest to use as a container. We have a copy of the container on Mantis here: <code>/isg/shared/databases/nfx_singularity_cache/agat-1.4.0.img</code>, but you can use <code>singularity pull docker://quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0</code> to grab your own copy if you like (a newer version may be available <a href="https://quay.io/repository/biocontainers/agat?tab=tags&amp;tag=latest">here</a>).</p>
+<p>Log in to Mantis, start an interactive session and try the following.</p>
 <p>We’ve been working with <em>Fundulus heteroclitus</em>, so let’s go to the <code>genome</code> directory in our RNAseq project and download the GFF3 version of the annotation from ENSEMBL (previously we grabbed the GTF).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ensembl.org/pub/release-112/gff3/fundulus_heteroclitus/Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3.gz</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> Fundulus_heteroclitus.Fundulus_heteroclitus-3.0.2.112.gff3.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -589,8 +589,8 @@ JXMV01047516.1  ensembl three_prime_UTR 7930    8092    .   +   .   ID=agat-thre
 <span id="annotated-cell-14-17"><a href="#annotated-cell-14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
 <span id="annotated-cell-14-18"><a href="#annotated-cell-14-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Counts </span></span>
 <span id="annotated-cell-14-19"><a href="#annotated-cell-14-19" aria-hidden="true" tabindex="-1"></a><span class="co">#################################################################</span></span>
-<span id="annotated-cell-14-20"><a href="#annotated-cell-14-20" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load htseq/0.13.5</span>
-<span id="annotated-cell-14-21"><a href="#annotated-cell-14-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20180122</span>
+<span id="annotated-cell-14-20"><a href="#annotated-cell-14-20" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load htseq/2.0.5</span>
+<span id="annotated-cell-14-21"><a href="#annotated-cell-14-21" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load parallel/20240822-yoeeumh</span>
 <span id="annotated-cell-14-22"><a href="#annotated-cell-14-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="annotated-cell-14-23"><a href="#annotated-cell-14-23" aria-hidden="true" tabindex="-1"></a><span class="va">INDIR</span><span class="op">=</span>../../03_align/alignments</span>
 <span id="annotated-cell-14-24"><a href="#annotated-cell-14-24" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>../../04_counts/counts</span>
