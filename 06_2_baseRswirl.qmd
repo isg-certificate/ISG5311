@@ -15,4 +15,4 @@ The instructions are fairly simple. Visit [this page](https://swirlstats.com/stu
 
 Install the course [`R Programming`](http://swirlstats.com/scn/rprog.html) and work through it. There are 15 lessons. Swirl lessons should take 10-20 minutes each, leading to a total time of 3-6 hours. 
 
-For future reference, check out this [base R cheat sheet](https://iqss.github.io/dss-workshops/R/Rintro/base-r-cheat-sheet.pdf). 
+For future reference, check out this [base R cheat sheet](https://rstudio.github.io/cheatsheets/base-r.pdf). 
